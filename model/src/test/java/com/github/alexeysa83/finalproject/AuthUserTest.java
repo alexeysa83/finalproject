@@ -6,7 +6,7 @@ import static org.junit.Assert.*;
 
 public class AuthUserTest {
 
-    AuthUser user = new AuthUser ("alexey", "password", Role.ADMIN);
+    private AuthUser user = new AuthUser ("alexey", "password", Role.ADMIN);
 
     @Test
     public void getLogin() {
