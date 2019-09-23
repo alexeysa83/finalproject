@@ -5,7 +5,6 @@ public class AuthUser {
     private String login;
     private String password;
     private Role role;
-//    private String userId;
 
     public AuthUser() {
     }
@@ -14,7 +13,6 @@ public class AuthUser {
         this.login = username;
         this.password = password;
         this.role = role;
-//        this.userId = userId;
     }
 
     public String getLogin() {
@@ -40,12 +38,4 @@ public class AuthUser {
     public void setRole(Role role) {
         this.role = role;
     }
-
-//    public String getUserId() {
-//        return userId;
-//    }
-//
-//    public void setUserId(String userId) {
-//        this.userId = userId;
-//    }
 }
