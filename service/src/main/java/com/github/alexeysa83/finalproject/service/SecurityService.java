@@ -1,4 +1,6 @@
-package com.github.alexeysa83.finalproject;
+package com.github.alexeysa83.finalproject.service;
+
+import com.github.alexeysa83.finalproject.model.AuthUser;
 
 public interface SecurityService {
 

@@ -1,4 +1,4 @@
-package com.github.alexeysa83.finalproject.servlet;
+package com.github.alexeysa83.finalproject.web.servlet;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;

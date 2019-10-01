@@ -1,4 +1,4 @@
-package com.github.alexeysa83.finalproject.filter;
+package com.github.alexeysa83.finalproject.web.filter;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static com.github.alexeysa83.finalproject.WebUtils.forwardToJsp;
+import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJsp;
 
 @WebFilter(displayName = "AuthFilter", urlPatterns = {"/userpage"})
 public class AuthFilter implements Filter {

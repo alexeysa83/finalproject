@@ -1,11 +1,11 @@
-package com.github.alexeysa83.finalproject.servlet;
+package com.github.alexeysa83.finalproject.web.servlet;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static com.github.alexeysa83.finalproject.WebUtils.forwardToJsp;
+import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJsp;
 
 @WebServlet(name = "LogoutServlet", urlPatterns = {"/logout"})
 public class LogoutServlet extends HttpServlet {

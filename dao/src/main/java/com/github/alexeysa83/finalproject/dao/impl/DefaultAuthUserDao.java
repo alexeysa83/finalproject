@@ -1,8 +1,8 @@
-package com.github.alexeysa83.finalproject.impl;
+package com.github.alexeysa83.finalproject.dao.impl;
 
-import com.github.alexeysa83.finalproject.Role;
-import com.github.alexeysa83.finalproject.AuthUser;
-import com.github.alexeysa83.finalproject.AuthUserDao;
+import com.github.alexeysa83.finalproject.dao.AuthUserDao;
+import com.github.alexeysa83.finalproject.model.AuthUser;
+import com.github.alexeysa83.finalproject.model.Role;
 
 import java.util.HashMap;
 import java.util.Map;

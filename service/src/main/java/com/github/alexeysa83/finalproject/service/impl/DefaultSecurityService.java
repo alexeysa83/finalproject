@@ -1,13 +1,15 @@
-package com.github.alexeysa83.finalproject.impl;
+package com.github.alexeysa83.finalproject.service.impl;
 
-import com.github.alexeysa83.finalproject.AuthUser;
-import com.github.alexeysa83.finalproject.AuthUserDao;
-import com.github.alexeysa83.finalproject.SecurityService;
+
+import com.github.alexeysa83.finalproject.dao.AuthUserDao;
+import com.github.alexeysa83.finalproject.dao.impl.DefaultAuthUserDao;
+import com.github.alexeysa83.finalproject.model.AuthUser;
+import com.github.alexeysa83.finalproject.service.SecurityService;
 
 
 public class DefaultSecurityService implements SecurityService {
-
-    private AuthUserDao authUserDao = DefaultAuthUserDao.getInstance();
+private AuthUserDao authUserDao = DefaultAuthUserDao.getInstance();
+    //private AuthUserDao authUserDao = DefaultAuthUserDao.getInstance();
 
     private static volatile SecurityService instance;
 

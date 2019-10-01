@@ -1,8 +1,8 @@
-package com.github.alexeysa83.finalproject.servlet;
+package com.github.alexeysa83.finalproject.web.servlet;
 
-import com.github.alexeysa83.finalproject.AuthUser;
-import com.github.alexeysa83.finalproject.SecurityService;
-import com.github.alexeysa83.finalproject.impl.DefaultSecurityService;
+import com.github.alexeysa83.finalproject.model.AuthUser;
+import com.github.alexeysa83.finalproject.service.SecurityService;
+import com.github.alexeysa83.finalproject.service.impl.DefaultSecurityService;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static com.github.alexeysa83.finalproject.WebUtils.forwardToJsp;
+import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJsp;
 
 /*
 Divide login/password-->

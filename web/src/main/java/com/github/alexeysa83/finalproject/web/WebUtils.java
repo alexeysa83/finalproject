@@ -1,4 +1,4 @@
-package com.github.alexeysa83.finalproject;
+package com.github.alexeysa83.finalproject.web;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
