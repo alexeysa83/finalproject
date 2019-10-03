@@ -4,9 +4,7 @@ import com.github.alexeysa83.finalproject.model.AuthUser;
 
 public interface SecurityService {
 
-    void saveAuthUser (AuthUser authUser);
-
-    AuthUser createAndSaveAuthUser (String login, String password, boolean isAdmin);
+    AuthUser createAndSaveAuthUser (String login, String password, String role);
 
     AuthUser login (String login, String password);
 

@@ -12,10 +12,6 @@ import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJsp;
 public class AuthFilter implements Filter {
 
     @Override
-    public void init(FilterConfig filterConfig) {
-    }
-
-    @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
@@ -25,9 +21,5 @@ public class AuthFilter implements Filter {
         } else {
             filterChain.doFilter(request, response);
         }
-    }
-
-    @Override
-    public void destroy() {
     }
 }

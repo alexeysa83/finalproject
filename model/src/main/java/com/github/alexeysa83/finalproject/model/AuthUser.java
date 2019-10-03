@@ -5,12 +5,13 @@ public class AuthUser {
     private String login;
     private String password;
     private Role role;
+    //private String id;
 
     public AuthUser() {
     }
 
-    public AuthUser(String username, String password, Role role) {
-        this.login = username;
+    public AuthUser(String login, String password, Role role) {
+        this.login = login;
         this.password = password;
         this.role = role;
     }

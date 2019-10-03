@@ -13,13 +13,18 @@
     <h2 style="color: firebrick">${requestScope.get('error')}</h2>
 </c:if>
 <form action="${pageContext.request.contextPath}/registration" method="POST">
-    <p><strong>Choose login:</strong>
-        <input maxlength="25" size="40" name="login" required></p>
-    <p><strong>Choose password:</strong>
-        <input type="password" maxlength="25" size="40" name="password" required></p>
-    <p><strong>Repeat password:</strong>
-        <input type="password" maxlength="25" size="40" name="repeatpassword" required></p>
-    <input type="submit" value="Submit"/>
+    <fieldset>
+        <legend>Registration form</legend>
+        <label for="login"><strong>Choose login:</strong></label>
+        <input id="login" type="text" name="login" required>
+
+        <label for="password"><strong>Choose password:</strong></label>
+        <input id="password" type="password" name="password" required>
+
+        <!--<label for="repeatpassword"><strong>Repeat password:</strong></label>
+        <input id="repeatpassword" type="password" name="repeatpassword" required>-->
+        <input type="submit" value="Submit"/>
+    </fieldset>
 </form>
 </body>
 </html>

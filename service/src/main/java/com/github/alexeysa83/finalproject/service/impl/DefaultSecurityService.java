@@ -6,10 +6,9 @@ import com.github.alexeysa83.finalproject.dao.impl.DefaultAuthUserDao;
 import com.github.alexeysa83.finalproject.model.AuthUser;
 import com.github.alexeysa83.finalproject.service.SecurityService;
 
-
 public class DefaultSecurityService implements SecurityService {
-private AuthUserDao authUserDao = DefaultAuthUserDao.getInstance();
-    //private AuthUserDao authUserDao = DefaultAuthUserDao.getInstance();
+
+    private AuthUserDao authUserDao = DefaultAuthUserDao.getInstance();
 
     private static volatile SecurityService instance;
 
@@ -27,13 +26,8 @@ private AuthUserDao authUserDao = DefaultAuthUserDao.getInstance();
     }
 
     @Override
-    public void saveAuthUser(AuthUser authUser) {
-        authUserDao.saveAuthUser(authUser);
-    }
-
-    @Override
-    public AuthUser createAndSaveAuthUser(String login, String password, boolean isAdmin) {
-        return authUserDao.createAuthUser(login, password, isAdmin);
+    public AuthUser createAndSaveAuthUser(String login, String password, String role) {
+        return authUserDao.createAuthUser(login, password, role);
     }
 
     @Override

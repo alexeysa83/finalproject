@@ -15,10 +15,10 @@
 <form action="${pageContext.request.contextPath}/login" method="POST">
     <fieldset>
         <legend>Login form</legend>
-        <p><strong>Login:</strong>
-            <label>
-                <input type="text" name="login" required>
-            </label></p>
+
+        <label for="login"><strong>Login:</strong></label>
+        <input id="login" type="text" name="login" required>
+
         <label for="password"><strong>Password:</strong></label>
         <input id="password" type="password" name="password" required>
         <input type="submit" value="Submit"/>

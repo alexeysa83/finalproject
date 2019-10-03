@@ -18,7 +18,7 @@ UID-->
 Welcome jsp (create+successfull login)-->
 Password to hash class-->
  */
-@WebServlet(name = "CreateUserServlet", urlPatterns = {"/registration"})
+@WebServlet(name = "RegistrationServlet", urlPatterns = {"/registration"})
 public class RegistrationServlet extends HttpServlet {
 
     private SecurityService securityService = DefaultSecurityService.getInstance();
@@ -29,32 +29,34 @@ public class RegistrationServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)  {
 
-        // One class/method in service?
+        // One class/method in Validation service?
         String login = req.getParameter("login");
+        String password = req.getParameter("password");
         if (login.length() < 1 || securityService.checkLoginIsTaken(login)) {
             req.setAttribute("error", "Login is already taken");
             doGet(req, resp);
-        }
+        } else {
+            AuthUser authUser = securityService.createAndSaveAuthUser(login, password, "user");
+            if (authUser == null) {
+                req.setAttribute("error", "Unknown registration error");
+                doGet(req, resp);
+            }
+            req.getSession().setAttribute("authUser", authUser);
+            try {
+                resp.sendRedirect(req.getContextPath() + "/index.jsp");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
-        String password = req.getParameter("password");
-        String repeatpassword = req.getParameter("repeatpassword");
-        if (password.length() < 1 || !(password.equals(repeatpassword))) {
-            req.setAttribute("error", "Password and repeat password should be the same");
-            doGet(req, resp);
-        }
 
-        AuthUser authUser = securityService.createAndSaveAuthUser(login, password, false);
-        if (authUser == null) {
-            req.setAttribute("error", "Unknown registration error");
-            doGet(req, resp);
         }
-        req.getSession().setAttribute("authUser", authUser);
-        try {
-            resp.sendRedirect(req.getContextPath() + "/index.jsp");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        String repeatpassword = req.getParameter("repeatpassword");
+//        if (password.length() < 1 || !(password.equals(repeatpassword))) {
+//            req.setAttribute("error", "Password and repeat password should be the same");
+//            doGet(req, resp);
+//        }
+
     }
 }

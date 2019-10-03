@@ -2,11 +2,11 @@ package com.github.alexeysa83.finalproject.dao;
 
 import com.github.alexeysa83.finalproject.model.AuthUser;
 
+import java.sql.SQLException;
+
 public interface AuthUserDao {
 
-    void saveAuthUser(AuthUser user);
-
-    AuthUser createAuthUser(String login, String password, boolean isAdmin);
+    AuthUser createAuthUser(String login, String password, String role);
 
     AuthUser getAuthUserByLogin(String login);
 

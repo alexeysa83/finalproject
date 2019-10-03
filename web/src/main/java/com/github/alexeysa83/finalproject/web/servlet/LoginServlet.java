@@ -31,19 +31,21 @@ public class LoginServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)  {
         String login = req.getParameter("login");
         String password = req.getParameter("password");
+
         AuthUser authUser = securityService.login(login, password);
         if (authUser == null) {
             req.setAttribute("error", "Invalid login or password");
             forwardToJsp("login", req, resp);
-        }
-        req.getSession().setAttribute("authUser", authUser);
-        try {
-            resp.sendRedirect(req.getContextPath() + "/index.jsp");
-        } catch (IOException e) {
-            e.printStackTrace();
+        } else {
+            req.getSession().setAttribute("authUser", authUser);
+            try {
+                resp.sendRedirect(req.getContextPath() + "/index.jsp");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

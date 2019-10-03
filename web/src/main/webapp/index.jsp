@@ -9,10 +9,9 @@
 </head>
 <body>
 <h2>Main page</h2>
-
 <c:choose>
     <c:when test="${sessionScope.get('authUser') != null}">
-        <a href="${pageContext.request.contextPath}/userinfo">${authUser.login}</a>
+        <a href="${pageContext.request.contextPath}/userpage">${authUser.login}</a>
         <a href="${pageContext.request.contextPath}/logout">Logout</a>
     </c:when>
     <c:otherwise>
@@ -21,7 +20,7 @@
     </c:otherwise>
 </c:choose>
 
+<!-- just for check -->
 <a href="${pageContext.request.contextPath}/userpage">User page</a>
-<a href="${pageContext.request.contextPath}/adminpage">Admin page</a>
 </body>
 </html>
