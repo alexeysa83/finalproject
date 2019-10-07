@@ -26,18 +26,18 @@ public class DefaultSecurityService implements SecurityService {
     }
 
     @Override
-    public AuthUser createAndSaveAuthUser(String login, String password, String role) {
-        return authUserDao.createAuthUser(login, password, role);
+    public AuthUser createAndSaveAuthUser(AuthUser user) {
+        return authUserDao.createAndSave(user);
     }
 
     @Override
-    public AuthUser login(String login, String password) {
-        AuthUser authUser = authUserDao.getAuthUserByLogin(login);
-        if (authUser == null) {
+    public AuthUser login(AuthUser userFromLogin) {
+        AuthUser userFromDB = authUserDao.getByLogin(userFromLogin);
+        if (userFromDB == null || userFromDB.isBlocked()) {
             return null;
         }
-        if (authUser.getPassword().equals(password)) {
-            return authUser;
+        if (userFromDB.getPassword().equals(userFromLogin.getPassword())) {
+            return userFromDB;
         }
         return null;
     }
@@ -46,4 +46,5 @@ public class DefaultSecurityService implements SecurityService {
     public boolean checkLoginIsTaken(String login) {
         return authUserDao.checkLoginIsTaken(login);
     }
-}
+
+    }

@@ -21,8 +21,8 @@
         <label for="password"><strong>Choose password:</strong></label>
         <input id="password" type="password" name="password" required>
 
-        <!--<label for="repeatpassword"><strong>Repeat password:</strong></label>
-        <input id="repeatpassword" type="password" name="repeatpassword" required>-->
+        <label for="repeatpassword"><strong>Repeat password:</strong></label>
+        <input id="repeatpassword" type="password" name="repeatpassword" required>
         <input type="submit" value="Submit"/>
     </fieldset>
 </form>

@@ -29,34 +29,37 @@ public class RegistrationServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)  {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
 
         // One class/method in Validation service?
         String login = req.getParameter("login");
-        String password = req.getParameter("password");
         if (login.length() < 1 || securityService.checkLoginIsTaken(login)) {
             req.setAttribute("error", "Login is already taken");
             doGet(req, resp);
-        } else {
-            AuthUser authUser = securityService.createAndSaveAuthUser(login, password, "user");
-            if (authUser == null) {
-                req.setAttribute("error", "Unknown registration error");
-                doGet(req, resp);
-            }
-            req.getSession().setAttribute("authUser", authUser);
-            try {
-                resp.sendRedirect(req.getContextPath() + "/index.jsp");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-
+            return;
         }
-//        String repeatpassword = req.getParameter("repeatpassword");
-//        if (password.length() < 1 || !(password.equals(repeatpassword))) {
-//            req.setAttribute("error", "Password and repeat password should be the same");
-//            doGet(req, resp);
-//        }
+
+        String password = req.getParameter("password");
+        String repeatpassword = req.getParameter("repeatpassword");
+        if (password.length() < 1 || !(password.equals(repeatpassword))) {
+            req.setAttribute("error", "Password and repeat password should be the same");
+            doGet(req, resp);
+            return;
+        }
+
+        AuthUser authUser = securityService.createAndSaveAuthUser(new AuthUser(login, password));
+        if (authUser == null) {
+            req.setAttribute("error", "Unknown registration error");
+            doGet(req, resp);
+            return;
+        }
+        req.getSession().setAttribute("authUser", authUser);
+        try {
+            resp.sendRedirect(req.getContextPath() + "/index.jsp");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
     }
 }
