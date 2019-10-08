@@ -1,8 +1,8 @@
-package com.github.alexeysa83.finalproject.web.servlet;
+package com.github.alexeysa83.finalproject.web.servlet.auth;
 
 import com.github.alexeysa83.finalproject.model.AuthUser;
-import com.github.alexeysa83.finalproject.service.SecurityService;
-import com.github.alexeysa83.finalproject.service.impl.DefaultSecurityService;
+import com.github.alexeysa83.finalproject.service.auth.SecurityService;
+import com.github.alexeysa83.finalproject.service.auth.DefaultSecurityService;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -34,7 +34,7 @@ public class RegistrationServlet extends HttpServlet {
         // One class/method in Validation service?
         String login = req.getParameter("login");
         if (login.length() < 1 || securityService.checkLoginIsTaken(login)) {
-            req.setAttribute("error", "Login is already taken");
+            req.setAttribute("message", "Login is already taken");
             doGet(req, resp);
             return;
         }
@@ -42,7 +42,7 @@ public class RegistrationServlet extends HttpServlet {
         String password = req.getParameter("password");
         String repeatpassword = req.getParameter("repeatpassword");
         if (password.length() < 1 || !(password.equals(repeatpassword))) {
-            req.setAttribute("error", "Password and repeat password should be the same");
+            req.setAttribute("message", "Password and repeat password should be the same");
             doGet(req, resp);
             return;
         }

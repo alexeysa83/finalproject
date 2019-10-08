@@ -1,9 +1,9 @@
-package com.github.alexeysa83.finalproject.web.servlet;
+package com.github.alexeysa83.finalproject.web.servlet.news;
 
 import com.github.alexeysa83.finalproject.model.AuthUser;
 import com.github.alexeysa83.finalproject.model.News;
-import com.github.alexeysa83.finalproject.service.NewsService;
-import com.github.alexeysa83.finalproject.service.impl.DefaultNewsService;
+import com.github.alexeysa83.finalproject.service.news.NewsService;
+import com.github.alexeysa83.finalproject.service.news.DefaultNewsService;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -26,14 +26,15 @@ public class AddNewsServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
-        String title = req.getParameter("title");
-        String content = req.getParameter("content");
+        final String title = req.getParameter("title");
+        final String content = req.getParameter("content");
         if (title != null && content != null) {
             AuthUser user = (AuthUser) req.getSession().getAttribute("authUser");
             final Timestamp creationTime = new Timestamp(System.currentTimeMillis());
-            service.createAndSave(new News(title, content, creationTime, user.getId(), user.getLogin()));
+            final News news = service.createAndSave(new News(title, content, creationTime, user.getLogin()));
+            // news == null + validation service
         } else {
-            req.setAttribute("error", "Title or content is not completed");
+            req.setAttribute("message", "Title or content is not completed");
             forwardToJsp("addnews", req, resp);
             return;
         }

@@ -1,11 +1,5 @@
 package com.github.alexeysa83.finalproject.dao;
 
-import com.github.alexeysa83.finalproject.dao.impl.DefaultAuthUserDao;
-import com.github.alexeysa83.finalproject.model.AuthUser;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
-
 
 public class DefaultAuthUserDaoTest {
 

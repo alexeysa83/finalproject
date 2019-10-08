@@ -1,8 +1,7 @@
-package com.github.alexeysa83.finalproject.web.servlet;
+package com.github.alexeysa83.finalproject.web.servlet.user;
 
-import com.github.alexeysa83.finalproject.model.AuthUser;
-import com.github.alexeysa83.finalproject.service.SecurityService;
-import com.github.alexeysa83.finalproject.service.impl.DefaultSecurityService;
+import com.github.alexeysa83.finalproject.service.auth.SecurityService;
+import com.github.alexeysa83.finalproject.service.auth.DefaultSecurityService;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -20,7 +19,7 @@ public class UserPageServlet extends HttpServlet {
         String login = req.getParameter("userPage");
         // user attributes
         boolean f = securityService.checkLoginIsTaken(login);
-        req.setAttribute("userPage", f);
+        req.setAttribute("userPage", login);
         forwardToJsp("userpage", req, resp);
     }
 }

@@ -1,6 +1,5 @@
-package com.github.alexeysa83.finalproject.dao.impl;
+package com.github.alexeysa83.finalproject.dao.authuser;
 
-import com.github.alexeysa83.finalproject.dao.AuthUserDao;
 import com.github.alexeysa83.finalproject.dao.MysqlConnection;
 import com.github.alexeysa83.finalproject.model.AuthUser;
 import com.github.alexeysa83.finalproject.model.Role;
@@ -26,62 +25,56 @@ public class DefaultAuthUserDao implements AuthUserDao {
         return localInstance;
     }
 
+    // default role and block in DB or constructor
     @Override
     public AuthUser createAndSave(AuthUser user) {
-        String login = user.getLogin();
-        String password = user.getPassword();
-        long id = 0;
-        ResultSet rs = null;
         try (Connection connection = mysql.getConnection();
              PreparedStatement statement = connection.prepareStatement
                      ("insert into auth_user (login, password) values (?, ?)", Statement.RETURN_GENERATED_KEYS)) {
-            statement.setString(1, login);
-            statement.setString(2, password);
+            statement.setString(1, user.getLogin());
+            statement.setString(2, user.getPassword());
             statement.executeUpdate();
-            rs = statement.getGeneratedKeys();
-            if (rs.next()) {
-                id = rs.getLong(1);
+            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                final boolean isSaved = generatedKeys.next();
+                if (!isSaved) {
+                    return null;
+                }
+                final long id = generatedKeys.getLong(1);
+                return new AuthUser(id, user.getLogin(), user.getPassword(), Role.USER, false);
             }
-            rs.close();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            if (rs != null){
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
+            throw new RuntimeException(e);
         }
-        return new AuthUser(id, login, password, Role.USER, false);
     }
 
-//    @Override
-//    public AuthUser getById(long id) {
-//        try (Connection connection = mysql.getConnection();
-//             PreparedStatement statement = connection.prepareStatement
-//                     ("select * from auth_user where id = ?")) {
-//            statement.setLong(1, id);
-//            try (ResultSet resultSet = statement.executeQuery()) {
-//                if (resultSet.next()) {
-//                    String login = resultSet.getString("login");
-//                    String password = resultSet.getString("password");
-//                    String r = resultSet.getString("role");
-//                    Role role = Role.valueOf(r);
-//                    boolean isBlocked = resultSet.getBoolean("is_blocked");
-//                    return new AuthUser(id, login, password, role, isBlocked);
-//                }
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
+    @Override
+    public AuthUser getById(long id) {
+        try (Connection connection = mysql.getConnection();
+             PreparedStatement statement = connection.prepareStatement
+                     ("select * from auth_user where id = ?")) {
+            statement.setLong(1, id);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                final boolean exist = resultSet.next();
+                if (!exist) {
+                    return null;
+                }
+                final String login = resultSet.getString("login");
+                final String password = resultSet.getString("password");
+                final String r = resultSet.getString("role");
+                final Role role = Role.valueOf(r);
+                final boolean isBlocked = resultSet.getBoolean("is_blocked");
+                return new AuthUser(id, login, password, role, isBlocked);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public boolean update(AuthUser user) {
-        boolean isUpdated = false;
+
         try (Connection connection = mysql.getConnection();
              PreparedStatement statement = connection.prepareStatement
                      ("update auth_user set login = ?, password = ?, role = ? where id = ?")) {
@@ -89,62 +82,63 @@ public class DefaultAuthUserDao implements AuthUserDao {
             statement.setString(2, user.getPassword());
             statement.setString(3, user.getRole().toString());
             statement.setLong(4, user.getId());
-            isUpdated = statement.executeUpdate() > 0;
+            return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return isUpdated;
     }
 
     @Override
     public boolean delete(long id) {
-        boolean isDeleted = false;
         try (Connection connection = mysql.getConnection();
              PreparedStatement statement = connection.prepareStatement
                      ("update auth_user set is_blocked = true where id = ?")) {
             statement.setLong(1, id);
-            isDeleted = statement.executeUpdate() > 0;
+            return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return isDeleted;
     }
 
+    // Duplicate code???
     public AuthUser getByLogin(AuthUser user) {
-        String login = user.getLogin();
         try (Connection connection = mysql.getConnection();
              PreparedStatement statement = connection.prepareStatement
                      ("select * from auth_user where login = ?")) {
-            statement.setString(1, login);
+            statement.setString(1, user.getLogin());
             try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    long id = resultSet.getLong("id");
-                    String password = resultSet.getString("password");
-                    String r = resultSet.getString("role");
-                    Role role = Role.valueOf(r);
-                    boolean isBlocked = resultSet.getBoolean("is_blocked");
-                    return new AuthUser(id, login, password, role, isBlocked);
+                final boolean exist = resultSet.next();
+                if (!exist) {
+                    return null;
                 }
+                final long id = resultSet.getLong("id");
+                final String password = resultSet.getString("password");
+                final String r = resultSet.getString("role");
+                final Role role = Role.valueOf(r);
+                boolean isBlocked = resultSet.getBoolean("is_blocked");
+                return new AuthUser(id, user.getLogin(), password, role, isBlocked);
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
+
     public boolean checkLoginIsTaken(String login) {
-        boolean loginIsTaken = false;
         try (Connection connection = mysql.getConnection();
              PreparedStatement statement = connection.prepareStatement
                      ("select role, password from auth_user where login = ?")) {
             statement.setString(1, login);
-            loginIsTaken = statement.executeQuery().next();
+            return statement.executeQuery().next();
 //            try (ResultSet resultSet = statement.executeQuery()) {
 //                loginIsTaken = resultSet.next();
 //            }
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return loginIsTaken;
     }
 }

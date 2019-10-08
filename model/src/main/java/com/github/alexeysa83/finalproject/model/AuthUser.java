@@ -8,6 +8,9 @@ public class AuthUser {
     private Role role;
     private boolean isBlocked;
 
+    public AuthUser() {
+    }
+
     // User created in login/registration servlets
     public AuthUser(String login, String password) {
         this.login = login;
@@ -37,10 +40,6 @@ public class AuthUser {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public Role getRole() {
         return role;
     }
@@ -55,6 +54,6 @@ public class AuthUser {
                 "id=" + id +
                 ", login=" + login +
                 ", role=" + role +
-                ", isBlocked=" + isBlocked;
+                ", isBlocked=" + isBlocked + '}';
     }
 }

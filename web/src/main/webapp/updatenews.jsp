@@ -1,23 +1,23 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Edit news</title>
+    <title>Update news</title>
 </head>
 <body>
 <jsp:include page="header.jsp"/>
-
 <form action="${pageContext.request.contextPath}/updatenews" method="POST">
-    <fieldset>
-        <legend>News title</legend>
-        <label for="title"><strong>News title</strong></label>
-        <input id="title" type="text" name="title" value="${news.title}" required>
-    </fieldset>
-    <fieldset>
-        <legend>Content</legend>
-        <label for="content"><strong>Content</strong></label>
-        <input id="content" type="text" name="content" value="${news.content}" required>
-        <button type="submit" class="color-square">Update news</button>
-    </fieldset>
+    <label for="title"><strong>News title</strong></label>
+    <input id="title" type="text" name="title" value="${news.title}" required>
+
+    <label for="content"><strong>Content</strong></label>
+    <textarea id="content" name="content" rows="10" required>${news.content}</textarea>
+
+    <label>
+        <input hidden="hidden" type="text" name="newsId" value="${news.id}">
+    </label>
+
+    <input type="reset" value="Reset">
+    <button type="submit" class="color-square">Update news</button>
 </form>
 </body>
 </html>

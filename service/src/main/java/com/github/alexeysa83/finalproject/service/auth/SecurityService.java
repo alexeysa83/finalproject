@@ -1,4 +1,4 @@
-package com.github.alexeysa83.finalproject.service;
+package com.github.alexeysa83.finalproject.service.auth;
 
 import com.github.alexeysa83.finalproject.model.AuthUser;
 

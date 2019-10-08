@@ -4,7 +4,7 @@ public interface DAO<T> {
 
     T createAndSave(T t);
 
-//    T getById(long id);
+    T getById(long id);
 
     boolean update(T t);
 

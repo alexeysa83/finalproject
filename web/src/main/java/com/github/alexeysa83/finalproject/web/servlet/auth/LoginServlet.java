@@ -1,8 +1,8 @@
-package com.github.alexeysa83.finalproject.web.servlet;
+package com.github.alexeysa83.finalproject.web.servlet.auth;
 
 import com.github.alexeysa83.finalproject.model.AuthUser;
-import com.github.alexeysa83.finalproject.service.SecurityService;
-import com.github.alexeysa83.finalproject.service.impl.DefaultSecurityService;
+import com.github.alexeysa83.finalproject.service.auth.SecurityService;
+import com.github.alexeysa83.finalproject.service.auth.DefaultSecurityService;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -32,12 +32,12 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
-        String login = req.getParameter("login");
-        String password = req.getParameter("password");
+        final String login = req.getParameter("login");
+        final String password = req.getParameter("password");
 
         AuthUser userFromDB = securityService.login(new AuthUser(login, password));
         if (userFromDB == null) {
-            req.setAttribute("error", "Invalid login or password");
+            req.setAttribute("message", "Invalid login or password");
             forwardToJsp("login", req, resp);
             return;
         }

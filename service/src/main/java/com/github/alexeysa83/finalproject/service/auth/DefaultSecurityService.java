@@ -1,10 +1,9 @@
-package com.github.alexeysa83.finalproject.service.impl;
+package com.github.alexeysa83.finalproject.service.auth;
 
 
-import com.github.alexeysa83.finalproject.dao.AuthUserDao;
-import com.github.alexeysa83.finalproject.dao.impl.DefaultAuthUserDao;
+import com.github.alexeysa83.finalproject.dao.authuser.AuthUserDao;
+import com.github.alexeysa83.finalproject.dao.authuser.DefaultAuthUserDao;
 import com.github.alexeysa83.finalproject.model.AuthUser;
-import com.github.alexeysa83.finalproject.service.SecurityService;
 
 public class DefaultSecurityService implements SecurityService {
 

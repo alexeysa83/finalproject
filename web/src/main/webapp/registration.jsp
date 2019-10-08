@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
@@ -9,8 +8,8 @@
     <title>Create new user</title>
 </head>
 <body>
-<c:if test="${requestScope.get('error') ne null}">
-    <h2 style="color: firebrick">${requestScope.get('error')}</h2>
+<c:if test="${requestScope.get('message') ne null}">
+    <h2 style="color: firebrick">${requestScope.get('message')}</h2>
 </c:if>
 <form action="${pageContext.request.contextPath}/registration" method="POST">
     <fieldset>
