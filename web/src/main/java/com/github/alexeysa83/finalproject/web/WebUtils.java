@@ -17,4 +17,40 @@ public abstract class WebUtils {
             e.printStackTrace();
         }
     }
+
+    public static void forwardToJspMessage
+            (String jspName, String message, HttpServletRequest req, HttpServletResponse resp)  {
+        req.setAttribute("message", message);
+        try {
+            req.getRequestDispatcher("/" + jspName + ".jsp").forward(req, resp);
+        } catch (ServletException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void forwardToServlet(String servletPath, HttpServletRequest req, HttpServletResponse resp)  {
+        try {
+            req.getRequestDispatcher(servletPath).forward(req, resp);
+        } catch (ServletException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void forwardToServletMessage
+            (String servletPath, String message, HttpServletRequest req, HttpServletResponse resp)  {
+        req.setAttribute("message", message);
+        try {
+            req.getRequestDispatcher(servletPath).forward(req, resp);
+        } catch (ServletException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void redirect(String page, HttpServletRequest rq, HttpServletResponse rs) {
+        try {
+            rs.sendRedirect(rq.getContextPath() + page);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

@@ -8,29 +8,28 @@ public class News {
     private String title;
     private String content;
     private Timestamp creationTime;
+    private long authId;
     private String authorNews;
 
     public News(long id, String title, String content) {
         this.id = id;
         this.title = title;
         this.content = content;
-        creationTime = null;
-        authorNews = null;
     }
 
-    public News(String title, String content, Timestamp creationTime, String authorNews) {
+    public News(String title, String content, Timestamp creationTime, long authId) {
         this.title = title;
         this.content = content;
         this.creationTime = creationTime;
-        this.authorNews = authorNews;
-        id = 0;
+        this.authId = authId;
     }
 
-    public News(long id, String title, String content, Timestamp creationTime, String authorNews) {
+    public News(long id, String title, String content, Timestamp creationTime, long authId, String authorNews) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.creationTime = creationTime;
+        this.authId = authId;
         this.authorNews = authorNews;
     }
 
@@ -50,6 +49,10 @@ public class News {
         return creationTime;
     }
 
+    public long getAuthId() {
+        return authId;
+    }
+
     public String getAuthorNews() {
         return authorNews;
     }
@@ -60,6 +63,7 @@ public class News {
                 "id=" + id +
                 ", title=" + title +
                 ", creation time=" + creationTime +
+                ", authId=" + authId +
                 ", author=" + authorNews + '}';
     }
 }

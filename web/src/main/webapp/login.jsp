@@ -1,6 +1,4 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <html>
 <head>
@@ -8,10 +6,11 @@
     <title>Login form</title>
 </head>
 <body>
-<c:if test="${requestScope.get('message') ne null}">
+<jsp:include page="header.jsp"/>
+
     <h2 style="color: firebrick">${requestScope.get('message')}</h2>
-</c:if>
-<form action="${pageContext.request.contextPath}/login" method="POST">
+
+<form action="${pageContext.request.contextPath}/auth/login" method="POST">
     <fieldset>
         <legend>Login form</legend>
 
@@ -24,8 +23,5 @@
     </fieldset>
 </form>
 
-<form action="${pageContext.request.contextPath}/registration" method="GET">
-    <input type="submit" value="Create user"/>
-</form>
 </body>
 </html>

@@ -5,7 +5,10 @@ import com.github.alexeysa83.finalproject.model.AuthUser;
 
 public interface AuthUserDao extends DAO<AuthUser> {
 
-    AuthUser getByLogin(AuthUser user);
+    AuthUser createAndSave(AuthUser user);
 
-    boolean checkLoginIsTaken(String login);
+    AuthUser getByLogin(String login);
+
+    boolean delete (long id);
+
 }

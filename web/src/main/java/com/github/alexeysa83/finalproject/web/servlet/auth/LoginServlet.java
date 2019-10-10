@@ -16,7 +16,7 @@ import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJsp;
 Divide login/password-->
 Jsp for succesfull login+create-->
  */
-@WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
+@WebServlet(name = "LoginServlet", urlPatterns = {"/auth/login"})
 public class LoginServlet extends HttpServlet {
 
     private SecurityService securityService = DefaultSecurityService.getInstance();
@@ -26,6 +26,7 @@ public class LoginServlet extends HttpServlet {
         Object authUser = req.getSession().getAttribute("authUser");
         if (authUser == null) {
             forwardToJsp("login", req, resp);
+            return;
         }
         forwardToJsp("index", req, resp);
     }
@@ -38,6 +39,11 @@ public class LoginServlet extends HttpServlet {
         AuthUser userFromDB = securityService.login(new AuthUser(login, password));
         if (userFromDB == null) {
             req.setAttribute("message", "Invalid login or password");
+            forwardToJsp("login", req, resp);
+            return;
+        }
+        if (userFromDB.isBlocked()) {
+            req.setAttribute("message", userFromDB.getLogin() + " is blocked");
             forwardToJsp("login", req, resp);
             return;
         }

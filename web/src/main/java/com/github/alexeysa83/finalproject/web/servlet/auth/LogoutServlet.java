@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJsp;
 
-@WebServlet(name = "LogoutServlet", urlPatterns = {"/logout"})
+@WebServlet(name = "LogoutServlet", urlPatterns = {"/auth/logout"})
 public class LogoutServlet extends HttpServlet {
 
     @Override

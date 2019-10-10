@@ -10,7 +10,33 @@ public class User {
     private Timestamp registrationTime;
     private String email;
     private String phone;
+    private long authId;
     private String userLogin;
+
+    public User(Timestamp registrationTime, long authId) {
+        this.registrationTime = registrationTime;
+        this.authId = authId;
+    }
+
+    public User(String firstName, String lastName, String email, String phone, long authId) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.phone = phone;
+        this.authId = authId;
+    }
+
+    public User(long id, String firstName, String lastName, Timestamp registrationTime,
+                String email, String phone, long authId, String userLogin) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.registrationTime = registrationTime;
+        this.email = email;
+        this.phone = phone;
+        this.authId = authId;
+        this.userLogin = userLogin;
+    }
 
     public long getId() {
         return id;
@@ -36,6 +62,10 @@ public class User {
         return phone;
     }
 
+    public long getAuthId() {
+        return authId;
+    }
+
     public String getUserLogin() {
         return userLogin;
     }
@@ -44,11 +74,12 @@ public class User {
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", firstName=" + firstName  +
-                ", lastName=" + lastName  +
+                ", firstName=" + firstName +
+                ", lastName=" + lastName +
                 ", registrationTime=" + registrationTime + '\n' +
                 ", email=" + email +
                 ", phone=" + phone +
+                ", authId=" + authId +
                 ", userLogin=" + userLogin +
                 '}';
     }

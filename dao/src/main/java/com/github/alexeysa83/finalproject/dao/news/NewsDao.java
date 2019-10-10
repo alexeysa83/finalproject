@@ -7,6 +7,10 @@ import java.util.List;
 
 public interface NewsDao extends DAO<News> {
 
+    News createAndSave(News news);
+
     // add page parameter
     List<News> getNewsOnPage ();
+
+    boolean delete (long id);
 }

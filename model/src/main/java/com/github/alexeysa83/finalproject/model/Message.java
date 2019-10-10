@@ -7,6 +7,7 @@ public class Message {
     private long id;
     private String content;
     private Timestamp creationTime;
+    private long authId;
     private String authorMessage;
 
     public long getId() {
@@ -21,6 +22,10 @@ public class Message {
         return creationTime;
     }
 
+    public long getAuthId() {
+        return authId;
+    }
+
     public String getAuthorMessage() {
         return authorMessage;
     }
@@ -31,6 +36,7 @@ public class Message {
                 "id=" + id +
                 ", content=" + content +
                 ", creationTime=" + creationTime +
+                ", authId=" + authId +
                 ", authorMessage=" + authorMessage +
                 '}';
     }

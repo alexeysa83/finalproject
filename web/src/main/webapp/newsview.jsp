@@ -11,20 +11,23 @@
 </c:if>
 <h2><span style='color: blue;'>${news.title}</span></h2>
 
-<h2 style="color: #2bb239">Author: <a href="${pageContext.request.contextPath}/userpage?userPage=${news.authorNews}">
+<h2 style="color: #2bb239">Author: <a
+        href="${pageContext.request.contextPath}/restricted/user/profile?authId=${news.authId}">
     ${news.authorNews}</a> Created: ${news.creationTime}</h2>
 <h2>${news.content}</h2>
 
 <c:if test="${authUser.login == news.authorNews || authUser.role == 'ADMIN'}">
-    <form action="${pageContext.request.contextPath}/updatenews?newsId=${news.id}" method="GET">
-        <input type="submit" value="Update"/>
+    <form action="${pageContext.request.contextPath}/restricted/news/update" method="GET">
+        <input type="submit" value="Update news"/>
         <label>
             <input hidden="hidden" type="text" name="newsId" value="${news.id}">
         </label>
     </form>
-    <form action="${pageContext.request.contextPath}/deletenews?newsId=${news.id}" method="GET">
-        <input type="submit" value="Delete"/>
-        <input hidden="hidden" type="text" name="newsId" value="${news.id}">
+    <form action="${pageContext.request.contextPath}/restricted/news/delete" method="GET">
+        <input type="submit" value="Delete news"/>
+        <label>
+            <input hidden="hidden" type="text" name="newsId" value="${news.id}">
+        </label>
     </form>
 </c:if>
 </body>

@@ -44,21 +44,13 @@ public class DefaultNewsService implements NewsService {
     }
 
     @Override
-    public String updateNews(News news) {
-        final boolean isUpdated = newsDao.update(news);
-        if (isUpdated) {
-            return "Update successfull";
-        }
-        return "Update canceled";
+    public boolean updateNews(News news) {
+        return newsDao.update(news);
     }
 
     @Override
-    public String deleteNews(String value) {
+    public boolean deleteNews(String value) {
         final long id = UtilsService.stringToLong(value);
-        final boolean isDeleted = newsDao.delete(id);
-        if (isDeleted) {
-            return "Delete successfull";
-        }
-        return "Delete canceled";
+        return newsDao.delete(id);
     }
 }

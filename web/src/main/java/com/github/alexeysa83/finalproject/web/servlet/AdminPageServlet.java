@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJsp;
 
-@WebServlet(name = "AdminPageServlet", urlPatterns = {"/adminpage"})
+@WebServlet(name = "AdminPageServlet", urlPatterns = {"/admin/main"})
 
 public class AdminPageServlet extends HttpServlet {
     @Override

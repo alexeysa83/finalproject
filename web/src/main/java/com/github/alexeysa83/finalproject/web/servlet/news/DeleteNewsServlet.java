@@ -12,7 +12,7 @@ import java.io.IOException;
 
 import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJsp;
 
-@WebServlet (name = "DeleteNewsServlet", urlPatterns = {"/deletenews"})
+@WebServlet (name = "DeleteNewsServlet", urlPatterns = {"/restricted/news/delete"})
 public class DeleteNewsServlet extends HttpServlet {
 
     private NewsService service = DefaultNewsService.getInstance();
@@ -20,9 +20,12 @@ public class DeleteNewsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         final String id = req.getParameter("newsId");
-        final String message = service.deleteNews(id);
+        final boolean isDeleted = service.deleteNews(id);
+        String message = "Delete successfull";
+        if (!isDeleted) {
+            message = "Delete cancelled";
+        }
         req.setAttribute("message", message);
         forwardToJsp("index", req, resp);
-
     }
 }

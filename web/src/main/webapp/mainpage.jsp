@@ -19,17 +19,17 @@
 <!-- just for check -->
 <c:if test="${requestScope.get('newsList') !=null}">
     <c:forEach items="${requestScope.newsList}" var="news">
-        <h2 style="color: #2bb239"><a href="${pageContext.request.contextPath}/newsview?newsId=${news.id}">
+        <h2 style="color: #2bb239"><a href="${pageContext.request.contextPath}/news/view?newsId=${news.id}">
                 ${news.title}</a></h2>
         <h2>${news.content}</h2>
-        <h3>Author: <a href="${pageContext.request.contextPath}/userpage?userPage=${news.authorNews}">
+        <h3>Author: <a href="${pageContext.request.contextPath}/restricted/user/profile?authId=${news.authId}">
                 ${news.authorNews}</a></h3>
         <h3>Created: ${news.creationTime}</h3>
         <hr/>
     </c:forEach>
 </c:if>
 
-<a href="${pageContext.request.contextPath}/userpage">User page</a>
-<a href="${pageContext.request.contextPath}/adminpage">Admin page</a>
+<%--<a href="${pageContext.request.contextPath}/userpage">User page</a>--%>
+<%--<a href="${pageContext.request.contextPath}/adminpage">Admin page</a>--%>
 </body>
 </html>

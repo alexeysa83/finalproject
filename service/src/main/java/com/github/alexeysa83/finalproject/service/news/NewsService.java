@@ -12,7 +12,7 @@ public interface NewsService {
 
     List<News> getNewsOnPage();
 
-    String updateNews (News news);
+    boolean updateNews (News news);
 
-    String deleteNews (String id);
+    boolean deleteNews (String id);
 }
