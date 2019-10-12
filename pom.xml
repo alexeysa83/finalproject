@@ -24,33 +24,25 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <!-- dependencies -->
-        <junit.version>4.11</junit.version>
         <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
         <jstl.version>1.2</jstl.version>
-        <!--<mysql-connector-java.version>8.0.17</mysql-connector-java.version> -->
-        <mockito-core.version>3.0.0</mockito-core.version>
-        <mockito-junit-jupiter.version>3.0.0</mockito-junit-jupiter.version>
+        <mysql-connector-java.version>8.0.17</mysql-connector-java.version>
+<!--testing-->
+       <junit-jupiter-engine.version>5.5.2</junit-jupiter-engine.version>
+<!--        <junit.version>4.11</junit.version>-->
+        <mockito-core.version>3.1.0</mockito-core.version>
+        <mockito-junit-jupiter.version>3.1.0</mockito-junit-jupiter.version>
+<!--logging-->
+        <slf4j-api.version>1.7.28</slf4j-api.version>
+        <log4j-core.version>2.12.1</log4j-core.version>
+        <log4j-slf4j-impl.version>2.12.1</log4j-slf4j-impl.version>
         <!-- plugins -->
         <maven-war-plugin.version>3.2.3</maven-war-plugin.version>
         <tomcat.plugin.version>2.2</tomcat.plugin.version>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.17</version>
-        </dependency>
-    </dependencies>
-
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
-                <scope>test</scope>
-            </dependency>
             <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>javax.servlet-api</artifactId>
@@ -63,6 +55,24 @@
                 <version>${jstl.version}</version>
             </dependency>
             <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql-connector-java.version}</version>
+            </dependency>
+            <!--testing-->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit-jupiter-engine.version}</version>
+                <scope>test</scope>
+            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>junit</groupId>-->
+<!--                <artifactId>junit</artifactId>-->
+<!--                <version>${junit.version}</version>-->
+<!--                <scope>test</scope>-->
+<!--            </dependency>-->
+            <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
                 <version>${mockito-core.version}</version>
@@ -73,6 +83,22 @@
                 <artifactId>mockito-junit-jupiter</artifactId>
                 <version>${mockito-junit-jupiter.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <!--logging-->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${log4j-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-slf4j-impl</artifactId>
+                <version>${log4j-slf4j-impl.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

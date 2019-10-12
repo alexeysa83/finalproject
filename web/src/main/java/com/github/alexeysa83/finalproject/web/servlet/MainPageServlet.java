@@ -17,6 +17,7 @@ public class MainPageServlet extends HttpServlet {
 
     private NewsService service = DefaultNewsService.getInstance();
 
+    // Check null
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         List<News> newsList = service.getNewsOnPage();

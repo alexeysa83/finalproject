@@ -1,10 +1,16 @@
 package com.github.alexeysa83.finalproject.dao;
 
+import com.github.alexeysa83.finalproject.dao.authuser.DefaultAuthUserDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ResourceBundle;
 
 public class MysqlConnection {
 
+    private static final Logger log = LoggerFactory.getLogger(DefaultAuthUserDao.class);
     private static volatile MysqlConnection instance;
 
     public static MysqlConnection getInstance() {
@@ -26,6 +32,7 @@ public class MysqlConnection {
         try {
             Class.forName(driver);
         } catch (ClassNotFoundException e) {
+            log.error("Unable to load JDBC driver: {}", LocalDateTime.now(), e);
             e.printStackTrace();
         }
         String url = res.getString("url");

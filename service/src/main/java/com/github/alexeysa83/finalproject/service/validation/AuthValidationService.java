@@ -1,20 +1,19 @@
-package com.github.alexeysa83.finalproject.service;
+package com.github.alexeysa83.finalproject.service.validation;
 
 import com.github.alexeysa83.finalproject.model.AuthUser;
+import com.github.alexeysa83.finalproject.model.Role;
+import com.github.alexeysa83.finalproject.service.UtilsService;
 import com.github.alexeysa83.finalproject.service.auth.DefaultSecurityService;
 import com.github.alexeysa83.finalproject.service.auth.SecurityService;
 
-public abstract class ValidationService {
+public abstract class AuthValidationService {
 
+      private static SecurityService securityService = DefaultSecurityService.getInstance();
 
-    private static SecurityService securityService = DefaultSecurityService.getInstance();
-
-    private ValidationService() {
+    private AuthValidationService() {
     }
 
-    /*
-    Authuser +add Regex patterns
-     */
+    // +add Regex patterns
     public static String isLoginValid(String login) {
         String message = null;
         if (login.length() < 1) {
@@ -46,27 +45,11 @@ public abstract class ValidationService {
     }
 
     public static boolean isRoleValid(String role) {
-        return role.equals("USER") || role.equals("ADMIN");
-    }
-        /*
-    User
-     */
-
-    /*
-    News
-     */
-
-    // ++ Regex pattern
-    public static String isValidTitleContent(String title, String content) {
-        String message = null;
-        if ((title.length() < 1) || (content.length() < 1)) {
-            message = "Title or content is not completed";
-        }
-        return message;
+               return role.equals((Role.USER).toString()) || role.equals((Role.ADMIN).toString());
     }
 
-    /*
-    Message
-     */
+    public static boolean isAdmin(Role role) {
+        return role.equals(Role.ADMIN);
+    }
 
 }

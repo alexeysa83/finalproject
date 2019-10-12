@@ -1,16 +1,20 @@
 package com.github.alexeysa83.finalproject.web.servlet.news;
 
 import com.github.alexeysa83.finalproject.model.News;
+import com.github.alexeysa83.finalproject.service.validation.NewsValidationservice;
 import com.github.alexeysa83.finalproject.service.UtilsService;
-import com.github.alexeysa83.finalproject.service.ValidationService;
 import com.github.alexeysa83.finalproject.service.news.DefaultNewsService;
 import com.github.alexeysa83.finalproject.service.news.NewsService;
+import com.github.alexeysa83.finalproject.web.servlet.auth.RegistrationServlet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+
+import java.time.LocalDateTime;
 
 import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJsp;
 import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToServletMessage;
@@ -18,6 +22,7 @@ import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToServletMe
 @WebServlet(name = "UpdateNewsServlet", urlPatterns = {"/restricted/news/update"})
 public class UpdateNewsServlet extends HttpServlet {
 
+    private static final Logger log = LoggerFactory.getLogger(RegistrationServlet.class);
     private NewsService service = DefaultNewsService.getInstance();
 
     @Override
@@ -33,7 +38,7 @@ public class UpdateNewsServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         final String title = req.getParameter("title");
         final String content = req.getParameter("content");
-        String message = ValidationService.isValidTitleContent(title, content);
+        String message = NewsValidationservice.isValidTitleContent(title, content);
         if (message != null) {
             req.setAttribute("message", message);
             doGet(req, resp);
@@ -45,9 +50,12 @@ public class UpdateNewsServlet extends HttpServlet {
         final boolean isUpdated = service.updateNews(new News(id, title, content));
 
         message = "Update succesfull";
+        String logMessage = "Updated news id: {} , at: {}";
         if (!isUpdated) {
             message = "Update cancelled, please try again";
+            logMessage = "Failed to update news id: {} , at: {}";
         }
+        log.info(logMessage, newsId, LocalDateTime.now());
         forwardToServletMessage("/news/view", message, req, resp);
     }
 }

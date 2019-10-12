@@ -1,12 +1,17 @@
 package com.github.alexeysa83.finalproject.dao.user;
 
 import com.github.alexeysa83.finalproject.dao.MysqlConnection;
+import com.github.alexeysa83.finalproject.dao.authuser.DefaultAuthUserDao;
 import com.github.alexeysa83.finalproject.model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 
 public class DefaultUserDAO implements UserDAO {
 
+    private static final Logger log = LoggerFactory.getLogger(DefaultAuthUserDao.class);
     private MysqlConnection mysql = MysqlConnection.getInstance();
 
     private static volatile UserDAO instance;
@@ -47,7 +52,7 @@ public class DefaultUserDAO implements UserDAO {
                 return new User(id, firstName, lastName, registrationTime, email, phone, authId, login);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.error("SQLException at: {}", LocalDateTime.now(), e);
             throw new RuntimeException(e);
         }
     }
@@ -62,9 +67,10 @@ public class DefaultUserDAO implements UserDAO {
             statement.setString(3, user.getEmail());
             statement.setString(4, user.getPhone());
             statement.setLong(5, user.getAuthId());
+            log.info("User id: {} updated in DB at: {}", user.getId(), LocalDateTime.now());
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.error("SQLException at: {}", LocalDateTime.now(), e);
             throw new RuntimeException(e);
         }
     }

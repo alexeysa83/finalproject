@@ -5,7 +5,7 @@ import com.github.alexeysa83.finalproject.dao.authuser.AuthUserDao;
 import com.github.alexeysa83.finalproject.dao.authuser.DefaultAuthUserDao;
 import com.github.alexeysa83.finalproject.model.AuthUser;
 import com.github.alexeysa83.finalproject.service.UtilsService;
-import com.github.alexeysa83.finalproject.service.ValidationService;
+import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
 
 public class DefaultSecurityService implements SecurityService {
 
@@ -47,7 +47,7 @@ public class DefaultSecurityService implements SecurityService {
         AuthUser userFromDB = authUserDao.getByLogin(userFromLogin.getLogin());
         boolean isValidPassword = false;
         if (userFromDB != null) {
-            isValidPassword = ValidationService.isPasswordEqual
+            isValidPassword = AuthValidationService.isPasswordEqual
                     (userFromLogin.getPassword(), userFromDB.getPassword());
         }
         return (isValidPassword) ? userFromDB : null;

@@ -4,17 +4,23 @@ import com.github.alexeysa83.finalproject.model.User;
 import com.github.alexeysa83.finalproject.service.UtilsService;
 import com.github.alexeysa83.finalproject.service.user.DefaultUserService;
 import com.github.alexeysa83.finalproject.service.user.UserService;
+import com.github.alexeysa83.finalproject.web.servlet.auth.RegistrationServlet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.time.LocalDateTime;
+
 import static com.github.alexeysa83.finalproject.web.WebUtils.*;
 
 @WebServlet(name = "UpdateUserServlet", urlPatterns = {"/restricted/user/update"})
 public class UpdateUserServlet extends HttpServlet {
 
+    private static final Logger log = LoggerFactory.getLogger(RegistrationServlet.class);
     private UserService userService = DefaultUserService.getInstance();
 
     @Override
@@ -36,9 +42,12 @@ public class UpdateUserServlet extends HttpServlet {
         final String phone = req.getParameter("phone");
         final boolean isUpdated = userService.update(new User(firstName, lastName, email, phone, id));
         String message = "Update succesfull";
+        String logMessage = "Updated profile to user id: {} , at: {}";
         if (!isUpdated) {
             message = "Update cancelled, please try again";
+            logMessage = "Failed to update profile to user id: {} , at: {}";
         }
+        log.info(logMessage, authId, LocalDateTime.now());
         forwardToServletMessage("/restricted/user/profile", message, req, resp);
     }
 }

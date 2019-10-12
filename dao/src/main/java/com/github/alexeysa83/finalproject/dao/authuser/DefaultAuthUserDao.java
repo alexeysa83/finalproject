@@ -3,11 +3,15 @@ package com.github.alexeysa83.finalproject.dao.authuser;
 import com.github.alexeysa83.finalproject.dao.MysqlConnection;
 import com.github.alexeysa83.finalproject.model.AuthUser;
 import com.github.alexeysa83.finalproject.model.Role;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 
 public class DefaultAuthUserDao implements AuthUserDao {
 
+    private static final Logger log = LoggerFactory.getLogger(DefaultAuthUserDao.class);
     private MysqlConnection mysql = MysqlConnection.getInstance();
 
     private static volatile AuthUserDao instance;
@@ -32,6 +36,8 @@ public class DefaultAuthUserDao implements AuthUserDao {
     @Override
     public AuthUser createAndSave(AuthUser user) {
         Connection connection = null;
+        final String login = user.getLogin();
+        final String password = user.getPassword();
         try {
             connection = mysql.getConnection();
             connection.setAutoCommit(false);
@@ -39,8 +45,8 @@ public class DefaultAuthUserDao implements AuthUserDao {
                     ("insert into auth_user (login, password) values (?, ?)", Statement.RETURN_GENERATED_KEYS);
                  PreparedStatement stateUser = connection.prepareStatement
                          ("insert into user (registration_time, auth_id) values (?, ?)")) {
-                stateAuthUser.setString(1, user.getLogin());
-                stateAuthUser.setString(2, user.getPassword());
+                stateAuthUser.setString(1, login);
+                stateAuthUser.setString(2, password);
                 stateAuthUser.executeUpdate();
                 long id;
                 try (ResultSet generatedKeys = stateAuthUser.getGeneratedKeys()) {
@@ -55,23 +61,26 @@ public class DefaultAuthUserDao implements AuthUserDao {
                 stateUser.setLong(2, id);
                 stateUser.executeUpdate();
                 connection.commit();
-                return new AuthUser(id, user.getLogin(), user.getPassword(), Role.USER, false);
+                log.info("AuthUser id (User auth_id): {} saved to DB at: {}", id, LocalDateTime.now());
+                return new AuthUser(id, login, password, Role.USER, false);
             }
         } catch (SQLException e) {
             try {
                 connection.rollback();
+                log.error("Unable to save new user to DB with login: {}, password: {}, at: {}",
+                        login, password, LocalDateTime.now());
             } catch (SQLException ex) {
-                ex.printStackTrace();
+                log.error("Unable to rollback transaction at: {}", LocalDateTime.now(), ex);
                 throw new RuntimeException(ex);
             }
-            e.printStackTrace();
+            log.error("SQLException at: {}", LocalDateTime.now(), e);
             throw new RuntimeException(e);
         } finally {
             if (connection != null) {
                 try {
                     connection.close();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    log.error("Unable to close connection at: {}", LocalDateTime.now(), e);
                 }
             }
         }
@@ -96,7 +105,7 @@ public class DefaultAuthUserDao implements AuthUserDao {
                 return new AuthUser(id, login, password, role, isBlocked);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.error("SQLException at: {}", LocalDateTime.now(), e);
             throw new RuntimeException(e);
         }
     }
@@ -121,7 +130,7 @@ public class DefaultAuthUserDao implements AuthUserDao {
                 return new AuthUser(id, login, password, role, isBlocked);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.error("SQLException at: {}", LocalDateTime.now(), e);
             throw new RuntimeException(e);
         }
     }
@@ -135,9 +144,10 @@ public class DefaultAuthUserDao implements AuthUserDao {
             statement.setString(2, user.getPassword());
             statement.setString(3, user.getRole().toString());
             statement.setLong(4, user.getId());
+            log.info("AuthUser id: {} updated in DB at: {}", user.getId(), LocalDateTime.now());
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.error("SQLException at: {}", LocalDateTime.now(), e);
             throw new RuntimeException(e);
         }
     }
@@ -157,23 +167,25 @@ public class DefaultAuthUserDao implements AuthUserDao {
                 stateUser.setLong(1, id);
                 int b = stateUser.executeUpdate();
                 connection.commit();
+                log.info("AuthUser id (User auth_id): {} deleted from DB at: {}", id, LocalDateTime.now());
                 return i > 0 && b > 0;
             }
         } catch (SQLException e) {
             try {
                 connection.rollback();
+                log.error("Unable to delete AuthUser id: {} from DB, at: {}", id, LocalDateTime.now());
             } catch (SQLException ex) {
-                ex.printStackTrace();
+                log.error("Unable to rollback transaction at: {}", LocalDateTime.now(), ex);
                 throw new RuntimeException(ex);
             }
-            e.printStackTrace();
+            log.error("SQLException at: {}", LocalDateTime.now(), e);
             throw new RuntimeException(e);
         } finally {
             if (connection != null) {
                 try {
                     connection.close();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    log.error("Unable to close connection at: {}", LocalDateTime.now(), e);
                 }
             }
         }

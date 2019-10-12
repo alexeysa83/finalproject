@@ -1,7 +1,7 @@
 package com.github.alexeysa83.finalproject.web.filter;
 
 import com.github.alexeysa83.finalproject.model.AuthUser;
-import com.github.alexeysa83.finalproject.model.Role;
+import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
@@ -19,8 +19,9 @@ public class AdminFilter  implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         AuthUser authUser = (AuthUser) request.getSession().getAttribute("authUser");
-        if (!authUser.getRole().equals(Role.ADMIN)) {
-            request.setAttribute("error", "Access only for admin users");
+        boolean isAdmin = AuthValidationService.isAdmin(authUser.getRole());
+        if (!isAdmin) {
+            request.setAttribute("message", "Access only for admin users");
             forwardToJsp("index", request,response);
         } else {
             filterChain.doFilter(request,response);

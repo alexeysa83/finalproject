@@ -7,8 +7,8 @@
     <packaging>war</packaging>
 
     <parent>
-        <artifactId>root</artifactId>
         <groupId>com.github.alexeysa83.finalproject</groupId>
+        <artifactId>root</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
@@ -17,8 +17,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>com.github.alexeysa83.finalproject</groupId>
+            <artifactId>service</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -29,22 +30,29 @@
             <artifactId>jstl</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.alexeysa83.finalproject</groupId>
-            <artifactId>service</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
         </dependency>
     </dependencies>
-  
+
     <build>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-war-plugin</artifactId>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.tomcat.maven</groupId>
-          <artifactId>tomcat7-maven-plugin</artifactId>
-        </plugin>
-      </plugins>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
     </build>
 </project>

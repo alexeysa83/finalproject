@@ -14,7 +14,7 @@
 </c:if>
 
 <c:if test="${sessionScope.get('authUser') != null}">
-    <a href="${pageContext.request.contextPath}/addnews.jsp">Add news</a>
+    <a href="${pageContext.request.contextPath}/restricted/news/add">Add news</a>
 </c:if>
 <!-- just for check -->
 <c:if test="${requestScope.get('newsList') !=null}">

@@ -1,14 +1,19 @@
 package com.github.alexeysa83.finalproject.dao.news;
 
 import com.github.alexeysa83.finalproject.dao.MysqlConnection;
+import com.github.alexeysa83.finalproject.dao.authuser.DefaultAuthUserDao;
 import com.github.alexeysa83.finalproject.model.News;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DefaultNewsDao implements NewsDao {
 
+    private static final Logger log = LoggerFactory.getLogger(DefaultAuthUserDao.class);
     private MysqlConnection mysql = MysqlConnection.getInstance();
 
     private static volatile NewsDao instance;
@@ -51,6 +56,7 @@ public class DefaultNewsDao implements NewsDao {
                     }
                     final long id = generatedKeys.getLong(1);
                     connection.commit();
+                    log.info("News id: {} saved to DB at: {}", id, LocalDateTime.now());
                     return new News
                             (id, news.getTitle(), news.getContent(),
                                     news.getCreationTime(), news.getAuthId(), news.getAuthorNews());
@@ -59,18 +65,19 @@ public class DefaultNewsDao implements NewsDao {
         } catch (SQLException e) {
             try {
                 connection.rollback();
+                log.error("Unable to save new news to DB at: {}", LocalDateTime.now());
             } catch (SQLException ex) {
-                ex.printStackTrace();
+                log.error("Unable to rollback transaction at: {}", LocalDateTime.now(), ex);
                 throw new RuntimeException(ex);
             }
-            e.printStackTrace();
+            log.error("SQLException at: {}", LocalDateTime.now(), e);
             throw new RuntimeException(e);
         } finally {
             if (connection != null) {
                 try {
                     connection.close();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    log.error("Unable to close connection at: {}", LocalDateTime.now(), e);
                 }
             }
         }
@@ -103,18 +110,19 @@ public class DefaultNewsDao implements NewsDao {
         } catch (SQLException e) {
             try {
                 connection.rollback();
+                log.error("Unable to get news id: {} from DB at: {}", id, LocalDateTime.now());
             } catch (SQLException ex) {
-                ex.printStackTrace();
+                log.error("Unable to rollback transaction at: {}", LocalDateTime.now(), ex);
                 throw new RuntimeException(ex);
             }
-            e.printStackTrace();
+            log.error("SQLException at: {}", LocalDateTime.now(), e);
             throw new RuntimeException(e);
         } finally {
             if (connection != null) {
                 try {
                     connection.close();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    log.error("Unable to close connection at: {}", LocalDateTime.now(), e);
                 }
             }
         }
@@ -148,18 +156,19 @@ public class DefaultNewsDao implements NewsDao {
         } catch (SQLException e) {
             try {
                 connection.rollback();
+                log.error("Unable to get list of news from DB at: {}", LocalDateTime.now());
             } catch (SQLException ex) {
-                ex.printStackTrace();
+                log.error("Unable to rollback transaction at: {}", LocalDateTime.now(), ex);
                 throw new RuntimeException(ex);
             }
-            e.printStackTrace();
+            log.error("SQLException at: {}", LocalDateTime.now(), e);
             throw new RuntimeException(e);
         } finally {
             if (connection != null) {
                 try {
                     connection.close();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    log.error("Unable to close connection at: {}", LocalDateTime.now(), e);
                 }
             }
         }
@@ -168,6 +177,7 @@ public class DefaultNewsDao implements NewsDao {
     @Override
     public boolean update(News news) {
         Connection connection = null;
+        final long id = news.getId();
         try {
             connection = mysql.getConnection();
             connection.setAutoCommit(false);
@@ -175,26 +185,28 @@ public class DefaultNewsDao implements NewsDao {
                     ("update news set title = ?, content = ? where id = ?")) {
                 statement.setString(1, news.getTitle());
                 statement.setString(2, news.getContent());
-                statement.setLong(3, news.getId());
+                statement.setLong(3, id);
                 final int i = statement.executeUpdate();
                 connection.commit();
+                log.info("News id: {} updated in DB at: {}", id, LocalDateTime.now());
                 return i > 0;
             }
         } catch (SQLException e) {
             try {
                 connection.rollback();
+                log.error("Unable to update news id: {} in DB at: {}", id, LocalDateTime.now());
             } catch (SQLException ex) {
-                ex.printStackTrace();
+                log.error("Unable to rollback transaction at: {}", LocalDateTime.now(), ex);
                 throw new RuntimeException(ex);
             }
-            e.printStackTrace();
+            log.error("SQLException at: {}", LocalDateTime.now(), e);
             throw new RuntimeException(e);
         } finally {
             if (connection != null) {
                 try {
                     connection.close();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    log.error("Unable to close connection at: {}", LocalDateTime.now(), e);
                 }
             }
         }
@@ -210,23 +222,25 @@ public class DefaultNewsDao implements NewsDao {
                 statement.setLong(1, id);
                 final int i = statement.executeUpdate();
                 connection.commit();
+                log.info("News id: {} deleted from DB at: {}", id, LocalDateTime.now());
                 return i > 0;
             }
         } catch (SQLException e) {
             try {
                 connection.rollback();
+                log.error("Unable to delete news id: {} from DB at: {}", id, LocalDateTime.now());
             } catch (SQLException ex) {
-                ex.printStackTrace();
+                log.error("Unable to rollback transaction at: {}", LocalDateTime.now(), ex);
                 throw new RuntimeException(ex);
             }
-            e.printStackTrace();
+            log.error("SQLException at: {}", LocalDateTime.now(), e);
             throw new RuntimeException(e);
         } finally {
             if (connection != null) {
                 try {
                     connection.close();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    log.error("Unable to close connection at: {}", LocalDateTime.now(), e);
                 }
             }
         }

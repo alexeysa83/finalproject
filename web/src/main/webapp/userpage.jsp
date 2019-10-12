@@ -8,8 +8,9 @@
 <jsp:include page="header.jsp"/>
 
 <%--User deleted message in JSP for deleted users + do not show delete / update buttons--%>
-<h2 style="color: firebrick">${requestScope.get('message')}</h2>
 
+<h2 style="color: firebrick">${requestScope.get('message')}</h2>
+<c:if test="${user != null}">
 <h2><span style='color: blue;'>${user.userLogin}</span></h2>
 
 <h2 style="color: #2bb239">Name: ${user.firstName}</h2>
@@ -33,6 +34,7 @@
             <input hidden="hidden" type="text" name="login" value="${user.userLogin}">
         </label>
     </form>
+</c:if>
 </c:if>
 </body>
 </html>
