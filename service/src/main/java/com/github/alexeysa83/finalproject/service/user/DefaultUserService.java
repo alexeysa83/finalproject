@@ -1,13 +1,13 @@
 package com.github.alexeysa83.finalproject.service.user;
 
-import com.github.alexeysa83.finalproject.dao.user.DefaultUserDAO;
-import com.github.alexeysa83.finalproject.dao.user.UserDAO;
+import com.github.alexeysa83.finalproject.dao.user.DefaultUserDao;
+import com.github.alexeysa83.finalproject.dao.user.UserDao;
 import com.github.alexeysa83.finalproject.model.User;
 import com.github.alexeysa83.finalproject.service.UtilsService;
 
 public class DefaultUserService implements UserService {
 
-    private UserDAO userDAO = DefaultUserDAO.getInstance();
+    private UserDao userDAO = DefaultUserDao.getInstance();
 
     private static volatile UserService instance;
 
@@ -28,8 +28,8 @@ public class DefaultUserService implements UserService {
 
     @Override
     public User getById(String value) {
-        final long authId = UtilsService.stringToLong(value);
-        return userDAO.getById(authId);
+        final long id = UtilsService.stringToLong(value);
+        return userDAO.getById(id);
     }
 
     @Override

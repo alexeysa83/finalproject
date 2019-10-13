@@ -17,11 +17,12 @@ public class News {
         this.content = content;
     }
 
-    public News(String title, String content, Timestamp creationTime, long authId) {
+    public News(String title, String content, Timestamp creationTime, long authId, String authorNews) {
         this.title = title;
         this.content = content;
         this.creationTime = creationTime;
         this.authId = authId;
+        this.authorNews = authorNews;
     }
 
     public News(long id, String title, String content, Timestamp creationTime, long authId, String authorNews) {

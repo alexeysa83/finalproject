@@ -9,20 +9,20 @@ import org.slf4j.LoggerFactory;
 import java.sql.*;
 import java.time.LocalDateTime;
 
-public class DefaultUserDAO implements UserDAO {
+public class DefaultUserDao implements UserDao {
 
-    private static final Logger log = LoggerFactory.getLogger(DefaultAuthUserDao.class);
+    private static final Logger log = LoggerFactory.getLogger(DefaultUserDao.class);
     private MysqlConnection mysql = MysqlConnection.getInstance();
 
-    private static volatile UserDAO instance;
+    private static volatile UserDao instance;
 
-    public static UserDAO getInstance() {
-        UserDAO localInstance = instance;
+    public static UserDao getInstance() {
+        UserDao localInstance = instance;
         if (localInstance == null) {
-            synchronized (UserDAO.class) {
+            synchronized (UserDao.class) {
                 localInstance = instance;
                 if (localInstance == null) {
-                    instance = localInstance = new DefaultUserDAO();
+                    instance = localInstance = new DefaultUserDao();
                 }
             }
         }
@@ -30,6 +30,9 @@ public class DefaultUserDAO implements UserDAO {
     }
 
     // Create and delete user logic in AuthUserDAO methods in transactions
+    /*
+    Get by auth_id method
+     */
     @Override
     public User getById(long authId) {
         try (Connection connection = mysql.getConnection();
@@ -67,7 +70,7 @@ public class DefaultUserDAO implements UserDAO {
             statement.setString(3, user.getEmail());
             statement.setString(4, user.getPhone());
             statement.setLong(5, user.getAuthId());
-            log.info("User id: {} updated in DB at: {}", user.getId(), LocalDateTime.now());
+            log.info("User (auth_id): {} updated in DB at: {}", user.getAuthId(), LocalDateTime.now());
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             log.error("SQLException at: {}", LocalDateTime.now(), e);

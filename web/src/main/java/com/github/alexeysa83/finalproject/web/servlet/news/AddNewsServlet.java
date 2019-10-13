@@ -2,6 +2,7 @@ package com.github.alexeysa83.finalproject.web.servlet.news;
 
 import com.github.alexeysa83.finalproject.model.AuthUser;
 import com.github.alexeysa83.finalproject.model.News;
+import com.github.alexeysa83.finalproject.service.UtilsService;
 import com.github.alexeysa83.finalproject.service.validation.NewsValidationservice;
 import com.github.alexeysa83.finalproject.service.news.DefaultNewsService;
 import com.github.alexeysa83.finalproject.service.news.NewsService;
@@ -21,7 +22,7 @@ import static com.github.alexeysa83.finalproject.web.WebUtils.*;
 @WebServlet(name = "AddNewsServlet", urlPatterns = {"/restricted/news/add"})
 public class AddNewsServlet extends HttpServlet {
 
-    private static final Logger log = LoggerFactory.getLogger(RegistrationServlet.class);
+    private static final Logger log = LoggerFactory.getLogger(AddNewsServlet.class);
     private NewsService service = DefaultNewsService.getInstance();
 
     @Override
@@ -40,8 +41,8 @@ public class AddNewsServlet extends HttpServlet {
         }
 
         AuthUser user = (AuthUser) req.getSession().getAttribute("authUser");
-        final Timestamp creationTime = new Timestamp(System.currentTimeMillis());
-        final News news = service.createAndSave(new News(title, content, creationTime, user.getId()));
+        final Timestamp creationTime = UtilsService.getTime();
+        final News news = service.createAndSave(new News(title, content, creationTime, user.getId(), user.getLogin()));
         if (news == null) {
             req.setAttribute("message", "Failed to add news");
             log.error("Failed to add news for user id: {}, at: {}", user.getId(), LocalDateTime.now());

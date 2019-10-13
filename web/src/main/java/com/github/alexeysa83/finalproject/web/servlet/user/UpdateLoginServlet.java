@@ -20,7 +20,7 @@ import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToServletMe
 @WebServlet(name = "UpdateLoginServlet", urlPatterns = {"/restricted/authuseruser/update/login"})
 public class UpdateLoginServlet extends HttpServlet {
 
-    private static final Logger log = LoggerFactory.getLogger(LoginServlet.class);
+    private static final Logger log = LoggerFactory.getLogger(UpdateLoginServlet.class);
     private SecurityService securityService = DefaultSecurityService.getInstance();
 
     // optimaze

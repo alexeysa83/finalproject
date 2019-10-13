@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 
-import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJspMessage;
+import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJsp;
 
 @WebServlet(name = "LogoutServlet", urlPatterns = {"/auth/logout"})
 public class LogoutServlet extends HttpServlet {
@@ -20,12 +20,10 @@ public class LogoutServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         AuthUser authUser = (AuthUser) req.getSession().getAttribute("authUser");
-        final String login = authUser.getLogin();
-        final String message = login + " successfully logged out";
         req.getSession().removeAttribute("authUser");
         req.getSession().invalidate();
-        log.info("User: {} logged out at: {}", login, LocalDateTime.now());
-        forwardToJspMessage("login", message, req, resp);
+        log.info("User id: {} logged out at: {}", authUser.getId(), LocalDateTime.now());
+        forwardToJsp("login", req, resp);
     }
 
     @Override

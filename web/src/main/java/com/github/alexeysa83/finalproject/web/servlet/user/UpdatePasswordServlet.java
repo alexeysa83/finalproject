@@ -21,7 +21,7 @@ import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToServletMe
 
 public class UpdatePasswordServlet extends HttpServlet {
 
-    private static final Logger log = LoggerFactory.getLogger(LoginServlet.class);
+    private static final Logger log = LoggerFactory.getLogger(UpdatePasswordServlet.class);
     private SecurityService securityService = DefaultSecurityService.getInstance();
 
     @Override
@@ -36,10 +36,10 @@ public class UpdatePasswordServlet extends HttpServlet {
             return;
         }
 
-        final String passwordOld = req.getParameter("passwordOld");
+        final String passwordBefore = req.getParameter("passwordBefore");
         final String authId = req.getParameter("authId");
         final AuthUser user = securityService.getById(authId);
-        final boolean isValid = AuthValidationService.isPasswordEqual(passwordOld, user.getPassword());
+        final boolean isValid = AuthValidationService.isPasswordEqual(passwordBefore, user.getPassword());
         if (!isValid) {
             message = "Invalid password";
             log.info("Invalid password enter for user id: {} at: {}", authId, LocalDateTime.now());

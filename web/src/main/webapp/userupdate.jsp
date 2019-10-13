@@ -48,7 +48,7 @@
 
         <form action="${pageContext.request.contextPath}/restricted/authuseruser/pass/update/password" method="POST">
             <br/>Old password:<br/>
-            <input type="password" name="passwordOld" required>
+            <input type="password" name="passwordBefore" required>
 
             <br/>New password:<br/>
             <input type="password" name="passwordNew" required>

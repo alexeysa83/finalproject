@@ -7,6 +7,8 @@ import com.github.alexeysa83.finalproject.model.AuthUser;
 import com.github.alexeysa83.finalproject.service.UtilsService;
 import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
 
+import java.sql.Timestamp;
+
 public class DefaultSecurityService implements SecurityService {
 
     private AuthUserDao authUserDao = DefaultAuthUserDao.getInstance();
@@ -28,7 +30,8 @@ public class DefaultSecurityService implements SecurityService {
 
     @Override
     public AuthUser createAndSaveAuthUser(AuthUser user) {
-                return authUserDao.createAndSave(user);
+        final Timestamp regTime = UtilsService.getTime();
+        return authUserDao.createAndSave(user, regTime);
     }
 
 //    @Override

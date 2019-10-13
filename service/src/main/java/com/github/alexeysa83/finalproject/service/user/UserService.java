@@ -6,7 +6,7 @@ public interface UserService {
 
 //   User create/delete service is made in transaction with AuthUserDAO methods
 
-    User getById (String authId);
+    User getById (String id);
 
     boolean update (User user);
 }

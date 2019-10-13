@@ -15,6 +15,8 @@ public class AuthUser {
     public AuthUser(String login, String password) {
         this.login = login;
         this.password = password;
+        role = Role.USER;
+        isBlocked = false;
     }
 
     public AuthUser(long id, String login, String password, Role role, boolean isBlocked) {

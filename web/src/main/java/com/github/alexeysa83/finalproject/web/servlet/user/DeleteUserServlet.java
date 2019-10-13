@@ -17,10 +17,10 @@ import java.time.LocalDateTime;
 
 import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToServletMessage;
 
-@WebServlet(name = "DeleteUser", urlPatterns = {"/restricted/authuser/delete"})
+@WebServlet(name = "DeleteUserServlet", urlPatterns = {"/restricted/authuser/delete"})
 public class DeleteUserServlet extends HttpServlet {
 
-    private static final Logger log = LoggerFactory.getLogger(LoginServlet.class);
+    private static final Logger log = LoggerFactory.getLogger(DeleteUserServlet.class);
     private SecurityService securityService = DefaultSecurityService.getInstance();
 
     // transaction + unsuccesfull delete

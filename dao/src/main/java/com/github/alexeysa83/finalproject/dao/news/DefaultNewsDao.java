@@ -13,7 +13,7 @@ import java.util.List;
 
 public class DefaultNewsDao implements NewsDao {
 
-    private static final Logger log = LoggerFactory.getLogger(DefaultAuthUserDao.class);
+    private static final Logger log = LoggerFactory.getLogger(DefaultNewsDao.class);
     private MysqlConnection mysql = MysqlConnection.getInstance();
 
     private static volatile NewsDao instance;

@@ -10,7 +10,7 @@ import java.util.ResourceBundle;
 
 public class MysqlConnection {
 
-    private static final Logger log = LoggerFactory.getLogger(DefaultAuthUserDao.class);
+    private static final Logger log = LoggerFactory.getLogger(MysqlConnection.class);
     private static volatile MysqlConnection instance;
 
     public static MysqlConnection getInstance() {

@@ -22,7 +22,7 @@ import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToServletMe
 @WebServlet(name = "UpdateNewsServlet", urlPatterns = {"/restricted/news/update"})
 public class UpdateNewsServlet extends HttpServlet {
 
-    private static final Logger log = LoggerFactory.getLogger(RegistrationServlet.class);
+    private static final Logger log = LoggerFactory.getLogger(UpdateNewsServlet.class);
     private NewsService service = DefaultNewsService.getInstance();
 
     @Override

@@ -34,7 +34,7 @@ public class DefaultAuthUserDao implements AuthUserDao {
     // Check login method needed?
 
     @Override
-    public AuthUser createAndSave(AuthUser user) {
+    public AuthUser createAndSave(AuthUser user, Timestamp regTime) {
         Connection connection = null;
         final String login = user.getLogin();
         final String password = user.getPassword();
@@ -56,8 +56,7 @@ public class DefaultAuthUserDao implements AuthUserDao {
                     }
                     id = generatedKeys.getLong(1);
                 }
-                final Timestamp registrationTime = new Timestamp(System.currentTimeMillis());
-                stateUser.setTimestamp(1, registrationTime);
+                stateUser.setTimestamp(1, regTime);
                 stateUser.setLong(2, id);
                 stateUser.executeUpdate();
                 connection.commit();

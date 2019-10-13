@@ -2,10 +2,9 @@ package com.github.alexeysa83.finalproject.web.servlet.user;
 
 import com.github.alexeysa83.finalproject.model.AuthUser;
 import com.github.alexeysa83.finalproject.model.Role;
-import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
 import com.github.alexeysa83.finalproject.service.auth.DefaultSecurityService;
 import com.github.alexeysa83.finalproject.service.auth.SecurityService;
-import com.github.alexeysa83.finalproject.web.servlet.auth.RegistrationServlet;
+import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +12,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.time.LocalDateTime;
 
 import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToServletMessage;
@@ -22,14 +20,14 @@ import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToServletMe
 @WebServlet (name = "UpdateRoleServlet", urlPatterns = {"/restricted/authuseruser/update/role"})
 public class UpdateRoleServlet extends HttpServlet {
 
-    private static final Logger log = LoggerFactory.getLogger(RegistrationServlet.class);
+    private static final Logger log = LoggerFactory.getLogger(UpdateRoleServlet.class);
     private SecurityService securityService = DefaultSecurityService.getInstance();
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)  {
         final String r = req.getParameter("role");
         boolean isRoleValid = AuthValidationService.isRoleValid(r);
-        String message = null;
+        String message;
         if (!isRoleValid) {
             message = "Update cancelled, please try again";
             //log.error("Failed to update role to user id: {} , at: {}", authId, LocalDateTime.now());

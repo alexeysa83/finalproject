@@ -19,7 +19,7 @@ import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJsp;
 @WebServlet (name = "DeleteNewsServlet", urlPatterns = {"/restricted/news/delete"})
 public class DeleteNewsServlet extends HttpServlet {
 
-    private static final Logger log = LoggerFactory.getLogger(RegistrationServlet.class);
+    private static final Logger log = LoggerFactory.getLogger(DeleteNewsServlet.class);
     private NewsService service = DefaultNewsService.getInstance();
 
     @Override
