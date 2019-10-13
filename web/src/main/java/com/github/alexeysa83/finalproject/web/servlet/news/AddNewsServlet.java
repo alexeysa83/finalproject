@@ -2,6 +2,7 @@ package com.github.alexeysa83.finalproject.web.servlet.news;
 
 import com.github.alexeysa83.finalproject.model.AuthUser;
 import com.github.alexeysa83.finalproject.model.News;
+import com.github.alexeysa83.finalproject.service.TimeService;
 import com.github.alexeysa83.finalproject.service.UtilsService;
 import com.github.alexeysa83.finalproject.service.validation.NewsValidationservice;
 import com.github.alexeysa83.finalproject.service.news.DefaultNewsService;
@@ -41,7 +42,7 @@ public class AddNewsServlet extends HttpServlet {
         }
 
         AuthUser user = (AuthUser) req.getSession().getAttribute("authUser");
-        final Timestamp creationTime = UtilsService.getTime();
+        final Timestamp creationTime = TimeService.getTime();
         final News news = service.createAndSave(new News(title, content, creationTime, user.getId(), user.getLogin()));
         if (news == null) {
             req.setAttribute("message", "Failed to add news");

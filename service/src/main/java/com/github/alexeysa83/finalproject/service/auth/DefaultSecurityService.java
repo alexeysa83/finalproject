@@ -4,6 +4,7 @@ package com.github.alexeysa83.finalproject.service.auth;
 import com.github.alexeysa83.finalproject.dao.authuser.AuthUserDao;
 import com.github.alexeysa83.finalproject.dao.authuser.DefaultAuthUserDao;
 import com.github.alexeysa83.finalproject.model.AuthUser;
+import com.github.alexeysa83.finalproject.service.TimeService;
 import com.github.alexeysa83.finalproject.service.UtilsService;
 import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
 
@@ -30,7 +31,7 @@ public class DefaultSecurityService implements SecurityService {
 
     @Override
     public AuthUser createAndSaveAuthUser(AuthUser user) {
-        final Timestamp regTime = UtilsService.getTime();
+        final Timestamp regTime = TimeService.getTime();
         return authUserDao.createAndSave(user, regTime);
     }
 
