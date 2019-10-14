@@ -4,12 +4,10 @@ import com.github.alexeysa83.finalproject.model.AuthUser;
 import com.github.alexeysa83.finalproject.service.auth.SecurityService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AuthValidationServiceTest {
@@ -29,11 +27,11 @@ class AuthValidationServiceTest {
 //
 //        // Check "empty" login
 //        message = AuthValidationService.isLoginValid("");
-//        assertEquals("Unacceptable login", message);
+//        assertEquals("invalid.login", message);
 //
 //        //Check login is already taken
 //        message = AuthValidationService.isLoginValid("invalidLogin");
-//        assertEquals("Login is already taken", message);
+//        assertEquals("login.istaken", message);
 //    }
 
     @Test
@@ -44,11 +42,11 @@ class AuthValidationServiceTest {
 
         // Check "empty" password
         message = AuthValidationService.isPasswordValid("", "Pass");
-        assertEquals("Unacceptable password", message);
+        assertEquals("invalid.pass", message);
 
         //Check password do not match
         message = AuthValidationService.isPasswordValid("Pass", "Sapp");
-        assertEquals("Repeat password do not match", message);
+        assertEquals("invalid.repeatpass", message);
     }
 
 //    @Test

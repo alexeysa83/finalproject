@@ -40,10 +40,10 @@ public class UpdateUserServlet extends HttpServlet {
         final String email = req.getParameter("email");
         final String phone = req.getParameter("phone");
         final boolean isUpdated = userService.update(new User(firstName, lastName, email, phone, authId));
-        String message = "Update succesfull";
+        String message = "update.success";
         String logMessage = "Updated profile to user id: {} , at: {}";
         if (!isUpdated) {
-            message = "Update cancelled, please try again";
+            message = "update.fail";
             logMessage = "Failed to update profile to user id: {} , at: {}";
         }
         log.info(logMessage, id, LocalDateTime.now());

@@ -26,10 +26,10 @@ public class AuthFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         AuthUser authUser = (AuthUser) request.getSession().getAttribute("authUser");
         if (authUser == null) {
-            request.setAttribute("error", "Access only for authorized users");
+            request.setAttribute("message", "access.auth");
             forwardToJsp("login", request, response);
         } else if (authUser.isBlocked()) {
-            String message = "User" + authUser.getLogin() + "is blocked";
+            String message = "blocked";
             log.error("Blocked user id: {}, is logged in at: {}", authUser.getId(), LocalDateTime.now());
             forwardToServletMessage("/auth/logout", message, request, response);
 //            request.setAttribute("error", "User" + authUser.getLogin() + "is blocked");

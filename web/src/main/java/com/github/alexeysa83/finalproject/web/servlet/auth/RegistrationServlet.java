@@ -58,7 +58,7 @@ public class RegistrationServlet extends HttpServlet {
 
         final AuthUser authUser = securityService.createAndSaveAuthUser(new AuthUser(login, password));
         if (authUser == null) {
-            req.setAttribute("message", "Unknown registration error");
+            req.setAttribute("message", "error.unknown");
             log.error("Failed to registrate user with login: {} pass {}, at: {}", login, password, LocalDateTime.now());
             doGet(req, resp);
             return;

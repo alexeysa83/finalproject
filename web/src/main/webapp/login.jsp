@@ -1,4 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<fmt:setLocale value= "${locale}"/>
+<fmt:setBundle basename = "messages" var = "msgs"/>
+<fmt:setBundle basename = "interface" var = "intr"/>
 
 <html>
 <head>
@@ -8,18 +14,21 @@
 <body>
 <jsp:include page="header.jsp"/>
 
-    <h2 style="color: firebrick">${requestScope.get('message')}</h2>
+<c:if test="${requestScope.get('message') != null}">
+    <h2 style="color: firebrick">
+        <fmt:message key="${requestScope.get('message')}" bundle="${msgs}"/></h2>
+</c:if>
 
 <form action="${pageContext.request.contextPath}/auth/login" method="POST">
     <fieldset>
-        <legend>Login form</legend>
+        <legend><fmt:message key="form.login" bundle="${intr}"/></legend>
 
-        <label for="login"><strong>Login:</strong></label>
+        <label for="login"><strong><fmt:message key="login" bundle="${intr}"/></strong></label>
         <input id="login" type="text" name="login" required>
 
-        <label for="password"><strong>Password:</strong></label>
+        <label for="password"><strong><fmt:message key="password" bundle="${intr}"/></strong></label>
         <input id="password" type="password" name="password" required>
-        <input type="submit" value="Submit"/>
+        <input type="submit" value="<fmt:message key="submit" bundle="${intr}"/>"/>
     </fieldset>
 </form>
 

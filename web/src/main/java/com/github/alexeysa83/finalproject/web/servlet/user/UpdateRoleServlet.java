@@ -17,32 +17,32 @@ import java.time.LocalDateTime;
 import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToServletMessage;
 
 // Optimization
-@WebServlet (name = "UpdateRoleServlet", urlPatterns = {"/restricted/authuseruser/update/role"})
+@WebServlet(name = "UpdateRoleServlet", urlPatterns = {"/restricted/authuseruser/update/role"})
 public class UpdateRoleServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(UpdateRoleServlet.class);
     private SecurityService securityService = DefaultSecurityService.getInstance();
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)  {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
+        final String authId = req.getParameter("authId");
         final String r = req.getParameter("role");
         boolean isRoleValid = AuthValidationService.isRoleValid(r);
         String message;
         if (!isRoleValid) {
-            message = "Update cancelled, please try again";
-            //log.error("Failed to update role to user id: {} , at: {}", authId, LocalDateTime.now());
+            message = "update.fail";
+            log.error("Failed to update role to user id: {} , at: {}", authId, LocalDateTime.now());
             forwardToServletMessage("/restricted/user/profile", message, req, resp);
             return;
         }
 
         final Role role = Role.valueOf(r);
-        final String authId = req.getParameter("authId");
         final AuthUser user = securityService.getById(authId);
         final boolean isUpdated = securityService.update
                 (new AuthUser(user.getId(), user.getLogin(), user.getPassword(), role, user.isBlocked()));
-        message = "Update succesfull";
+        message = "update.success";
         if (!isUpdated) {
-            message = "Update cancelled, please try again";
+            message = "update.fail";
             log.error("Failed to update role to user id: {} , at: {}", authId, LocalDateTime.now());
             forwardToServletMessage("/restricted/user/profile", message, req, resp);
             return;

@@ -23,7 +23,7 @@ public class UpdateLoginServlet extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(UpdateLoginServlet.class);
     private SecurityService securityService = DefaultSecurityService.getInstance();
 
-    // optimaze
+    // optimize
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         final String loginNew = req.getParameter("login");
@@ -37,9 +37,9 @@ public class UpdateLoginServlet extends HttpServlet {
 
         final boolean isUpdated = securityService.update
                 (new AuthUser(userOld.getId(), loginNew, userOld.getPassword(), userOld.getRole(), userOld.isBlocked()));
-        message = "Update succesfull";
+        message = "update.success";
         if (!isUpdated) {
-            message = "Update cancelled, please try again";
+            message = "update.fail";
             log.error("Failed to update login for user id: {}, at: {}", authId,  LocalDateTime.now());
             forwardToServletMessage("/restricted/user/profile", message, req, resp);
         }

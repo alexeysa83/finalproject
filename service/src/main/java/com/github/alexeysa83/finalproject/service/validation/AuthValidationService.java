@@ -17,9 +17,9 @@ public abstract class AuthValidationService {
     public static String isLoginValid(String login) {
         String message = null;
         if (login.length() < 1) {
-            message = "Unacceptable login";
+            message = "invalid.login";
         } else if (securityService.checkLoginIsTaken(login)) {
-            message = "Login is already taken";
+            message = "login.istaken";
         }
         return message;
     }
@@ -27,9 +27,9 @@ public abstract class AuthValidationService {
     public static String isPasswordValid(String pass1, String pass2) {
         String message = null;
         if (pass1.length() < 1) {
-            message = "Unacceptable password";
+            message = "invalid.pass";
         } else if (!pass1.equals(pass2)) {
-            message = "Repeat password do not match";
+            message = "invalid.repeatpass";
         }
         return message;
     }

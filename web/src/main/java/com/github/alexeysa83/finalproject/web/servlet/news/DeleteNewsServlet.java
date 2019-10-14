@@ -26,10 +26,10 @@ public class DeleteNewsServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         final String newsId = req.getParameter("newsId");
         final boolean isDeleted = service.deleteNews(newsId);
-        String message = "Delete successfull";
+        String message = "delete.success";
         String logMessage = "Deleted news id: {} , at: {}";
         if (!isDeleted) {
-            message = "Delete cancelled";
+            message = "delete.fail";
             logMessage = "Failed to delete news id: {} , at: {}";
         }
         log.info(logMessage, newsId, LocalDateTime.now());

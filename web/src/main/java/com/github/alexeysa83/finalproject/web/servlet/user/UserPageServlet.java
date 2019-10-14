@@ -23,7 +23,7 @@ public class UserPageServlet extends HttpServlet {
         final String authId = req.getParameter("authId");
         final User user = userService.getById(authId);
         if (user == null) {
-            String message = "User is blocked";
+            String message = "blocked";
             forwardToJspMessage("userpage", message, req, resp);
         }
         req.setAttribute("user", user);

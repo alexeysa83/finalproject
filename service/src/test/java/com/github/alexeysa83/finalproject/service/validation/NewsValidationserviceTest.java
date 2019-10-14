@@ -9,10 +9,10 @@ class NewsValidationserviceTest {
     @Test
     void isValidTitleContent() {
         String message = NewsValidationservice.isValidTitleContent("", "Content");
-        assertEquals("Title or content is not completed", message);
+        assertEquals("invalid.news", message);
 
         message = NewsValidationservice.isValidTitleContent("Title", "");
-        assertEquals("Title or content is not completed", message);
+        assertEquals("invalid.news", message);
 
         message = NewsValidationservice.isValidTitleContent("Title", "Content");
         assertNull(message);

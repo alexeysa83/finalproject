@@ -42,13 +42,14 @@ public class LoginServlet extends HttpServlet {
 
         AuthUser userFromDB = securityService.login(new AuthUser(login, password));
         if (userFromDB == null) {
-            req.setAttribute("message", "Invalid login or password");
+            req.setAttribute("message", "wrong.logpass");
             log.info("Invalid login or password enter for user: {} at: {}", login, LocalDateTime.now());
             forwardToJsp("login", req, resp);
             return;
         }
+        // Translation
         if (userFromDB.isBlocked()) {
-            req.setAttribute("message", userFromDB.getLogin() + " is blocked");
+            req.setAttribute("message", "blocked");
             log.info("Blocked user: {} tried to login at: {}", login, LocalDateTime.now());
             forwardToJsp("login", req, resp);
             return;

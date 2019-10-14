@@ -49,10 +49,10 @@ public class UpdateNewsServlet extends HttpServlet {
         final long id = UtilsService.stringToLong(newsId);
         final boolean isUpdated = service.updateNews(new News(id, title, content));
 
-        message = "Update succesfull";
+        message = "update.success";
         String logMessage = "Updated news id: {} , at: {}";
         if (!isUpdated) {
-            message = "Update cancelled, please try again";
+            message = "update.fail";
             logMessage = "Failed to update news id: {} , at: {}";
         }
         log.info(logMessage, newsId, LocalDateTime.now());

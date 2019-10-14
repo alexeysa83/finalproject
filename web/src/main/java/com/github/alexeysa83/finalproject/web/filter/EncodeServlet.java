@@ -12,7 +12,7 @@ public class EncodeServlet implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         servletRequest.setCharacterEncoding(UTF_8);
-        filterChain.doFilter(servletRequest, servletResponse);
         servletResponse.setCharacterEncoding(UTF_8);
+        filterChain.doFilter(servletRequest, servletResponse);
     }
 }

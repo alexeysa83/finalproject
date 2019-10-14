@@ -41,7 +41,7 @@ public class UpdatePasswordServlet extends HttpServlet {
         final AuthUser user = securityService.getById(authId);
         final boolean isValid = AuthValidationService.isPasswordEqual(passwordBefore, user.getPassword());
         if (!isValid) {
-            message = "Invalid password";
+            message = "wrong.pass";
             log.info("Invalid password enter for user id: {} at: {}", authId, LocalDateTime.now());
             forwardToServletMessage("/restricted/user/profile", message, req, resp);
             return;
@@ -49,9 +49,9 @@ public class UpdatePasswordServlet extends HttpServlet {
 
         final boolean isUpdated = securityService.update
                 (new AuthUser(user.getId(), user.getLogin(), passwordNew, user.getRole(), user.isBlocked()));
-        message = "Update succesfull";
+        message = "update.success";
         if (!isUpdated) {
-            message = "Update cancelled, please try again";
+            message = "update.fail";
             log.error("Failed to update password for user id: {} , at: {}", authId, LocalDateTime.now());
             forwardToServletMessage("/restricted/user/profile", message, req, resp);
         }

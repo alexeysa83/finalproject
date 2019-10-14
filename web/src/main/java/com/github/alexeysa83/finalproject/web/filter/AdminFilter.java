@@ -21,7 +21,7 @@ public class AdminFilter  implements Filter {
         AuthUser authUser = (AuthUser) request.getSession().getAttribute("authUser");
         boolean isAdmin = AuthValidationService.isAdmin(authUser.getRole());
         if (!isAdmin) {
-            request.setAttribute("message", "Access only for admin users");
+            request.setAttribute("message", "access.admin");
             forwardToJsp("index", request,response);
         } else {
             filterChain.doFilter(request,response);

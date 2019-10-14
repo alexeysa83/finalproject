@@ -10,7 +10,7 @@ public abstract class NewsValidationservice {
     public static String isValidTitleContent(String title, String content) {
         String message = null;
         if ((title.length() < 1) || (content.length() < 1)) {
-            message = "Title or content is not completed";
+            message = "invalid.news";
         }
         return message;
     }

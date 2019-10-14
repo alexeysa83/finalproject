@@ -45,7 +45,7 @@ public class AddNewsServlet extends HttpServlet {
         final Timestamp creationTime = TimeService.getTime();
         final News news = service.createAndSave(new News(title, content, creationTime, user.getId(), user.getLogin()));
         if (news == null) {
-            req.setAttribute("message", "Failed to add news");
+            req.setAttribute("message", "error.unknown");
             log.error("Failed to add news for user id: {}, at: {}", user.getId(), LocalDateTime.now());
             doGet(req, resp);
             return;
