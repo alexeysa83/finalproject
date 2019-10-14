@@ -1,7 +1,6 @@
 package com.github.alexeysa83.finalproject.dao.news;
 
 import com.github.alexeysa83.finalproject.dao.MysqlConnection;
-import com.github.alexeysa83.finalproject.dao.authuser.DefaultAuthUserDao;
 import com.github.alexeysa83.finalproject.model.News;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

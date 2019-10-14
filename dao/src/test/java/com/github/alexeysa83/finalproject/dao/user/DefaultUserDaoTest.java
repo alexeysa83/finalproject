@@ -58,7 +58,6 @@ class DefaultUserDaoTest {
         final AuthUser savedAuthUser = authUserDao.createAndSave(authUser, regTime);
         final long authId = savedAuthUser.getId();
 
-        final User testUser = userDAO.getById(authId);
         final User userToUpdate = new User
                 ("First", "Last", "email", "phone", authId);
 

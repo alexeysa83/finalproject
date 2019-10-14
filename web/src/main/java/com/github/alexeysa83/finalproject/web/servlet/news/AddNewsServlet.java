@@ -3,11 +3,9 @@ package com.github.alexeysa83.finalproject.web.servlet.news;
 import com.github.alexeysa83.finalproject.model.AuthUser;
 import com.github.alexeysa83.finalproject.model.News;
 import com.github.alexeysa83.finalproject.service.TimeService;
-import com.github.alexeysa83.finalproject.service.UtilsService;
-import com.github.alexeysa83.finalproject.service.validation.NewsValidationservice;
 import com.github.alexeysa83.finalproject.service.news.DefaultNewsService;
 import com.github.alexeysa83.finalproject.service.news.NewsService;
-import com.github.alexeysa83.finalproject.web.servlet.auth.RegistrationServlet;
+import com.github.alexeysa83.finalproject.service.validation.NewsValidationservice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

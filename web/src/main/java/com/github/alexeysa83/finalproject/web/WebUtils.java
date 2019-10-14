@@ -35,14 +35,14 @@ public abstract class WebUtils {
         }
     }
 
-    public static void forwardToServlet(String servletPath, HttpServletRequest req, HttpServletResponse resp)  {
-        try {
-            req.getRequestDispatcher(servletPath).forward(req, resp);
-        } catch (ServletException | IOException e) {
-            log.error("Error in forward to: {}", servletPath, e);
-            throw new RuntimeException(e);
-        }
-    }
+//    public static void forwardToServlet(String servletPath, HttpServletRequest req, HttpServletResponse resp)  {
+//        try {
+//            req.getRequestDispatcher(servletPath).forward(req, resp);
+//        } catch (ServletException | IOException e) {
+//            log.error("Error in forward to: {}", servletPath, e);
+//            throw new RuntimeException(e);
+//        }
+//    }
 
     public static void forwardToServletMessage
             (String servletPath, String message, HttpServletRequest req, HttpServletResponse resp)  {

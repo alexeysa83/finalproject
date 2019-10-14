@@ -1,7 +1,6 @@
 package com.github.alexeysa83.finalproject.dao.user;
 
 import com.github.alexeysa83.finalproject.dao.MysqlConnection;
-import com.github.alexeysa83.finalproject.dao.authuser.DefaultAuthUserDao;
 import com.github.alexeysa83.finalproject.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
