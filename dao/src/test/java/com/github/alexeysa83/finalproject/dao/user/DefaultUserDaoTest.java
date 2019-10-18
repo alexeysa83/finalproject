@@ -1,11 +1,15 @@
 package com.github.alexeysa83.finalproject.dao.user;
 
-import com.github.alexeysa83.finalproject.dao.authuser.AuthUserDao;
-import com.github.alexeysa83.finalproject.dao.authuser.DefaultAuthUserDao;
+import com.github.alexeysa83.finalproject.dao.DataSource;
+import com.github.alexeysa83.finalproject.dao.authuser.AuthUserBaseDao;
+import com.github.alexeysa83.finalproject.dao.authuser.DefaultAuthUserBaseDao;
 import com.github.alexeysa83.finalproject.model.AuthUser;
 import com.github.alexeysa83.finalproject.model.User;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
@@ -13,8 +17,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DefaultUserDaoTest {
 
-    private final UserDao userDAO = DefaultUserDao.getInstance();
-    private final AuthUserDao authUserDao = DefaultAuthUserDao.getInstance();
+    private final UserBaseDao userDAO = DefaultUserBaseDao.getInstance();
+    private final AuthUserBaseDao authUserDao = DefaultAuthUserBaseDao.getInstance();
+    private DataSource mysql = DataSource.getInstance();
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -49,6 +54,8 @@ class DefaultUserDaoTest {
         assertNull(testUser.getLastName());
         assertNull(testUser.getEmail());
         assertNull(testUser.getPhone());
+
+        completeDeleteUser(authId);
     }
 
     @Test
@@ -69,5 +76,19 @@ class DefaultUserDaoTest {
         assertEquals(userToUpdate.getLastName(), afterUpdate.getLastName());
         assertEquals(userToUpdate.getEmail(), afterUpdate.getEmail());
         assertEquals(userToUpdate.getPhone(), afterUpdate.getPhone());
+
+        completeDeleteUser(authId);
+    }
+
+    private void completeDeleteUser(long id) {
+        authUserDao.delete(id);
+        try (Connection connection = mysql.getConnection();
+             PreparedStatement statement = connection.prepareStatement
+                     ("delete from auth_user where id = ?")) {
+            statement.setLong(1, id);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

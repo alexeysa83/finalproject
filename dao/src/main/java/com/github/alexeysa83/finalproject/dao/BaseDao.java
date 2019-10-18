@@ -1,6 +1,6 @@
 package com.github.alexeysa83.finalproject.dao;
 
-public interface DAO<T> {
+public interface BaseDao<T> {
 
     T getById (long id);
 

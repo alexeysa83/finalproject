@@ -1,6 +1,6 @@
 package com.github.alexeysa83.finalproject.dao.news;
 
-import com.github.alexeysa83.finalproject.dao.MysqlConnection;
+import com.github.alexeysa83.finalproject.dao.DataSource;
 import com.github.alexeysa83.finalproject.model.News;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,20 +10,20 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DefaultNewsDao implements NewsDao {
+public class DefaultNewsBaseDao implements NewsBaseDao {
 
-    private static final Logger log = LoggerFactory.getLogger(DefaultNewsDao.class);
-    private MysqlConnection mysql = MysqlConnection.getInstance();
+    private static final Logger log = LoggerFactory.getLogger(DefaultNewsBaseDao.class);
+    private DataSource mysql = DataSource.getInstance();
 
-    private static volatile NewsDao instance;
+    private static volatile NewsBaseDao instance;
 
-    public static NewsDao getInstance() {
-        NewsDao localInstance = instance;
+    public static NewsBaseDao getInstance() {
+        NewsBaseDao localInstance = instance;
         if (localInstance == null) {
-            synchronized (NewsDao.class) {
+            synchronized (NewsBaseDao.class) {
                 localInstance = instance;
                 if (localInstance == null) {
-                    instance = localInstance = new DefaultNewsDao();
+                    instance = localInstance = new DefaultNewsBaseDao();
                 }
             }
         }

@@ -25,7 +25,8 @@ public class UpdateUserServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         final String authId = req.getParameter("authId");
-        final User user = userService.getById(authId);
+        final long id = UtilsService.stringToLong(authId);
+        final User user = userService.getById(id);
         req.setAttribute("user", user);
         forwardToJsp("userupdate", req, resp);
     }

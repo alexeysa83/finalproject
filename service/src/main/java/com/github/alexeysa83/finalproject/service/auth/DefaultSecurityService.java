@@ -1,8 +1,8 @@
 package com.github.alexeysa83.finalproject.service.auth;
 
 
-import com.github.alexeysa83.finalproject.dao.authuser.AuthUserDao;
-import com.github.alexeysa83.finalproject.dao.authuser.DefaultAuthUserDao;
+import com.github.alexeysa83.finalproject.dao.authuser.AuthUserBaseDao;
+import com.github.alexeysa83.finalproject.dao.authuser.DefaultAuthUserBaseDao;
 import com.github.alexeysa83.finalproject.model.AuthUser;
 import com.github.alexeysa83.finalproject.service.TimeService;
 import com.github.alexeysa83.finalproject.service.UtilsService;
@@ -12,7 +12,7 @@ import java.sql.Timestamp;
 
 public class DefaultSecurityService implements SecurityService {
 
-    private AuthUserDao authUserDao = DefaultAuthUserDao.getInstance();
+    private AuthUserBaseDao authUserDao = DefaultAuthUserBaseDao.getInstance();
 
     private static volatile SecurityService instance;
 
@@ -41,9 +41,8 @@ public class DefaultSecurityService implements SecurityService {
 //    }
 
     @Override
-    public AuthUser getById(String value) {
-        final long authId = UtilsService.stringToLong(value);
-        return authUserDao.getById(authId);
+    public AuthUser getById(long id) {
+        return authUserDao.getById(id);
     }
 
     @Override
@@ -68,8 +67,7 @@ public class DefaultSecurityService implements SecurityService {
     }
 
     @Override
-    public boolean delete(String value) {
-        final long authId = UtilsService.stringToLong(value);
-        return authUserDao.delete(authId);
+    public boolean delete(long id) {
+        return authUserDao.delete(id);
     }
 }

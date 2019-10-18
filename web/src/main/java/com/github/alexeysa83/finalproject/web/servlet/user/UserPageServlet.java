@@ -1,6 +1,7 @@
 package com.github.alexeysa83.finalproject.web.servlet.user;
 
 import com.github.alexeysa83.finalproject.model.User;
+import com.github.alexeysa83.finalproject.service.UtilsService;
 import com.github.alexeysa83.finalproject.service.user.DefaultUserService;
 import com.github.alexeysa83.finalproject.service.user.UserService;
 
@@ -21,9 +22,10 @@ public class UserPageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         final String authId = req.getParameter("authId");
-        final User user = userService.getById(authId);
+        final long id = UtilsService.stringToLong(authId);
+        final User user = userService.getById(id);
         if (user == null) {
-            String message = "blocked";
+            String message = "deleted";
             forwardToJspMessage("userpage", message, req, resp);
         }
         req.setAttribute("user", user);

@@ -1,6 +1,6 @@
 package com.github.alexeysa83.finalproject.dao.user;
 
-import com.github.alexeysa83.finalproject.dao.MysqlConnection;
+import com.github.alexeysa83.finalproject.dao.DataSource;
 import com.github.alexeysa83.finalproject.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,20 +8,20 @@ import org.slf4j.LoggerFactory;
 import java.sql.*;
 import java.time.LocalDateTime;
 
-public class DefaultUserDao implements UserDao {
+public class DefaultUserBaseDao implements UserBaseDao {
 
-    private static final Logger log = LoggerFactory.getLogger(DefaultUserDao.class);
-    private MysqlConnection mysql = MysqlConnection.getInstance();
+    private static final Logger log = LoggerFactory.getLogger(DefaultUserBaseDao.class);
+    private DataSource mysql = DataSource.getInstance();
 
-    private static volatile UserDao instance;
+    private static volatile UserBaseDao instance;
 
-    public static UserDao getInstance() {
-        UserDao localInstance = instance;
+    public static UserBaseDao getInstance() {
+        UserBaseDao localInstance = instance;
         if (localInstance == null) {
-            synchronized (UserDao.class) {
+            synchronized (UserBaseDao.class) {
                 localInstance = instance;
                 if (localInstance == null) {
-                    instance = localInstance = new DefaultUserDao();
+                    instance = localInstance = new DefaultUserBaseDao();
                 }
             }
         }

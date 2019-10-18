@@ -26,7 +26,8 @@ public class UpdateNewsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         final String newsId = req.getParameter("newsId");
-        final News news = service.getNewsOnId(newsId);
+        final long id = UtilsService.stringToLong(newsId);
+        final News news = service.getNewsOnId(id);
         req.setAttribute("news", news);
         forwardToJsp("newsupdate", req, resp);
     }

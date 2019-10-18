@@ -1,6 +1,6 @@
 package com.github.alexeysa83.finalproject.service.auth;
 
-import com.github.alexeysa83.finalproject.dao.authuser.AuthUserDao;
+import com.github.alexeysa83.finalproject.dao.authuser.AuthUserBaseDao;
 import com.github.alexeysa83.finalproject.model.AuthUser;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +15,7 @@ import static org.mockito.Mockito.when;
 class DefaultSecurityServiceTest {
 
     @Mock
-    AuthUserDao authUserDao;
+    AuthUserBaseDao authUserDao;
 
     @InjectMocks
     DefaultSecurityService service;
@@ -29,25 +29,30 @@ class DefaultSecurityServiceTest {
 //    }
 
     @Test
-    void login () {
-        // Test login not exist case
-        when (authUserDao.getByLogin("loginNotExist")).thenReturn(null);
+    void loginNotExist() {
+        when(authUserDao.getByLogin("loginNotExist")).thenReturn(null);
         AuthUser testUser = new AuthUser("loginNotExist", "Pass");
         AuthUser userFromDB = service.login(testUser);
         assertNull(userFromDB);
+    }
 
-        // Test login exist and password correct case
+    @Test
+    void loginExistPassCorr() {
         when(authUserDao.getByLogin("loginExist"))
                 .thenReturn(new AuthUser("loginExist", "passCorrect"));
-        testUser = new AuthUser("loginExist", "passCorrect");
-        userFromDB = service.login(testUser);
+        AuthUser testUser = new AuthUser("loginExist", "passCorrect");
+        AuthUser userFromDB = service.login(testUser);
         assertNotNull(userFromDB);
         assertEquals(testUser.getLogin(), userFromDB.getLogin());
         assertEquals(testUser.getPassword(), userFromDB.getPassword());
+    }
 
-        // Test login exist and password wrong case
-        testUser = new AuthUser("loginExist", "passWrong");
-        userFromDB = service.login(testUser);
+    @Test
+    void loginExistPassWrong() {
+        when(authUserDao.getByLogin("loginExist"))
+                .thenReturn(new AuthUser("loginExist", "passCorrect"));
+        AuthUser testUser = new AuthUser("loginExist", "passWrong");
+        AuthUser userFromDB = service.login(testUser);
         assertNull(userFromDB);
     }
 

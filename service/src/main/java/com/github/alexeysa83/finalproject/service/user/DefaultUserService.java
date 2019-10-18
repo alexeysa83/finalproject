@@ -1,13 +1,13 @@
 package com.github.alexeysa83.finalproject.service.user;
 
-import com.github.alexeysa83.finalproject.dao.user.DefaultUserDao;
-import com.github.alexeysa83.finalproject.dao.user.UserDao;
+import com.github.alexeysa83.finalproject.dao.user.DefaultUserBaseDao;
+import com.github.alexeysa83.finalproject.dao.user.UserBaseDao;
 import com.github.alexeysa83.finalproject.model.User;
 import com.github.alexeysa83.finalproject.service.UtilsService;
 
 public class DefaultUserService implements UserService {
 
-    private UserDao userDAO = DefaultUserDao.getInstance();
+    private UserBaseDao userDAO = DefaultUserBaseDao.getInstance();
 
     private static volatile UserService instance;
 
@@ -27,8 +27,7 @@ public class DefaultUserService implements UserService {
     //   User create/delete service is made in transaction with AuthUserDAO methods
 
     @Override
-    public User getById(String value) {
-        final long id = UtilsService.stringToLong(value);
+    public User getById(long id) {
         return userDAO.getById(id);
     }
 

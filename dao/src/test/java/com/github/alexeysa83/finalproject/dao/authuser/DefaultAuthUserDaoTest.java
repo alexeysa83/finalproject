@@ -1,16 +1,21 @@
 package com.github.alexeysa83.finalproject.dao.authuser;
 
+import com.github.alexeysa83.finalproject.dao.DataSource;
 import com.github.alexeysa83.finalproject.model.AuthUser;
 import com.github.alexeysa83.finalproject.model.Role;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class DefaultAuthUserDaoTest {
 
-    private final AuthUserDao authUserDao = DefaultAuthUserDao.getInstance();
+    private final AuthUserBaseDao authUserDao = DefaultAuthUserBaseDao.getInstance();
+    private DataSource mysql = DataSource.getInstance();
 
     @Test
     void getInstance() {
@@ -29,6 +34,8 @@ class DefaultAuthUserDaoTest {
         assertEquals(testUser.getPassword(), savedUser.getPassword());
         assertEquals(testUser.getRole(), savedUser.getRole());
         assertEquals(testUser.isBlocked(), savedUser.isBlocked());
+
+        completeDeleteUser(id);
     }
 
     @Test
@@ -44,6 +51,8 @@ class DefaultAuthUserDaoTest {
         assertEquals(testUser.getPassword(), userFromDB.getPassword());
         assertEquals(testUser.getRole(), userFromDB.getRole());
         assertEquals(testUser.isBlocked(), userFromDB.isBlocked());
+
+        completeDeleteUser(userFromDB.getId());
     }
 
     @Test
@@ -59,6 +68,8 @@ class DefaultAuthUserDaoTest {
         assertEquals(testUser.getPassword(), userFromDB.getPassword());
         assertEquals(testUser.getRole(), userFromDB.getRole());
         assertEquals(testUser.isBlocked(), userFromDB.isBlocked());
+
+        completeDeleteUser(id);
     }
 
     @Test
@@ -75,6 +86,8 @@ class DefaultAuthUserDaoTest {
         assertEquals(userToUpdate.getLogin(), afterUpdate.getLogin());
         assertEquals(userToUpdate.getPassword(), afterUpdate.getPassword());
         assertEquals(userToUpdate.getRole(), afterUpdate.getRole());
+
+        completeDeleteUser(id);
     }
 
     @Test
@@ -90,5 +103,19 @@ class DefaultAuthUserDaoTest {
 
         final AuthUser afterDelete = authUserDao.getById(id);
         assertTrue(afterDelete.isBlocked());
+
+        completeDeleteUser(id);
+    }
+
+    private void completeDeleteUser(long id) {
+        authUserDao.delete(id);
+        try (Connection connection = mysql.getConnection();
+             PreparedStatement statement = connection.prepareStatement
+                     ("delete from auth_user where id = ?")) {
+            statement.setLong(1, id);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

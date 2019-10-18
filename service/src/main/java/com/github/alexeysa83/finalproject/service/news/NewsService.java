@@ -8,11 +8,11 @@ public interface NewsService {
 
     News createAndSave (News news);
 
-    News getNewsOnId (String id);
+    News getNewsOnId (long id);
 
     List<News> getNewsOnPage();
 
     boolean updateNews (News news);
 
-    boolean deleteNews (String id);
+    boolean deleteNews (long id);
 }

@@ -1,6 +1,7 @@
 package com.github.alexeysa83.finalproject.web.servlet.user;
 
 import com.github.alexeysa83.finalproject.model.AuthUser;
+import com.github.alexeysa83.finalproject.service.UtilsService;
 import com.github.alexeysa83.finalproject.service.auth.DefaultSecurityService;
 import com.github.alexeysa83.finalproject.service.auth.SecurityService;
 import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
@@ -36,7 +37,8 @@ public class UpdatePasswordServlet extends HttpServlet {
 
         final String passwordBefore = req.getParameter("passwordBefore");
         final String authId = req.getParameter("authId");
-        final AuthUser user = securityService.getById(authId);
+        final long id = UtilsService.stringToLong(authId);
+        final AuthUser user = securityService.getById(id);
         final boolean isValid = AuthValidationService.isPasswordEqual(passwordBefore, user.getPassword());
         if (!isValid) {
             message = "wrong.pass";

@@ -5,18 +5,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ResourceBundle;
 
-public class MysqlConnection {
+public class DataSource {
 
-    private static final Logger log = LoggerFactory.getLogger(MysqlConnection.class);
+    private static final Logger log = LoggerFactory.getLogger(DataSource.class);
 
     private final ComboPooledDataSource pool;
 
-    public MysqlConnection() {
+    public DataSource() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
@@ -38,15 +37,15 @@ public class MysqlConnection {
         pool.setMaxStatements(180);
     }
 
-    private static volatile MysqlConnection instance;
+    private static volatile DataSource instance;
 
-    public static MysqlConnection getInstance() {
-        MysqlConnection localInstance = instance;
+    public static DataSource getInstance() {
+        DataSource localInstance = instance;
         if (localInstance == null) {
-            synchronized (MysqlConnection.class) {
+            synchronized (DataSource.class) {
                 localInstance = instance;
                 if (localInstance == null) {
-                    instance = localInstance = new MysqlConnection();
+                    instance = localInstance = new DataSource();
                 }
             }
         }

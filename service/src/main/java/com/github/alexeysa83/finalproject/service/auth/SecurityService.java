@@ -8,7 +8,7 @@ public interface SecurityService {
 
 //    AuthUser getByLogin (String login);
 
-    AuthUser getById (String id);
+    AuthUser getById (long id);
 
     AuthUser login (AuthUser user);
 
@@ -16,5 +16,5 @@ public interface SecurityService {
 
     boolean update (AuthUser user);
 
-    boolean delete (String id);
+    boolean delete (long id);
 }

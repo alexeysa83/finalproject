@@ -1,11 +1,16 @@
 package com.github.alexeysa83.finalproject.dao.news;
 
-import com.github.alexeysa83.finalproject.dao.authuser.AuthUserDao;
-import com.github.alexeysa83.finalproject.dao.authuser.DefaultAuthUserDao;
+import com.github.alexeysa83.finalproject.dao.DataSource;
+import com.github.alexeysa83.finalproject.dao.authuser.AuthUserBaseDao;
+import com.github.alexeysa83.finalproject.dao.authuser.DefaultAuthUserBaseDao;
 import com.github.alexeysa83.finalproject.model.AuthUser;
 import com.github.alexeysa83.finalproject.model.News;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
@@ -15,8 +20,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DefaultNewsDaoTest {
 
-    private final NewsDao newsDao = DefaultNewsDao.getInstance();
-    private final static AuthUserDao authUserDao = DefaultAuthUserDao.getInstance();
+    private final NewsBaseDao newsDao = DefaultNewsBaseDao.getInstance();
+    private final static AuthUserBaseDao authUserDao = DefaultAuthUserBaseDao.getInstance();
+    private static DataSource mysql = DataSource.getInstance();
     private final static AuthUser testUser;
 
     static {
@@ -49,6 +55,8 @@ class DefaultNewsDaoTest {
         assertEquals(testNews.getCreationTime(), savedNews.getCreationTime());
         assertEquals(testNews.getAuthId(), savedNews.getAuthId());
         assertEquals(testNews.getAuthorNews(), savedNews.getAuthorNews());
+
+        newsDao.delete(id);
     }
 
     @Test
@@ -67,6 +75,8 @@ class DefaultNewsDaoTest {
         assertEquals(testNews.getCreationTime(), newsFromDB.getCreationTime());
         assertEquals(testNews.getAuthId(), newsFromDB.getAuthId());
         assertEquals(testNews.getAuthorNews(), testNews.getAuthorNews());
+
+        newsDao.delete(id);
     }
 
     /**
@@ -94,6 +104,8 @@ class DefaultNewsDaoTest {
             assertEquals(testNews.getCreationTime(), newsFromDB.getCreationTime());
             assertEquals(testNews.getAuthId(), newsFromDB.getAuthId());
             assertEquals(testNews.getAuthorNews(), newsFromDB.getAuthorNews());
+
+            newsDao.delete(newsFromDB.getId());
         }
     }
 
@@ -113,6 +125,8 @@ class DefaultNewsDaoTest {
         final News afterUpdate = newsDao.getById(id);
         assertEquals(newsToUpdate.getTitle(), afterUpdate.getTitle());
         assertEquals(newsToUpdate.getContent(), afterUpdate.getContent());
+
+        newsDao.delete(id);
     }
 
     @Test
@@ -130,5 +144,19 @@ class DefaultNewsDaoTest {
 
         final News afterDelete = newsDao.getById(id);
         assertNull(afterDelete);
+    }
+
+    @AfterAll
+    static void completeDeleteUser() {
+        final long id = testUser.getId();
+        authUserDao.delete(id);
+        try (Connection connection = mysql.getConnection();
+             PreparedStatement statement = connection.prepareStatement
+                     ("delete from auth_user where id = ?")) {
+            statement.setLong(1, id);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

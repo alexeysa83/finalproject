@@ -1,6 +1,7 @@
 package com.github.alexeysa83.finalproject.web.servlet.user;
 
 import com.github.alexeysa83.finalproject.model.AuthUser;
+import com.github.alexeysa83.finalproject.service.UtilsService;
 import com.github.alexeysa83.finalproject.service.auth.DefaultSecurityService;
 import com.github.alexeysa83.finalproject.service.auth.SecurityService;
 import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
@@ -25,7 +26,8 @@ public class DeleteUserServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         final String authId = req.getParameter("authId");
-        final boolean isDeleted = securityService.delete(authId);
+        final long id = UtilsService.stringToLong(authId);
+        final boolean isDeleted = securityService.delete(id);
         log.info("User id: {} deleted at: {}", authId, LocalDateTime.now());
         final AuthUser authUser = (AuthUser) req.getSession().getAttribute("authUser");
 

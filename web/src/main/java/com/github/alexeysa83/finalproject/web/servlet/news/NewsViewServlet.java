@@ -1,6 +1,7 @@
 package com.github.alexeysa83.finalproject.web.servlet.news;
 
 import com.github.alexeysa83.finalproject.model.News;
+import com.github.alexeysa83.finalproject.service.UtilsService;
 import com.github.alexeysa83.finalproject.service.news.DefaultNewsService;
 import com.github.alexeysa83.finalproject.service.news.NewsService;
 
@@ -19,7 +20,8 @@ public class NewsViewServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         final String newsId = req.getParameter("newsId");
-        final News news = service.getNewsOnId(newsId);
+        final long id = UtilsService.stringToLong(newsId);
+        final News news = service.getNewsOnId(id);
         req.setAttribute("news", news);
         forwardToJsp("newsview", req, resp);
     }
