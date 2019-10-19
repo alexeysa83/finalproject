@@ -19,7 +19,7 @@
         <fmt:message key="${requestScope.get('message')}" bundle="${msgs}"/></h2>
 </c:if>
 
-<form action="${pageContext.request.contextPath}/auth/login" method="POST">
+<form action="${pageContext.request.contextPath}/login" method="POST">
     <fieldset>
         <legend><fmt:message key="form.login" bundle="${intr}"/></legend>
 

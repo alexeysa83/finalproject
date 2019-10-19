@@ -1,4 +1,4 @@
-package com.github.alexeysa83.finalproject.web.servlet.news;
+package com.github.alexeysa83.finalproject.web.servlet.auth.news;
 
 import com.github.alexeysa83.finalproject.service.UtilsService;
 import com.github.alexeysa83.finalproject.service.news.DefaultNewsService;
@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 
 import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJsp;
 
-@WebServlet (name = "DeleteNewsServlet", urlPatterns = {"/restricted/news/delete"})
+@WebServlet (name = "DeleteNewsServlet", urlPatterns = {"/auth/news/delete"})
 public class DeleteNewsServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(DeleteNewsServlet.class);

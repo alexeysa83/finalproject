@@ -1,4 +1,4 @@
-package com.github.alexeysa83.finalproject.web.servlet.news;
+package com.github.alexeysa83.finalproject.web.servlet;
 
 import com.github.alexeysa83.finalproject.model.News;
 import com.github.alexeysa83.finalproject.service.UtilsService;

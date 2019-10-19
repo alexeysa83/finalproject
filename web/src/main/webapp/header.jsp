@@ -25,12 +25,12 @@
 <a href="${pageContext.request.contextPath}/index.jsp"><fmt:message key="main" bundle="${intr}"/></a>
 <c:choose>
     <c:when test="${sessionScope.get('authUser') != null}">
-        <a href="${pageContext.request.contextPath}/restricted/user/profile?authId=${authUser.id}">${authUser.login}</a>
+        <a href="${pageContext.request.contextPath}/auth/user/view?authId=${authUser.id}">${authUser.login}</a>
         <a href="${pageContext.request.contextPath}/auth/logout"><fmt:message key="logout" bundle="${intr}"/></a>
     </c:when>
     <c:otherwise>
-        <a href="${pageContext.request.contextPath}/auth/login"><fmt:message key="login" bundle="${intr}"/></a>
-        <a href="${pageContext.request.contextPath}/auth/registration">
+        <a href="${pageContext.request.contextPath}/login"><fmt:message key="login" bundle="${intr}"/></a>
+        <a href="${pageContext.request.contextPath}/registration">
             <fmt:message key="registration" bundle="${intr}"/></a>
     </c:otherwise>
 </c:choose>

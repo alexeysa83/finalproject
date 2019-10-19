@@ -16,7 +16,7 @@
         <fmt:message key="${requestScope.get('message')}" bundle="${msgs}"/></h2>
 </c:if>
 
-<form action="${pageContext.request.contextPath}/restricted/news/add" method="POST">
+<form action="${pageContext.request.contextPath}/auth/news/add" method="POST">
     <label for="title"><strong><fmt:message key="title" bundle="${intr}"/></strong></label>
     <input id="title" type="text" name="title">
     <br/>

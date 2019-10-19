@@ -19,7 +19,7 @@
 </c:if>
 
 <c:if test="${authUser.login == user.userLogin || authUser.role == 'ADMIN'}">
-    <form action="${pageContext.request.contextPath}/restricted/user/update" method="POST">
+    <form action="${pageContext.request.contextPath}/auth/user/update" method="POST">
         <h2><span style='color: blue;'>${user.userLogin}</span></h2>
         <h2><fmt:message key="update.settings" bundle="${intr}"/>:</h2><br/>
 
@@ -44,7 +44,7 @@
 
     <c:if test="${authUser.login == user.userLogin}">
         <h2><fmt:message key="update.security" bundle="${intr}"/>:</h2><br/>
-        <form action="${pageContext.request.contextPath}/restricted/authuseruser/update/login" method="POST">
+        <form action="${pageContext.request.contextPath}/auth/user/login" method="POST">
             <br/><fmt:message key="login" bundle="${intr}"/>:<br/>
             <input type="text" name="login" value="${user.userLogin}" required>
             <label>
@@ -53,7 +53,7 @@
             <button type="submit" class="color-square"><fmt:message key="change.login" bundle="${intr}"/></button>
         </form>
 
-        <form action="${pageContext.request.contextPath}/restricted/authuseruser/pass/update/password" method="POST">
+        <form action="${pageContext.request.contextPath}/auth/user/password" method="POST">
             <br/><fmt:message key="current.pass" bundle="${intr}"/>:<br/>
             <input type="password" name="passwordBefore" required>
 
@@ -71,7 +71,7 @@
     </c:if>
 
     <c:if test="${authUser.role == 'ADMIN'}">
-        <form action="${pageContext.request.contextPath}/restricted/authuseruser/update/role" method="POST">
+        <form action="${pageContext.request.contextPath}/admin/update/role" method="POST">
             <br/><fmt:message key="role" bundle="${intr}"/>:<br/>
             <input type="radio" name="role" value="USER" required> <fmt:message key="user" bundle="${intr}"/>
             <input type="radio" name="role" value="ADMIN" required> <fmt:message key="admin" bundle="${intr}"/>
@@ -82,7 +82,7 @@
         </form>
     </c:if>
 
-    <form action="${pageContext.request.contextPath}/restricted/authuser/delete" method="GET">
+    <form action="${pageContext.request.contextPath}/auth/user/delete" method="GET">
         <input type="submit" value="<fmt:message key="delete.user" bundle="${intr}"/>"/>
         <label>
             <input hidden="hidden" type="text" name="authId" value="${user.authId}">

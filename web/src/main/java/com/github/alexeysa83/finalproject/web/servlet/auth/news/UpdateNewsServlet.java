@@ -1,4 +1,4 @@
-package com.github.alexeysa83.finalproject.web.servlet.news;
+package com.github.alexeysa83.finalproject.web.servlet.auth.news;
 
 import com.github.alexeysa83.finalproject.model.News;
 import com.github.alexeysa83.finalproject.service.UtilsService;
@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJsp;
 import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToServletMessage;
 
-@WebServlet(name = "UpdateNewsServlet", urlPatterns = {"/restricted/news/update"})
+@WebServlet(name = "UpdateNewsServlet", urlPatterns = {"/auth/news/update"})
 public class UpdateNewsServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(UpdateNewsServlet.class);

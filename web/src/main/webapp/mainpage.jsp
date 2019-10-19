@@ -17,7 +17,7 @@
 </c:if>
 
 <c:if test="${sessionScope.get('authUser') != null}">
-    <a href="${pageContext.request.contextPath}/restricted/news/add">
+    <a href="${pageContext.request.contextPath}/auth/news/add">
         <fmt:message key="add.news" bundle="${intr}"/></a>
 </c:if>
 <!-- just for check -->
@@ -27,7 +27,7 @@
                 ${news.title}</a></h2>
         <h2>${news.content}</h2>
         <h3><fmt:message key="author" bundle="${intr}"/>:
-            <a href="${pageContext.request.contextPath}/restricted/user/profile?authId=${news.authId}">
+            <a href="${pageContext.request.contextPath}/auth/user/view?authId=${news.authId}">
                 ${news.authorNews}</a></h3>
         <h3><fmt:message key="created" bundle="${intr}"/>: ${news.creationTime}</h3>
         <hr/>

@@ -1,4 +1,4 @@
-package com.github.alexeysa83.finalproject.web.servlet.user;
+package com.github.alexeysa83.finalproject.web.servlet.auth.user;
 
 import com.github.alexeysa83.finalproject.model.AuthUser;
 import com.github.alexeysa83.finalproject.service.UtilsService;
@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 
 import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToServletMessage;
 
-@WebServlet(name = "DeleteUserServlet", urlPatterns = {"/restricted/authuser/delete"})
+@WebServlet(name = "DeleteUserServlet", urlPatterns = {"/auth/user/delete"})
 public class DeleteUserServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(DeleteUserServlet.class);
@@ -40,6 +40,6 @@ public class DeleteUserServlet extends HttpServlet {
             forwardToServletMessage("/auth/logout", message, req, resp);
             return;
         }
-        forwardToServletMessage("/restricted/user/profile", message, req, resp);
+        forwardToServletMessage("/auth/user/view", message, req, resp);
     }
 }

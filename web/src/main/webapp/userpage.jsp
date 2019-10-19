@@ -30,13 +30,13 @@
 <h2><fmt:message key="registered" bundle="${intr}"/>: ${user.registrationTime}</h2>
 
 <c:if test="${authUser.login == user.userLogin || authUser.role == 'ADMIN'}">
-    <form action="${pageContext.request.contextPath}/restricted/user/update" method="GET">
+    <form action="${pageContext.request.contextPath}/auth/user/update" method="GET">
         <input type="submit" value="<fmt:message key="update.user" bundle="${intr}"/>"/>
         <label>
             <input hidden="hidden" type="text" name="authId" value="${user.authId}">
         </label>
     </form>
-    <form action="${pageContext.request.contextPath}/restricted/authuser/delete" method="GET">
+    <form action="${pageContext.request.contextPath}/auth/user/delete" method="GET">
         <input type="submit" value="<fmt:message key="delete.user" bundle="${intr}"/>"/>
         <label>
             <input hidden="hidden" type="text" name="authId" value="${user.authId}">

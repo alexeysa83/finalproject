@@ -12,7 +12,7 @@ import java.util.List;
 
 import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJsp;
 
-@WebServlet(name = "MainPageServlet", urlPatterns = "/news/main")
+@WebServlet(name = "MainPageServlet", urlPatterns = "/main")
 public class MainPageServlet extends HttpServlet {
 
     private NewsService service = DefaultNewsService.getInstance();

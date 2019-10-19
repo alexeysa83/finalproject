@@ -15,7 +15,7 @@
     <filter-mapping>
         <filter-name>AuthFilter</filter-name>
         <url-pattern>/admin/*</url-pattern>
-        <url-pattern>/restricted/*</url-pattern>
+        <url-pattern>/auth/*</url-pattern>
     </filter-mapping>
     <filter-mapping>
         <filter-name>AdminFilter</filter-name>

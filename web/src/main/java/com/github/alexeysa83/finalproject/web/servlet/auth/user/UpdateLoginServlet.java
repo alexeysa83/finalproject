@@ -1,4 +1,4 @@
-package com.github.alexeysa83.finalproject.web.servlet.user;
+package com.github.alexeysa83.finalproject.web.servlet.auth.user;
 
 import com.github.alexeysa83.finalproject.model.AuthUser;
 import com.github.alexeysa83.finalproject.service.UtilsService;
@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 
 import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToServletMessage;
 
-@WebServlet(name = "UpdateLoginServlet", urlPatterns = {"/restricted/authuseruser/update/login"})
+@WebServlet(name = "UpdateLoginServlet", urlPatterns = {"/auth/user/login"})
 public class UpdateLoginServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(UpdateLoginServlet.class);
@@ -29,7 +29,7 @@ public class UpdateLoginServlet extends HttpServlet {
         final String loginNew = req.getParameter("login");
         String message = validationService.isLoginValid(loginNew);
         if (message != null) {
-            forwardToServletMessage("/restricted/user/profile", message, req, resp);
+            forwardToServletMessage("/auth/user/view", message, req, resp);
             return;
         }
         final String authId = req.getParameter("authId");
@@ -42,7 +42,7 @@ public class UpdateLoginServlet extends HttpServlet {
         if (!isUpdated) {
             message = "update.fail";
             log.error("Failed to update login for user id: {}, at: {}", authId,  LocalDateTime.now());
-            forwardToServletMessage("/restricted/user/profile", message, req, resp);
+            forwardToServletMessage("/auth/user/view", message, req, resp);
         }
         log.info("Updated login for user id: {}, at: {}", authId,  LocalDateTime.now());
         forwardToServletMessage("/auth/logout", message, req, resp);

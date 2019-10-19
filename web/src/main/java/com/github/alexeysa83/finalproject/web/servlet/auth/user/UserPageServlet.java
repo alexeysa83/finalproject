@@ -1,4 +1,4 @@
-package com.github.alexeysa83.finalproject.web.servlet.user;
+package com.github.alexeysa83.finalproject.web.servlet.auth.user;
 
 import com.github.alexeysa83.finalproject.model.User;
 import com.github.alexeysa83.finalproject.service.UtilsService;
@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJsp;
 import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJspMessage;
 
-@WebServlet(name = "UserPageServlet", urlPatterns = {"/restricted/user/profile"})
+@WebServlet(name = "UserPageServlet", urlPatterns = {"/auth/user/view"})
 public class UserPageServlet extends HttpServlet {
 
     private UserService userService = DefaultUserService.getInstance();

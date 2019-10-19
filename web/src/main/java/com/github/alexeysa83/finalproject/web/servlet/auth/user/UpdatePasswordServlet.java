@@ -1,4 +1,4 @@
-package com.github.alexeysa83.finalproject.web.servlet.user;
+package com.github.alexeysa83.finalproject.web.servlet.auth.user;
 
 import com.github.alexeysa83.finalproject.model.AuthUser;
 import com.github.alexeysa83.finalproject.service.UtilsService;
@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 
 import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToServletMessage;
 
-@WebServlet(name = "UpdatePasswordServlet", urlPatterns = {"/restricted/authuseruser/pass/update/password"})
+@WebServlet(name = "UpdatePasswordServlet", urlPatterns = {"/auth/user/password"})
 
 public class UpdatePasswordServlet extends HttpServlet {
 
@@ -32,7 +32,7 @@ public class UpdatePasswordServlet extends HttpServlet {
 
         String message = validationService.isPasswordValid(passwordNew, passwordRepeat);
         if (message != null) {
-            forwardToServletMessage("/restricted/user/profile", message, req, resp);
+            forwardToServletMessage("/auth/user/view", message, req, resp);
             return;
         }
 
@@ -44,7 +44,7 @@ public class UpdatePasswordServlet extends HttpServlet {
         if (!isValid) {
             message = "wrong.pass";
             log.info("Invalid password enter for user id: {} at: {}", authId, LocalDateTime.now());
-            forwardToServletMessage("/restricted/user/profile", message, req, resp);
+            forwardToServletMessage("/auth/user/view", message, req, resp);
             return;
         }
 
@@ -54,7 +54,7 @@ public class UpdatePasswordServlet extends HttpServlet {
         if (!isUpdated) {
             message = "update.fail";
             log.error("Failed to update password for user id: {} , at: {}", authId, LocalDateTime.now());
-            forwardToServletMessage("/restricted/user/profile", message, req, resp);
+            forwardToServletMessage("/auth/user/view", message, req, resp);
         }
         log.info("Updated password for user id: {}, at: {}", authId,  LocalDateTime.now());
         forwardToServletMessage("/auth/logout", message, req, resp);

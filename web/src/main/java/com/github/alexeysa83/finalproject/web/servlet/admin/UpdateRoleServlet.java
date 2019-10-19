@@ -1,4 +1,4 @@
-package com.github.alexeysa83.finalproject.web.servlet.user;
+package com.github.alexeysa83.finalproject.web.servlet.admin;
 
 import com.github.alexeysa83.finalproject.model.AuthUser;
 import com.github.alexeysa83.finalproject.model.Role;
@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToServletMessage;
 
 // Optimization
-@WebServlet(name = "UpdateRoleServlet", urlPatterns = {"/restricted/authuseruser/update/role"})
+@WebServlet(name = "UpdateRoleServlet", urlPatterns = {"/admin/update/role"})
 public class UpdateRoleServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(UpdateRoleServlet.class);
@@ -35,7 +35,7 @@ public class UpdateRoleServlet extends HttpServlet {
         if (!isRoleValid) {
             message = "update.fail";
             log.error("Failed to update role to user id: {} , at: {}", authId, LocalDateTime.now());
-            forwardToServletMessage("/restricted/user/profile", message, req, resp);
+            forwardToServletMessage("/auth/user/view", message, req, resp);
             return;
         }
 
@@ -47,7 +47,7 @@ public class UpdateRoleServlet extends HttpServlet {
         if (!isUpdated) {
             message = "update.fail";
             log.error("Failed to update role to user id: {} , at: {}", authId, LocalDateTime.now());
-            forwardToServletMessage("/restricted/user/profile", message, req, resp);
+            forwardToServletMessage("/auth/user/view", message, req, resp);
             return;
         }
         log.info("Updated role to user id: {} , at: {}", authId, LocalDateTime.now());
@@ -57,6 +57,6 @@ public class UpdateRoleServlet extends HttpServlet {
             forwardToServletMessage("/auth/logout", message, req, resp);
             return;
         }
-        forwardToServletMessage("/restricted/user/profile", message, req, resp);
+        forwardToServletMessage("/auth/user/view", message, req, resp);
     }
 }

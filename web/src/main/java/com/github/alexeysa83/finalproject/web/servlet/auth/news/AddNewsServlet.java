@@ -1,4 +1,4 @@
-package com.github.alexeysa83.finalproject.web.servlet.news;
+package com.github.alexeysa83.finalproject.web.servlet.auth.news;
 
 import com.github.alexeysa83.finalproject.model.AuthUser;
 import com.github.alexeysa83.finalproject.model.News;
@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 
 import static com.github.alexeysa83.finalproject.web.WebUtils.*;
 
-@WebServlet(name = "AddNewsServlet", urlPatterns = {"/restricted/news/add"})
+@WebServlet(name = "AddNewsServlet", urlPatterns = {"/auth/news/add"})
 public class AddNewsServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(AddNewsServlet.class);

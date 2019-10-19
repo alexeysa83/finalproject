@@ -19,19 +19,19 @@
 <h2><span style='color: blue;'>${news.title}</span></h2>
 
 <h2 style="color: #2bb239"><fmt:message key="author" bundle="${intr}"/>:
-    <a href="${pageContext.request.contextPath}/restricted/user/profile?authId=${news.authId}">
+    <a href="${pageContext.request.contextPath}/auth/user/view?authId=${news.authId}">
     ${news.authorNews}</a>
     <fmt:message key="created" bundle="${intr}"/>: ${news.creationTime}</h2>
 <h2>${news.content}</h2>
 
 <c:if test="${authUser.login == news.authorNews || authUser.role == 'ADMIN'}">
-    <form action="${pageContext.request.contextPath}/restricted/news/update" method="GET">
+    <form action="${pageContext.request.contextPath}/auth/news/update" method="GET">
         <input type="submit" value="<fmt:message key="update.news" bundle="${intr}"/>"/>
         <label>
             <input hidden="hidden" type="text" name="newsId" value="${news.id}">
         </label>
     </form>
-    <form action="${pageContext.request.contextPath}/restricted/news/delete" method="GET">
+    <form action="${pageContext.request.contextPath}/auth/news/delete" method="GET">
         <input type="submit" value="<fmt:message key="delete.news" bundle="${intr}"/>"/>
         <label>
             <input hidden="hidden" type="text" name="newsId" value="${news.id}">

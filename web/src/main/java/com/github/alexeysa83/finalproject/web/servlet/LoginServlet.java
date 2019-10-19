@@ -1,4 +1,4 @@
-package com.github.alexeysa83.finalproject.web.servlet.auth;
+package com.github.alexeysa83.finalproject.web.servlet;
 
 import com.github.alexeysa83.finalproject.model.AuthUser;
 import com.github.alexeysa83.finalproject.service.auth.DefaultSecurityService;
@@ -19,7 +19,7 @@ import static com.github.alexeysa83.finalproject.web.WebUtils.redirect;
 Divide login/password-->
 Jsp for succesfull login+create-->
  */
-@WebServlet(name = "LoginServlet", urlPatterns = {"/auth/login"})
+@WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
 public class LoginServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(LoginServlet.class);

@@ -1,4 +1,4 @@
-package com.github.alexeysa83.finalproject.web.servlet.user;
+package com.github.alexeysa83.finalproject.web.servlet.auth.user;
 
 import com.github.alexeysa83.finalproject.model.User;
 import com.github.alexeysa83.finalproject.service.UtilsService;
@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJsp;
 import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToServletMessage;
 
-@WebServlet(name = "UpdateUserServlet", urlPatterns = {"/restricted/user/update"})
+@WebServlet(name = "UpdateUserServlet", urlPatterns = {"/auth/user/update"})
 public class UpdateUserServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(UpdateUserServlet.class);
@@ -48,6 +48,6 @@ public class UpdateUserServlet extends HttpServlet {
             logMessage = "Failed to update profile to user id: {} , at: {}";
         }
         log.info(logMessage, id, LocalDateTime.now());
-        forwardToServletMessage("/restricted/user/profile", message, req, resp);
+        forwardToServletMessage("/auth/user/view", message, req, resp);
     }
 }

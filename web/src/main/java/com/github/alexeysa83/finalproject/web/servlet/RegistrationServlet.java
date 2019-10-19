@@ -1,4 +1,4 @@
-package com.github.alexeysa83.finalproject.web.servlet.auth;
+package com.github.alexeysa83.finalproject.web.servlet;
 
 import com.github.alexeysa83.finalproject.model.AuthUser;
 import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
@@ -22,7 +22,7 @@ UID-->
 Welcome jsp (create+successfull login)-->
 Password to hash class-->
  */
-@WebServlet(name = "RegistrationServlet", urlPatterns = {"/auth/registration"})
+@WebServlet(name = "RegistrationServlet", urlPatterns = {"/registration"})
 public class RegistrationServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(RegistrationServlet.class);
