@@ -1,5 +1,6 @@
 package com.github.alexeysa83.finalproject.web.servlet.news;
 
+import com.github.alexeysa83.finalproject.service.UtilsService;
 import com.github.alexeysa83.finalproject.service.news.DefaultNewsService;
 import com.github.alexeysa83.finalproject.service.news.NewsService;
 import org.slf4j.Logger;
@@ -22,7 +23,8 @@ public class DeleteNewsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         final String newsId = req.getParameter("newsId");
-        final boolean isDeleted = service.deleteNews(newsId);
+        final long id = UtilsService.stringToLong(newsId);
+        final boolean isDeleted = service.deleteNews(id);
         String message = "delete.success";
         String logMessage = "Deleted news id: {} , at: {}";
         if (!isDeleted) {

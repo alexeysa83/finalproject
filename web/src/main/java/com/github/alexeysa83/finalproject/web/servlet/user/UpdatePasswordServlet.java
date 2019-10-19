@@ -22,6 +22,7 @@ public class UpdatePasswordServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(UpdatePasswordServlet.class);
     private SecurityService securityService = DefaultSecurityService.getInstance();
+    private AuthValidationService validationService = new AuthValidationService();
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
@@ -29,7 +30,7 @@ public class UpdatePasswordServlet extends HttpServlet {
         final String passwordNew = req.getParameter("passwordNew");
         final String passwordRepeat = req.getParameter("passwordRepeat");
 
-        String message = AuthValidationService.isPasswordValid(passwordNew, passwordRepeat);
+        String message = validationService.isPasswordValid(passwordNew, passwordRepeat);
         if (message != null) {
             forwardToServletMessage("/restricted/user/profile", message, req, resp);
             return;
@@ -39,7 +40,7 @@ public class UpdatePasswordServlet extends HttpServlet {
         final String authId = req.getParameter("authId");
         final long id = UtilsService.stringToLong(authId);
         final AuthUser user = securityService.getById(id);
-        final boolean isValid = AuthValidationService.isPasswordEqual(passwordBefore, user.getPassword());
+        final boolean isValid = validationService.isPasswordEqual(passwordBefore, user.getPassword());
         if (!isValid) {
             message = "wrong.pass";
             log.info("Invalid password enter for user id: {} at: {}", authId, LocalDateTime.now());

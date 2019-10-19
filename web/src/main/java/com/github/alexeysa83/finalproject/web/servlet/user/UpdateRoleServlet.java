@@ -23,13 +23,14 @@ public class UpdateRoleServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(UpdateRoleServlet.class);
     private SecurityService securityService = DefaultSecurityService.getInstance();
+    private AuthValidationService validationService = new AuthValidationService();
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         final String authId = req.getParameter("authId");
         final long id = UtilsService.stringToLong(authId);
         final String r = req.getParameter("role");
-        boolean isRoleValid = AuthValidationService.isRoleValid(r);
+        boolean isRoleValid = validationService.isRoleValid(r);
         String message;
         if (!isRoleValid) {
             message = "update.fail";
@@ -51,7 +52,7 @@ public class UpdateRoleServlet extends HttpServlet {
         }
         log.info("Updated role to user id: {} , at: {}", authId, LocalDateTime.now());
         final AuthUser authUser = (AuthUser) req.getSession().getAttribute("authUser");
-        final boolean needLogout = AuthValidationService.needLogout(authUser, authId);
+        final boolean needLogout = validationService.needLogout(authUser, authId);
         if (needLogout) {
             forwardToServletMessage("/auth/logout", message, req, resp);
             return;

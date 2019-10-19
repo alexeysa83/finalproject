@@ -14,12 +14,14 @@ import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJsp;
 @WebFilter (filterName = "AdminFilter")
 public class AdminFilter  implements Filter {
 
+    private AuthValidationService validationService = new AuthValidationService();
+
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         AuthUser authUser = (AuthUser) request.getSession().getAttribute("authUser");
-        boolean isAdmin = AuthValidationService.isAdmin(authUser.getRole());
+        boolean isAdmin = validationService.isAdmin(authUser.getRole());
         if (!isAdmin) {
             request.setAttribute("message", "access.admin");
             forwardToJsp("index", request,response);

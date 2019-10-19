@@ -21,12 +21,13 @@ public class UpdateLoginServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(UpdateLoginServlet.class);
     private SecurityService securityService = DefaultSecurityService.getInstance();
+    private AuthValidationService validationService = new AuthValidationService();
 
     // optimize
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         final String loginNew = req.getParameter("login");
-        String message = AuthValidationService.isLoginValid(loginNew);
+        String message = validationService.isLoginValid(loginNew);
         if (message != null) {
             forwardToServletMessage("/restricted/user/profile", message, req, resp);
             return;

@@ -21,6 +21,7 @@ public class DeleteUserServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(DeleteUserServlet.class);
     private SecurityService securityService = DefaultSecurityService.getInstance();
+    private AuthValidationService validationService = new AuthValidationService();
 
     // unsuccessful delete
     @Override
@@ -34,7 +35,7 @@ public class DeleteUserServlet extends HttpServlet {
         // With user name
 //        final String login = req.getParameter("login");
         String message = "delete.success";
-        final boolean needLogout = AuthValidationService.needLogout(authUser, authId);
+        final boolean needLogout = validationService.needLogout(authUser, authId);
         if (needLogout) {
             forwardToServletMessage("/auth/logout", message, req, resp);
             return;

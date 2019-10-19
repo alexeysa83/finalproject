@@ -50,7 +50,7 @@ public class DefaultSecurityService implements SecurityService {
         AuthUser userFromDB = authUserDao.getByLogin(userFromLogin.getLogin());
         boolean isValidPassword = false;
         if (userFromDB != null) {
-            isValidPassword = AuthValidationService.isPasswordEqual
+            isValidPassword = new AuthValidationService().isPasswordEqual
                     (userFromLogin.getPassword(), userFromDB.getPassword());
         }
         return (isValidPassword) ? userFromDB : null;

@@ -6,15 +6,12 @@ import com.github.alexeysa83.finalproject.service.UtilsService;
 import com.github.alexeysa83.finalproject.service.auth.DefaultSecurityService;
 import com.github.alexeysa83.finalproject.service.auth.SecurityService;
 
-public abstract class AuthValidationService {
+public class AuthValidationService {
 
-      private static SecurityService securityService = DefaultSecurityService.getInstance();
-
-    private AuthValidationService() {
-    }
+      private SecurityService securityService = DefaultSecurityService.getInstance();
 
     // +add Regex patterns
-    public static String isLoginValid(String login) {
+    public String isLoginValid(String login) {
         String message = null;
         if (login.length() < 1) {
             message = "invalid.login";
@@ -24,7 +21,7 @@ public abstract class AuthValidationService {
         return message;
     }
 
-    public static String isPasswordValid(String pass1, String pass2) {
+    public String isPasswordValid(String pass1, String pass2) {
         String message = null;
         if (pass1.length() < 1) {
             message = "invalid.pass";
@@ -34,22 +31,21 @@ public abstract class AuthValidationService {
         return message;
     }
 
-    public static boolean isPasswordEqual(String pass1, String pass2) {
+    public boolean isPasswordEqual(String pass1, String pass2) {
         return pass1.equals(pass2);
     }
 
     //Check if user in session is the same to user who's security settings are being changed
-    public static boolean needLogout(AuthUser user, String id) {
+    public boolean needLogout(AuthUser user, String id) {
         final long authId = UtilsService.stringToLong(id);
         return authId == user.getId();
     }
 
-    public static boolean isRoleValid(String role) {
+    public boolean isRoleValid(String role) {
                return role.equals((Role.USER).toString()) || role.equals((Role.ADMIN).toString());
     }
 
-    public static boolean isAdmin(Role role) {
+    public  boolean isAdmin(Role role) {
         return role.equals(Role.ADMIN);
     }
-
 }

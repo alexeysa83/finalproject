@@ -27,6 +27,7 @@ public class RegistrationServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(RegistrationServlet.class);
     private SecurityService securityService = DefaultSecurityService.getInstance();
+    private AuthValidationService validationService = new AuthValidationService();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
@@ -39,7 +40,7 @@ public class RegistrationServlet extends HttpServlet {
 
 
         final String login = req.getParameter("login");
-        String message = AuthValidationService.isLoginValid(login);
+        String message = validationService.isLoginValid(login);
         if (message != null) {
             req.setAttribute("message", message);
             doGet(req, resp);
@@ -48,7 +49,7 @@ public class RegistrationServlet extends HttpServlet {
         // Optimize
         final String password = req.getParameter("password");
         final String passwordRepeat = req.getParameter("passwordRepeat");
-        message = AuthValidationService.isPasswordValid(password,
+        message = validationService.isPasswordValid(password,
                 passwordRepeat);
         if (message != null) {
             req.setAttribute("message", message);
