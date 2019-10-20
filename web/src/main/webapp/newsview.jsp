@@ -2,9 +2,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<fmt:setLocale value= "${locale}"/>
-<fmt:setBundle basename = "messages" var = "msgs"/>
-<fmt:setBundle basename = "interface" var = "intr"/>
+<fmt:setLocale value="${locale}"/>
+<fmt:setBundle basename="messages" var="msgs"/>
+<fmt:setBundle basename="interface" var="intr"/>
 <html>
 <head>
     <title>News view</title>
@@ -20,9 +20,10 @@
 
 <h2 style="color: #2bb239"><fmt:message key="author" bundle="${intr}"/>:
     <a href="${pageContext.request.contextPath}/auth/user/view?authId=${news.authId}">
-    ${news.authorNews}</a>
+        ${news.authorNews}</a>
     <fmt:message key="created" bundle="${intr}"/>: ${news.creationTime}</h2>
 <h2>${news.content}</h2>
+<h2><fmt:message key="messages" bundle="${intr}"/>: 0</h2>
 
 <c:if test="${authUser.login == news.authorNews || authUser.role == 'ADMIN'}">
     <form action="${pageContext.request.contextPath}/auth/news/update" method="GET">
@@ -38,6 +39,29 @@
         </label>
     </form>
 </c:if>
+<hr/><hr/>
+<c:if test="${sessionScope.get('authUser') != null}">
+    <c:if test="${requestScope.get('messageList') !=null}">
+        <c:forEach items="${requestScope.messageList}" var="message">
+            <h4 style="color: #b04db2">${message.content}</h4>
+            <h4><fmt:message key="author" bundle="${intr}"/>:
+                <a href="${pageContext.request.contextPath}/auth/user/view?authId=${message.authId}">
+                        ${message.authorMessage}</a></h4>
+            <h4><fmt:message key="created" bundle="${intr}"/>: ${message.creationTime}</h4>
+            <hr/>
+        </c:forEach>
+    </c:if>
+
+    <form action="${pageContext.request.contextPath}/auth/message/add" method="POST">
+        <label for="content"><strong><fmt:message key="content" bundle="${intr}"/></strong></label>
+        <textarea id="content" name="content" rows="10"></textarea>
+        <input type="submit" value="<fmt:message key="add.message" bundle="${intr}"/>"/>
+        <label>
+            <input hidden="hidden" type="text" name="newsId" value="${news.id}">
+        </label>
+    </form>
+</c:if>
+
 </body>
 </html>
 

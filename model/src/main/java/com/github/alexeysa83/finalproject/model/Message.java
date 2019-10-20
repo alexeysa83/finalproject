@@ -8,7 +8,24 @@ public class Message {
     private String content;
     private Timestamp creationTime;
     private long authId;
+    private long newsId;
     private String authorMessage;
+
+    public Message(String content, Timestamp creationTime, long authId, long newsId) {
+        this.content = content;
+        this.creationTime = creationTime;
+        this.authId = authId;
+        this.newsId = newsId;
+    }
+
+    public Message(long id, String content, Timestamp creationTime, long authId, long newsId, String authorMessage) {
+        this.id = id;
+        this.content = content;
+        this.creationTime = creationTime;
+        this.authId = authId;
+        this.newsId = newsId;
+        this.authorMessage = authorMessage;
+    }
 
     public long getId() {
         return id;
@@ -26,6 +43,10 @@ public class Message {
         return authId;
     }
 
+    public long getNewsId() {
+        return newsId;
+    }
+
     public String getAuthorMessage() {
         return authorMessage;
     }
@@ -37,6 +58,7 @@ public class Message {
                 ", content=" + content +
                 ", creationTime=" + creationTime +
                 ", authId=" + authId +
+                ", newsId=" + newsId +
                 ", authorMessage=" + authorMessage +
                 '}';
     }

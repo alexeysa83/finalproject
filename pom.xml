@@ -26,6 +26,7 @@
         <!-- dependencies -->
         <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
         <jstl.version>1.2</jstl.version>
+<hibernate-core.version>5.4.6.Final</hibernate-core.version>
         <mysql-connector-java.version>8.0.17</mysql-connector-java.version>
 <c3p0.version>0.9.5.4</c3p0.version>
 <!--testing-->
@@ -53,6 +54,11 @@
                 <groupId>jstl</groupId>
                 <artifactId>jstl</artifactId>
                 <version>${jstl.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-core</artifactId>
+                <version>${hibernate-core.version}</version>
             </dependency>
             <dependency>
                 <groupId>mysql</groupId>
