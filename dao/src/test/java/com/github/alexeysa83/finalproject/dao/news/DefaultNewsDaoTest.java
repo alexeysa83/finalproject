@@ -30,6 +30,7 @@ class DefaultNewsDaoTest {
     }
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
     private Timestamp getTime() {
         String time = sdf.format(System.currentTimeMillis());
         return Timestamp.valueOf(time);
@@ -44,7 +45,7 @@ class DefaultNewsDaoTest {
     void createAndSave() {
         final News testNews = new News
                 ("NewsCreate", "TestContent",
-                        new Timestamp(System.currentTimeMillis()), testUser.getId(), testUser.getLogin());
+                        getTime(), testUser.getId(), testUser.getLogin());
         final News savedNews = newsDao.createAndSave(testNews);
         assertNotNull(savedNews);
 
@@ -85,7 +86,7 @@ class DefaultNewsDaoTest {
     @Test
     void getNewsOnPage() {
         LinkedList<News> testList = new LinkedList<>();
-                for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 10; i++) {
             final News news = new News("NewsOnPage" + i, "TestContentPage" + i,
                     getTime(), testUser.getId(), testUser.getLogin());
             final News n = newsDao.createAndSave(news);
@@ -113,11 +114,12 @@ class DefaultNewsDaoTest {
     void update() {
         final News news = new News
                 ("NewsUpdate", "TestContent",
-                        new Timestamp(System.currentTimeMillis()), testUser.getId(), testUser.getLogin());
+                        getTime(), testUser.getId(), testUser.getLogin());
         final News testNews = newsDao.createAndSave(news);
         final long id = testNews.getId();
         final News newsToUpdate = new News
-                (id, "UpdateNewsComplete", "UpdateContentComplete");
+                (id, "UpdateNewsComplete", "UpdateContentComplete",
+                        getTime(), testUser.getId(), testUser.getLogin());
 
         final boolean isUpdated = newsDao.update(newsToUpdate);
         assertTrue(isUpdated);
@@ -133,7 +135,7 @@ class DefaultNewsDaoTest {
     void delete() {
         final News news = new News
                 ("NewsDelete", "TestContent",
-                        new Timestamp(System.currentTimeMillis()), testUser.getId(), testUser.getLogin());
+                        getTime(), testUser.getId(), testUser.getLogin());
         final News testNews = newsDao.createAndSave(news);
         final long id = testNews.getId();
         News newsToDelete = newsDao.getById(id);

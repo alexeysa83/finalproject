@@ -6,7 +6,11 @@ import java.util.List;
 
 public interface MessageService {
 
-    boolean createAndSave (Message message);
+    Message createAndSave (Message message);
 
     List<Message> getMessagesOnNews (long newsId);
+
+    boolean updateMessage (Message message);
+
+    boolean deleteMessage (long id);
 }

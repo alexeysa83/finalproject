@@ -11,11 +11,12 @@ public class Message {
     private long newsId;
     private String authorMessage;
 
-    public Message(String content, Timestamp creationTime, long authId, long newsId) {
+    public Message(String content, Timestamp creationTime, long authId, long newsId, String authorMessage) {
         this.content = content;
         this.creationTime = creationTime;
         this.authId = authId;
         this.newsId = newsId;
+        this.authorMessage = authorMessage;
     }
 
     public Message(long id, String content, Timestamp creationTime, long authId, long newsId, String authorMessage) {

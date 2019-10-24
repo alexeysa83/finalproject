@@ -41,7 +41,7 @@ public class DefaultNewsBaseDao implements NewsBaseDao {
             connection = mysql.getConnection();
             connection.setAutoCommit(false);
             try (PreparedStatement statement = connection.prepareStatement
-                    ("insert into news (title, content, creation_time, auth_id) values (?, ?,?, ?)  ",
+                    ("insert into news (title, content, creation_time, auth_id) values (?, ?,?, ?)",
                             Statement.RETURN_GENERATED_KEYS)) {
                 statement.setString(1, news.getTitle());
                 statement.setString(2, news.getContent());
@@ -211,6 +211,7 @@ public class DefaultNewsBaseDao implements NewsBaseDao {
         }
     }
 
+    // Messages delete
     @Override
     public boolean delete(long id) {
         Connection connection = null;

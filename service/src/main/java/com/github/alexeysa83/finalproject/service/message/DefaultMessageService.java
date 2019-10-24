@@ -26,12 +26,22 @@ public class DefaultMessageService implements MessageService {
     }
 
     @Override
-    public boolean createAndSave(Message message) {
+    public Message createAndSave(Message message) {
         return messageDao.createAndSave(message);
     }
 
     @Override
     public List<Message> getMessagesOnNews(long newsId) {
         return messageDao.getMessagesOnNews(newsId);
+    }
+
+    @Override
+    public boolean updateMessage(Message message) {
+        return messageDao.update(message);
+    }
+
+    @Override
+    public boolean deleteMessage(long id) {
+        return messageDao.delete(id);
     }
 }

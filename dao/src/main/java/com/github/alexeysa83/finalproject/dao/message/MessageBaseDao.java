@@ -7,8 +7,9 @@ import java.util.List;
 
 public interface MessageBaseDao extends BaseDao <Message> {
 
-    boolean createAndSave(Message message);
+    Message createAndSave(Message message);
 
     List<Message> getMessagesOnNews (long newsId);
 
+    boolean delete (long id);
 }

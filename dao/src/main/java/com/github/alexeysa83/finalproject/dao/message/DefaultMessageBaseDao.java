@@ -2,7 +2,6 @@ package com.github.alexeysa83.finalproject.dao.message;
 
 import com.github.alexeysa83.finalproject.dao.DataSource;
 import com.github.alexeysa83.finalproject.model.Message;
-import com.github.alexeysa83.finalproject.model.News;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,15 +32,28 @@ public class DefaultMessageBaseDao implements MessageBaseDao {
 
 
     @Override
-    public boolean createAndSave(Message message) {
+    public Message createAndSave(Message message) {
         try (Connection connection = mysql.getConnection();
              PreparedStatement statement = connection.prepareStatement
-                     ("insert into message (content, creation_time, auth_id, news_id) values (?, ?, ?, ?)")) {
+                     ("insert into message (content, creation_time, auth_id, news_id) values (?, ?, ?, ?)",
+                             Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, message.getContent());
             statement.setTimestamp(2, message.getCreationTime());
             statement.setLong(3, message.getAuthId());
             statement.setLong(4, message.getNewsId());
-            return statement.executeUpdate() > 0;
+            statement.executeUpdate();
+            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                final boolean isSaved = generatedKeys.next();
+                if (!isSaved) {
+                    return null;
+                }
+                final long id = generatedKeys.getLong(1);
+                log.info("Message id: {} saved to DB at: {}", id, LocalDateTime.now());
+                return new Message
+                        (id, message.getContent(), message.getCreationTime(),
+                                message.getAuthId(), message.getNewsId(), message.getAuthorMessage());
+            }
+
         } catch (SQLException e) {
             log.error("SQLException at: {}", LocalDateTime.now(), e);
             throw new RuntimeException(e);
@@ -126,6 +138,20 @@ public class DefaultMessageBaseDao implements MessageBaseDao {
             statement.setString(1, message.getContent());
             statement.setLong(2, message.getId());
             log.info("Message id: {} updated in DB at: {}", message.getId(), LocalDateTime.now());
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            log.error("SQLException at: {}", LocalDateTime.now(), e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public boolean delete(long id) {
+        try (Connection connection = mysql.getConnection();
+             PreparedStatement statement = connection.prepareStatement
+                     ("delete from message where id = ?")) {
+                        statement.setLong(1, id);
+            log.info("Message id: {} deleted from DB at: {}", id, LocalDateTime.now());
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             log.error("SQLException at: {}", LocalDateTime.now(), e);

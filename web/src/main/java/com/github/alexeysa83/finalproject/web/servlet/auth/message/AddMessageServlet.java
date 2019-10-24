@@ -40,10 +40,11 @@ public class AddMessageServlet extends HttpServlet {
         final Timestamp creationTime = TimeService.getTime();
         final String newsId = req.getParameter("newsId");
         final long id = UtilsService.stringToLong(newsId);
-        final boolean isCreated = messageService.createAndSave(new Message(content, creationTime, user.getId(), id));
+        final Message mess = messageService.createAndSave
+                (new Message(content, creationTime, user.getId(), id, user.getLogin()));
 
         String logMessage = "Created message for news id: {} , at: {}";
-        if (!isCreated) {
+        if (mess == null) {
             logMessage = "Failed to create message for news id: {} , at: {}";
         }
         log.info(logMessage, newsId, LocalDateTime.now());

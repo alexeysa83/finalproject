@@ -12,19 +12,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 
-import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJsp;
+import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJspMessage;
 
 @WebServlet (name = "DeleteNewsServlet", urlPatterns = {"/auth/news/delete"})
 public class DeleteNewsServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(DeleteNewsServlet.class);
-    private NewsService service = DefaultNewsService.getInstance();
+    private NewsService newsService = DefaultNewsService.getInstance();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         final String newsId = req.getParameter("newsId");
         final long id = UtilsService.stringToLong(newsId);
-        final boolean isDeleted = service.deleteNews(id);
+        final boolean isDeleted = newsService.deleteNews(id);
         String message = "delete.success";
         String logMessage = "Deleted news id: {} , at: {}";
         if (!isDeleted) {
@@ -32,7 +32,6 @@ public class DeleteNewsServlet extends HttpServlet {
             logMessage = "Failed to delete news id: {} , at: {}";
         }
         log.info(logMessage, newsId, LocalDateTime.now());
-        req.setAttribute("message", message);
-        forwardToJsp("index", req, resp);
+        forwardToJspMessage("index", message, req, resp);
     }
 }
