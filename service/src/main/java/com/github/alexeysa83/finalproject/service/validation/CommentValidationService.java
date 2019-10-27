@@ -8,7 +8,7 @@ public abstract class CommentValidationService {
     public static String isValidContent(String content) {
         String message = null;
         if (content.length() < 1) {
-            message = "invalid.message";
+            message = "invalid.comment";
         }
         return message;
     }
