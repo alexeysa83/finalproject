@@ -1,6 +1,6 @@
 package com.github.alexeysa83.finalproject.web.servlet.auth;
 
-import com.github.alexeysa83.finalproject.model.AuthUser;
+import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +19,7 @@ public class LogoutServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-        AuthUser authUser = (AuthUser) req.getSession().getAttribute("authUser");
+        AuthUserDto authUser = (AuthUserDto) req.getSession().getAttribute("authUser");
         req.getSession().removeAttribute("authUser");
         req.getSession().invalidate();
         log.info("User id: {} logged out at: {}", authUser.getId(), LocalDateTime.now());

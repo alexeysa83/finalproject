@@ -1,8 +1,8 @@
 package com.github.alexeysa83.finalproject.service.validation;
 
-import com.github.alexeysa83.finalproject.model.AuthUser;
+import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.Role;
-import com.github.alexeysa83.finalproject.service.UtilsService;
+import com.github.alexeysa83.finalproject.service.UtilService;
 import com.github.alexeysa83.finalproject.service.auth.DefaultSecurityService;
 import com.github.alexeysa83.finalproject.service.auth.SecurityService;
 
@@ -36,8 +36,8 @@ public class AuthValidationService {
     }
 
     //Check if user in session is the same to user who's security settings are being changed
-    public boolean needLogout(AuthUser user, String id) {
-        final long authId = UtilsService.stringToLong(id);
+    public boolean needLogout(AuthUserDto user, String id) {
+        final long authId = UtilService.stringToLong(id);
         return authId == user.getId();
     }
 

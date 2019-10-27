@@ -7,12 +7,10 @@
 <fmt:setBundle basename = "interface" var = "intr"/>
 <html>
 <head>
-    <title>Userpage</title>
+    <title>User page</title>
 </head>
 <body>
 <jsp:include page="header.jsp"/>
-
-<%--User deleted message in JSP for deleted users + do not show delete / update buttons--%>
 
 <c:if test="${requestScope.get('message') != null}">
     <h2 style="color: firebrick">

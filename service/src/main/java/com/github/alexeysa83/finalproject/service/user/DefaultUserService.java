@@ -2,8 +2,7 @@ package com.github.alexeysa83.finalproject.service.user;
 
 import com.github.alexeysa83.finalproject.dao.user.DefaultUserBaseDao;
 import com.github.alexeysa83.finalproject.dao.user.UserBaseDao;
-import com.github.alexeysa83.finalproject.model.User;
-import com.github.alexeysa83.finalproject.service.UtilsService;
+import com.github.alexeysa83.finalproject.model.dto.UserDto;
 
 public class DefaultUserService implements UserService {
 
@@ -27,12 +26,12 @@ public class DefaultUserService implements UserService {
     //   User create/delete service is made in transaction with AuthUserDAO methods
 
     @Override
-    public User getById(long id) {
+    public UserDto getById(long id) {
         return userDAO.getById(id);
     }
 
     @Override
-    public boolean update(User user) {
+    public boolean update(UserDto user) {
         return userDAO.update(user);
     }
 

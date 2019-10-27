@@ -1,8 +1,8 @@
-package com.github.alexeysa83.finalproject.model;
+package com.github.alexeysa83.finalproject.model.dto;
 
 import java.sql.Timestamp;
 
-public class User {
+public class UserDto {
 
     private long id;
     private String firstName;
@@ -13,12 +13,12 @@ public class User {
     private long authId;
     private String userLogin;
 
-    public User(Timestamp registrationTime, long authId) {
+    public UserDto(Timestamp registrationTime, long authId) {
         this.registrationTime = registrationTime;
         this.authId = authId;
     }
 
-    public User(String firstName, String lastName, String email, String phone, long authId) {
+    public UserDto(String firstName, String lastName, String email, String phone, long authId) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -26,8 +26,8 @@ public class User {
         this.authId = authId;
     }
 
-    public User(long id, String firstName, String lastName, Timestamp registrationTime,
-                String email, String phone, long authId, String userLogin) {
+    public UserDto(long id, String firstName, String lastName, Timestamp registrationTime,
+                   String email, String phone, long authId, String userLogin) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;

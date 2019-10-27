@@ -1,7 +1,7 @@
 package com.github.alexeysa83.finalproject.web.servlet.auth.user;
 
-import com.github.alexeysa83.finalproject.model.AuthUser;
-import com.github.alexeysa83.finalproject.service.UtilsService;
+import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
+import com.github.alexeysa83.finalproject.service.UtilService;
 import com.github.alexeysa83.finalproject.service.auth.DefaultSecurityService;
 import com.github.alexeysa83.finalproject.service.auth.SecurityService;
 import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
@@ -33,11 +33,11 @@ public class UpdateLoginServlet extends HttpServlet {
             return;
         }
         final String authId = req.getParameter("authId");
-        final long id = UtilsService.stringToLong(authId);
-        final AuthUser userOld = securityService.getById(id);
+        final long id = UtilService.stringToLong(authId);
+        final AuthUserDto userOld = securityService.getById(id);
 
         final boolean isUpdated = securityService.update
-                (new AuthUser(userOld.getId(), loginNew, userOld.getPassword(), userOld.getRole(), userOld.isBlocked()));
+                (new AuthUserDto(userOld.getId(), loginNew, userOld.getPassword(), userOld.getRole(), userOld.isBlocked()));
         message = "update.success";
         if (!isUpdated) {
             message = "update.fail";

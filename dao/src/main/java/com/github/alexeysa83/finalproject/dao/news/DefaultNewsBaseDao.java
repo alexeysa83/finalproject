@@ -1,7 +1,7 @@
 package com.github.alexeysa83.finalproject.dao.news;
 
 import com.github.alexeysa83.finalproject.dao.DataSource;
-import com.github.alexeysa83.finalproject.model.News;
+import com.github.alexeysa83.finalproject.model.dto.NewsDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +35,7 @@ public class DefaultNewsBaseDao implements NewsBaseDao {
     // add page and limit parameters to get news on page method
 
     @Override
-    public News createAndSave(News news) {
+    public NewsDto createAndSave(NewsDto newsDto) {
         Connection connection = null;
         try {
             connection = mysql.getConnection();
@@ -43,10 +43,10 @@ public class DefaultNewsBaseDao implements NewsBaseDao {
             try (PreparedStatement statement = connection.prepareStatement
                     ("insert into news (title, content, creation_time, auth_id) values (?, ?,?, ?)",
                             Statement.RETURN_GENERATED_KEYS)) {
-                statement.setString(1, news.getTitle());
-                statement.setString(2, news.getContent());
-                statement.setTimestamp(3, news.getCreationTime());
-                statement.setLong(4, news.getAuthId());
+                statement.setString(1, newsDto.getTitle());
+                statement.setString(2, newsDto.getContent());
+                statement.setTimestamp(3, newsDto.getCreationTime());
+                statement.setLong(4, newsDto.getAuthId());
                 statement.executeUpdate();
                 try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
                     final boolean isSaved = generatedKeys.next();
@@ -56,9 +56,9 @@ public class DefaultNewsBaseDao implements NewsBaseDao {
                     final long id = generatedKeys.getLong(1);
                     connection.commit();
                     log.info("News id: {} saved to DB at: {}", id, LocalDateTime.now());
-                    return new News
-                            (id, news.getTitle(), news.getContent(),
-                                    news.getCreationTime(), news.getAuthId(), news.getAuthorNews());
+                    return new NewsDto
+                            (id, newsDto.getTitle(), newsDto.getContent(),
+                                    newsDto.getCreationTime(), newsDto.getAuthId(), newsDto.getAuthorNews());
                 }
             }
         } catch (SQLException e) {
@@ -83,7 +83,7 @@ public class DefaultNewsBaseDao implements NewsBaseDao {
     }
 
     @Override
-    public News getById(long id) {
+    public NewsDto getById(long id) {
         Connection connection = null;
         try {
             connection = mysql.getConnection();
@@ -103,7 +103,7 @@ public class DefaultNewsBaseDao implements NewsBaseDao {
                     final long authId = resultSet.getLong("auth_id");
                     final String login = resultSet.getString("login");
                     connection.commit();
-                    return new News(id, title, content, creationTime, authId, login);
+                    return new NewsDto(id, title, content, creationTime, authId, login);
                 }
             }
         } catch (SQLException e) {
@@ -128,7 +128,7 @@ public class DefaultNewsBaseDao implements NewsBaseDao {
     }
 
     @Override
-    public List<News> getNewsOnPage() {
+    public List<NewsDto> getNewsOnPage() {
         Connection connection = null;
         try {
             connection = mysql.getConnection();
@@ -138,7 +138,7 @@ public class DefaultNewsBaseDao implements NewsBaseDao {
                             "join auth_user au on n.auth_id = au.id order by n.id desc limit 10")) {
                 //statement.setInt(1, page); page parameter
                 try (ResultSet resultSet = statement.executeQuery()) {
-                    final List<News> newsList = new ArrayList<>();
+                    final List<NewsDto> newsDtoList = new ArrayList<>();
                     while (resultSet.next()) {
                         final long id = resultSet.getLong("id");
                         final String title = resultSet.getString("title");
@@ -146,10 +146,10 @@ public class DefaultNewsBaseDao implements NewsBaseDao {
                         final Timestamp creationTime = resultSet.getTimestamp("creation_time");
                         final long authId = resultSet.getLong("auth_id");
                         final String login = resultSet.getString("login");
-                        newsList.add(new News(id, title, content, creationTime, authId, login));
+                        newsDtoList.add(new NewsDto(id, title, content, creationTime, authId, login));
                     }
                     connection.commit();
-                    return newsList;
+                    return newsDtoList;
                 }
             }
         } catch (SQLException e) {
@@ -174,16 +174,16 @@ public class DefaultNewsBaseDao implements NewsBaseDao {
     }
 
     @Override
-    public boolean update(News news) {
+    public boolean update(NewsDto newsDto) {
         Connection connection = null;
-        final long id = news.getId();
+        final long id = newsDto.getId();
         try {
             connection = mysql.getConnection();
             connection.setAutoCommit(false);
             try (PreparedStatement statement = connection.prepareStatement
                     ("update news set title = ?, content = ? where id = ?")) {
-                statement.setString(1, news.getTitle());
-                statement.setString(2, news.getContent());
+                statement.setString(1, newsDto.getTitle());
+                statement.setString(2, newsDto.getContent());
                 statement.setLong(3, id);
                 final int i = statement.executeUpdate();
                 connection.commit();

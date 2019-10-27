@@ -1,9 +1,8 @@
 package com.github.alexeysa83.finalproject.web.servlet.auth.message;
 
-import com.github.alexeysa83.finalproject.model.AuthUser;
-import com.github.alexeysa83.finalproject.model.Message;
-import com.github.alexeysa83.finalproject.service.TimeService;
-import com.github.alexeysa83.finalproject.service.UtilsService;
+import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
+import com.github.alexeysa83.finalproject.model.dto.MessageDto;
+import com.github.alexeysa83.finalproject.service.UtilService;
 import com.github.alexeysa83.finalproject.service.message.DefaultMessageService;
 import com.github.alexeysa83.finalproject.service.message.MessageService;
 import com.github.alexeysa83.finalproject.service.validation.MessageValidationService;
@@ -18,8 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
-import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJspMessage;
-import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToServlet;
+import static com.github.alexeysa83.finalproject.web.WebUtils.*;
 
 @WebServlet(name = "AddMessageServlet", urlPatterns = {"/auth/message/add"})
 public class AddMessageServlet extends HttpServlet {
@@ -32,16 +30,16 @@ public class AddMessageServlet extends HttpServlet {
         final String content = req.getParameter("content");
         String message = MessageValidationService.isValidContent(content);
         if (message != null) {
-            forwardToJspMessage("newsview", message, req, resp);
+            forwardToServletMessage("/news/view", message, req, resp);
             return;
         }
 
-        AuthUser user = (AuthUser) req.getSession().getAttribute("authUser");
-        final Timestamp creationTime = TimeService.getTime();
+        AuthUserDto authUser = (AuthUserDto) req.getSession().getAttribute("authUser");
+        final Timestamp creationTime = UtilService.getTime();
         final String newsId = req.getParameter("newsId");
-        final long id = UtilsService.stringToLong(newsId);
-        final Message mess = messageService.createAndSave
-                (new Message(content, creationTime, user.getId(), id, user.getLogin()));
+        final long id = UtilService.stringToLong(newsId);
+        final MessageDto mess = messageService.createAndSave
+                (new MessageDto(content, creationTime, authUser.getId(), id, authUser.getLogin()));
 
         String logMessage = "Created message for news id: {} , at: {}";
         if (mess == null) {

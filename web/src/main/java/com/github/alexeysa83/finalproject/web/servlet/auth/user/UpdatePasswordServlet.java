@@ -1,7 +1,7 @@
 package com.github.alexeysa83.finalproject.web.servlet.auth.user;
 
-import com.github.alexeysa83.finalproject.model.AuthUser;
-import com.github.alexeysa83.finalproject.service.UtilsService;
+import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
+import com.github.alexeysa83.finalproject.service.UtilService;
 import com.github.alexeysa83.finalproject.service.auth.DefaultSecurityService;
 import com.github.alexeysa83.finalproject.service.auth.SecurityService;
 import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
@@ -38,8 +38,8 @@ public class UpdatePasswordServlet extends HttpServlet {
 
         final String passwordBefore = req.getParameter("passwordBefore");
         final String authId = req.getParameter("authId");
-        final long id = UtilsService.stringToLong(authId);
-        final AuthUser user = securityService.getById(id);
+        final long id = UtilService.stringToLong(authId);
+        final AuthUserDto user = securityService.getById(id);
         final boolean isValid = validationService.isPasswordEqual(passwordBefore, user.getPassword());
         if (!isValid) {
             message = "wrong.pass";
@@ -49,7 +49,7 @@ public class UpdatePasswordServlet extends HttpServlet {
         }
 
         final boolean isUpdated = securityService.update
-                (new AuthUser(user.getId(), user.getLogin(), passwordNew, user.getRole(), user.isBlocked()));
+                (new AuthUserDto(user.getId(), user.getLogin(), passwordNew, user.getRole(), user.isBlocked()));
         message = "update.success";
         if (!isUpdated) {
             message = "update.fail";

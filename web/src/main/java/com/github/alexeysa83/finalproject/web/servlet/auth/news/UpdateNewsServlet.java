@@ -1,7 +1,7 @@
 package com.github.alexeysa83.finalproject.web.servlet.auth.news;
 
-import com.github.alexeysa83.finalproject.model.News;
-import com.github.alexeysa83.finalproject.service.UtilsService;
+import com.github.alexeysa83.finalproject.model.dto.NewsDto;
+import com.github.alexeysa83.finalproject.service.UtilService;
 import com.github.alexeysa83.finalproject.service.news.DefaultNewsService;
 import com.github.alexeysa83.finalproject.service.news.NewsService;
 import com.github.alexeysa83.finalproject.service.validation.NewsValidationservice;
@@ -26,8 +26,8 @@ public class UpdateNewsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         final String newsId = req.getParameter("newsId");
-        final long id = UtilsService.stringToLong(newsId);
-        final News news = service.getNewsOnId(id);
+        final long id = UtilService.stringToLong(newsId);
+        final NewsDto news = service.getNewsOnId(id);
         req.setAttribute("news", news);
         forwardToJsp("newsupdate", req, resp);
     }
@@ -45,8 +45,8 @@ public class UpdateNewsServlet extends HttpServlet {
         }
 
         final String newsId = req.getParameter("newsId");
-        final long id = UtilsService.stringToLong(newsId);
-        final boolean isUpdated = service.updateNews(new News(id, title, content));
+        final long id = UtilService.stringToLong(newsId);
+        final boolean isUpdated = service.updateNews(new NewsDto(id, title, content));
 
         message = "update.success";
         String logMessage = "Updated news id: {} , at: {}";

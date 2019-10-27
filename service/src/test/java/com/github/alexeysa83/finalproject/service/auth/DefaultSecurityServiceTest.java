@@ -1,7 +1,7 @@
 package com.github.alexeysa83.finalproject.service.auth;
 
 import com.github.alexeysa83.finalproject.dao.authuser.AuthUserBaseDao;
-import com.github.alexeysa83.finalproject.model.AuthUser;
+import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,17 +31,17 @@ class DefaultSecurityServiceTest {
     @Test
     void loginNotExist() {
         when(authUserDao.getByLogin("loginNotExist")).thenReturn(null);
-        AuthUser testUser = new AuthUser("loginNotExist", "Pass");
-        AuthUser userFromDB = service.login(testUser);
+        AuthUserDto testUser = new AuthUserDto("loginNotExist", "Pass");
+        AuthUserDto userFromDB = service.login(testUser);
         assertNull(userFromDB);
     }
 
     @Test
     void loginExistPassCorr() {
         when(authUserDao.getByLogin("loginExist"))
-                .thenReturn(new AuthUser("loginExist", "passCorrect"));
-        AuthUser testUser = new AuthUser("loginExist", "passCorrect");
-        AuthUser userFromDB = service.login(testUser);
+                .thenReturn(new AuthUserDto("loginExist", "passCorrect"));
+        AuthUserDto testUser = new AuthUserDto("loginExist", "passCorrect");
+        AuthUserDto userFromDB = service.login(testUser);
         assertNotNull(userFromDB);
         assertEquals(testUser.getLogin(), userFromDB.getLogin());
         assertEquals(testUser.getPassword(), userFromDB.getPassword());
@@ -50,9 +50,9 @@ class DefaultSecurityServiceTest {
     @Test
     void loginExistPassWrong() {
         when(authUserDao.getByLogin("loginExist"))
-                .thenReturn(new AuthUser("loginExist", "passCorrect"));
-        AuthUser testUser = new AuthUser("loginExist", "passWrong");
-        AuthUser userFromDB = service.login(testUser);
+                .thenReturn(new AuthUserDto("loginExist", "passCorrect"));
+        AuthUserDto testUser = new AuthUserDto("loginExist", "passWrong");
+        AuthUserDto userFromDB = service.login(testUser);
         assertNull(userFromDB);
     }
 

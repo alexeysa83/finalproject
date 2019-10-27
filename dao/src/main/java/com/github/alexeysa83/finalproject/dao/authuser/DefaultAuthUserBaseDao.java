@@ -1,7 +1,7 @@
 package com.github.alexeysa83.finalproject.dao.authuser;
 
 import com.github.alexeysa83.finalproject.dao.DataSource;
-import com.github.alexeysa83.finalproject.model.AuthUser;
+import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.Role;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +34,7 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
     // Check login method needed?
 
     @Override
-    public AuthUser createAndSave(AuthUser user, Timestamp regTime) {
+    public AuthUserDto createAndSave(AuthUserDto user, Timestamp regTime) {
         Connection connection = null;
         final String login = user.getLogin();
         final String password = user.getPassword();
@@ -61,7 +61,7 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
                 stateUser.executeUpdate();
                 connection.commit();
                 log.info("AuthUser id (User auth_id): {} saved to DB at: {}", id, LocalDateTime.now());
-                return new AuthUser(id, login, password, Role.USER, false);
+                return new AuthUserDto(id, login, password, Role.USER, false);
             }
         } catch (SQLException e) {
             try {
@@ -86,7 +86,7 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
     }
 
     @Override
-    public AuthUser getByLogin(String login) {
+    public AuthUserDto getByLogin(String login) {
         try (Connection connection = mysql.getConnection();
              PreparedStatement statement = connection.prepareStatement
                      ("select * from auth_user where login = ?")) {
@@ -101,7 +101,7 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
                 final String r = resultSet.getString("role");
                 final Role role = Role.valueOf(r);
                 boolean isBlocked = resultSet.getBoolean("is_blocked");
-                return new AuthUser(id, login, password, role, isBlocked);
+                return new AuthUserDto(id, login, password, role, isBlocked);
             }
         } catch (SQLException e) {
             log.error("SQLException at: {}", LocalDateTime.now(), e);
@@ -111,7 +111,7 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
 
 
     @Override
-    public AuthUser getById(long id) {
+    public AuthUserDto getById(long id) {
         try (Connection connection = mysql.getConnection();
              PreparedStatement statement = connection.prepareStatement
                      ("select * from auth_user where id = ?")) {
@@ -126,7 +126,7 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
                 final String r = resultSet.getString("role");
                 final Role role = Role.valueOf(r);
                 final boolean isBlocked = resultSet.getBoolean("is_blocked");
-                return new AuthUser(id, login, password, role, isBlocked);
+                return new AuthUserDto(id, login, password, role, isBlocked);
             }
         } catch (SQLException e) {
             log.error("SQLException at: {}", LocalDateTime.now(), e);
@@ -135,7 +135,7 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
     }
 
     @Override
-    public boolean update(AuthUser user) {
+    public boolean update(AuthUserDto user) {
         try (Connection connection = mysql.getConnection();
              PreparedStatement statement = connection.prepareStatement
                      ("update auth_user set login = ?, password = ?, role = ? where id = ?")) {

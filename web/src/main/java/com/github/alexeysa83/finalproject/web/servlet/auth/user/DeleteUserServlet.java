@@ -1,7 +1,7 @@
 package com.github.alexeysa83.finalproject.web.servlet.auth.user;
 
-import com.github.alexeysa83.finalproject.model.AuthUser;
-import com.github.alexeysa83.finalproject.service.UtilsService;
+import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
+import com.github.alexeysa83.finalproject.service.UtilService;
 import com.github.alexeysa83.finalproject.service.auth.DefaultSecurityService;
 import com.github.alexeysa83.finalproject.service.auth.SecurityService;
 import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 
-import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToServletMessage;
+import static com.github.alexeysa83.finalproject.web.WebUtils.*;
 
 @WebServlet(name = "DeleteUserServlet", urlPatterns = {"/auth/user/delete"})
 public class DeleteUserServlet extends HttpServlet {
@@ -27,14 +27,19 @@ public class DeleteUserServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         final String authId = req.getParameter("authId");
-        final long id = UtilsService.stringToLong(authId);
+        final long id = UtilService.stringToLong(authId);
         final boolean isDeleted = securityService.delete(id);
-        log.info("User id: {} deleted at: {}", authId, LocalDateTime.now());
-        final AuthUser authUser = (AuthUser) req.getSession().getAttribute("authUser");
-
-        // With user name
-//        final String login = req.getParameter("login");
+        String logMessage = "User id: {} deleted at: {}";
         String message = "delete.success";
+        if (!isDeleted) {
+            message = "delete.fail";
+            logMessage = "Failed to delete user id: {} , at: {}";
+            log.info(logMessage, authId, LocalDateTime.now());
+            forwardToJspMessage("index", message, req, resp);
+        }
+        log.info(logMessage, authId, LocalDateTime.now());
+
+        final AuthUserDto authUser = (AuthUserDto) req.getSession().getAttribute("authUser");
         final boolean needLogout = validationService.needLogout(authUser, authId);
         if (needLogout) {
             forwardToServletMessage("/auth/logout", message, req, resp);

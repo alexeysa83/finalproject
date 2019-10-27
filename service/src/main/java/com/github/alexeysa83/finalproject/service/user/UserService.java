@@ -1,12 +1,12 @@
 package com.github.alexeysa83.finalproject.service.user;
 
-import com.github.alexeysa83.finalproject.model.User;
+import com.github.alexeysa83.finalproject.model.dto.UserDto;
 
 public interface UserService {
 
 //   User create/delete service is made in transaction with AuthUserDAO methods
 
-    User getById (long id);
+    UserDto getById (long id);
 
-    boolean update (User user);
+    boolean update (UserDto user);
 }

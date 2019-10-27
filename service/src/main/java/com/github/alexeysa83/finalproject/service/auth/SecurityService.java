@@ -1,20 +1,20 @@
 package com.github.alexeysa83.finalproject.service.auth;
 
-import com.github.alexeysa83.finalproject.model.AuthUser;
+import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 
 public interface SecurityService {
 
-    AuthUser createAndSaveAuthUser (AuthUser user);
+    AuthUserDto createAndSaveAuthUser (AuthUserDto user);
 
 //    AuthUser getByLogin (String login);
 
-    AuthUser getById (long id);
+    AuthUserDto getById (long id);
 
-    AuthUser login (AuthUser user);
+    AuthUserDto login (AuthUserDto user);
 
     boolean checkLoginIsTaken (String login);
 
-    boolean update (AuthUser user);
+    boolean update (AuthUserDto user);
 
     boolean delete (long id);
 }

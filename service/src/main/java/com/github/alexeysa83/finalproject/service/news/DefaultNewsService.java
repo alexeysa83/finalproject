@@ -2,8 +2,7 @@ package com.github.alexeysa83.finalproject.service.news;
 
 import com.github.alexeysa83.finalproject.dao.news.NewsBaseDao;
 import com.github.alexeysa83.finalproject.dao.news.DefaultNewsBaseDao;
-import com.github.alexeysa83.finalproject.model.News;
-import com.github.alexeysa83.finalproject.service.UtilsService;
+import com.github.alexeysa83.finalproject.model.dto.NewsDto;
 
 import java.util.List;
 
@@ -27,23 +26,23 @@ public class DefaultNewsService implements NewsService {
     }
 
     @Override
-    public News createAndSave(News news) {
+    public NewsDto createAndSave(NewsDto news) {
         return newsDao.createAndSave(news);
     }
 
     @Override
-    public News getNewsOnId(long id) {
+    public NewsDto getNewsOnId(long id) {
         return newsDao.getById(id);
     }
 
     //Add page parameter
     @Override
-    public List<News> getNewsOnPage() {
+    public List<NewsDto> getNewsOnPage() {
         return newsDao.getNewsOnPage();
     }
 
     @Override
-    public boolean updateNews(News news) {
+    public boolean updateNews(NewsDto news) {
         return newsDao.update(news);
     }
 

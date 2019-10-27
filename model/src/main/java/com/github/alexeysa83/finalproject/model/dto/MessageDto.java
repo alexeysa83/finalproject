@@ -1,8 +1,8 @@
-package com.github.alexeysa83.finalproject.model;
+package com.github.alexeysa83.finalproject.model.dto;
 
 import java.sql.Timestamp;
 
-public class Message {
+public class MessageDto {
 
     private long id;
     private String content;
@@ -11,7 +11,7 @@ public class Message {
     private long newsId;
     private String authorMessage;
 
-    public Message(String content, Timestamp creationTime, long authId, long newsId, String authorMessage) {
+    public MessageDto(String content, Timestamp creationTime, long authId, long newsId, String authorMessage) {
         this.content = content;
         this.creationTime = creationTime;
         this.authId = authId;
@@ -19,7 +19,7 @@ public class Message {
         this.authorMessage = authorMessage;
     }
 
-    public Message(long id, String content, Timestamp creationTime, long authId, long newsId, String authorMessage) {
+    public MessageDto(long id, String content, Timestamp creationTime, long authId, long newsId, String authorMessage) {
         this.id = id;
         this.content = content;
         this.creationTime = creationTime;

@@ -1,6 +1,6 @@
 package com.github.alexeysa83.finalproject.service.validation;
 
-import com.github.alexeysa83.finalproject.model.AuthUser;
+import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.service.auth.SecurityService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,7 +65,7 @@ class AuthValidationServiceTest {
 
     @Test
     void needLogout() {
-        AuthUser testUser = new AuthUser(1, "Test", "Test", null, false);
+        AuthUserDto testUser = new AuthUserDto(1, "Test", "Test", null, false);
         boolean result = validationService.needLogout(testUser, "1");
         assertTrue(result);
 

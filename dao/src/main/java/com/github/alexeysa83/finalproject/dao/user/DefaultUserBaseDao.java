@@ -1,7 +1,7 @@
 package com.github.alexeysa83.finalproject.dao.user;
 
 import com.github.alexeysa83.finalproject.dao.DataSource;
-import com.github.alexeysa83.finalproject.model.User;
+import com.github.alexeysa83.finalproject.model.dto.UserDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +33,7 @@ public class DefaultUserBaseDao implements UserBaseDao {
     Get by auth_id method
      */
     @Override
-    public User getById(long authId) {
+    public UserDto getById(long authId) {
         try (Connection connection = mysql.getConnection();
              PreparedStatement statement = connection.prepareStatement
                      ("select u.id, u.first_name, u.last_name, u.registration_time, u.email, u.phone, au.login " +
@@ -51,7 +51,7 @@ public class DefaultUserBaseDao implements UserBaseDao {
                 final String email = resultSet.getString("email");
                 final String phone = resultSet.getString("phone");
                 final String login = resultSet.getString("login");
-                return new User(id, firstName, lastName, registrationTime, email, phone, authId, login);
+                return new UserDto(id, firstName, lastName, registrationTime, email, phone, authId, login);
             }
         } catch (SQLException e) {
             log.error("SQLException at: {}", LocalDateTime.now(), e);
@@ -60,16 +60,16 @@ public class DefaultUserBaseDao implements UserBaseDao {
     }
 
     @Override
-    public boolean update(User user) {
+    public boolean update(UserDto userDto) {
         try (Connection connection = mysql.getConnection();
              PreparedStatement statement = connection.prepareStatement
                      ("update user set first_name = ?, last_name = ?, email = ?, phone = ? where auth_id = ?")) {
-            statement.setString(1, user.getFirstName());
-            statement.setString(2, user.getLastName());
-            statement.setString(3, user.getEmail());
-            statement.setString(4, user.getPhone());
-            statement.setLong(5, user.getAuthId());
-            log.info("User (auth_id): {} updated in DB at: {}", user.getAuthId(), LocalDateTime.now());
+            statement.setString(1, userDto.getFirstName());
+            statement.setString(2, userDto.getLastName());
+            statement.setString(3, userDto.getEmail());
+            statement.setString(4, userDto.getPhone());
+            statement.setLong(5, userDto.getAuthId());
+            log.info("User (auth_id): {} updated in DB at: {}", userDto.getAuthId(), LocalDateTime.now());
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             log.error("SQLException at: {}", LocalDateTime.now(), e);

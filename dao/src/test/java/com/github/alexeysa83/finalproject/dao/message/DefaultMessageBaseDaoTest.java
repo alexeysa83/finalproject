@@ -5,9 +5,9 @@ import com.github.alexeysa83.finalproject.dao.authuser.AuthUserBaseDao;
 import com.github.alexeysa83.finalproject.dao.authuser.DefaultAuthUserBaseDao;
 import com.github.alexeysa83.finalproject.dao.news.DefaultNewsBaseDao;
 import com.github.alexeysa83.finalproject.dao.news.NewsBaseDao;
-import com.github.alexeysa83.finalproject.model.AuthUser;
-import com.github.alexeysa83.finalproject.model.Message;
-import com.github.alexeysa83.finalproject.model.News;
+import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
+import com.github.alexeysa83.finalproject.model.dto.MessageDto;
+import com.github.alexeysa83.finalproject.model.dto.NewsDto;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
@@ -27,13 +27,13 @@ class DefaultMessageBaseDaoTest {
     private final static NewsBaseDao newsDao = DefaultNewsBaseDao.getInstance();
     private MessageBaseDao messageDao = DefaultMessageBaseDao.getInstance();
     private static DataSource mysql = DataSource.getInstance();
-    private final static AuthUser testUser;
-    private final static News testNews;
+    private final static AuthUserDto testUser;
+    private final static NewsDto testNews;
 
 
     static {
-        testUser = authUserDao.createAndSave(new AuthUser("MessageTest", "Pass"), new Timestamp(System.currentTimeMillis()));
-        testNews = newsDao.createAndSave(new News
+        testUser = authUserDao.createAndSave(new AuthUserDto("MessageTest", "Pass"), new Timestamp(System.currentTimeMillis()));
+        testNews = newsDao.createAndSave(new NewsDto
                 ("MessageTest", "MessageTest", new Timestamp(System.currentTimeMillis()), testUser.getId(), null));
     }
 
@@ -52,9 +52,9 @@ class DefaultMessageBaseDaoTest {
 
     @Test
     void createAndSave() {
-        final Message testMessage = new Message
+        final MessageDto testMessage = new MessageDto
                 ("MessageCreate", getTime(), testUser.getId(), testNews.getId(), testUser.getLogin());
-        final Message savedMessage = messageDao.createAndSave(testMessage);
+        final MessageDto savedMessage = messageDao.createAndSave(testMessage);
         assertNotNull(savedMessage);
 
         final Long id = savedMessage.getId();
@@ -70,11 +70,11 @@ class DefaultMessageBaseDaoTest {
 
     @Test
     void getById() {
-        final Message message = new Message
+        final MessageDto message = new MessageDto
                 ("MessageId", getTime(), testUser.getId(), testNews.getId(), testUser.getLogin());
-        final Message testMessage = messageDao.createAndSave(message);
+        final MessageDto testMessage = messageDao.createAndSave(message);
         final long id = testMessage.getId();
-        final Message messageFromDB = messageDao.getById(id);
+        final MessageDto messageFromDB = messageDao.getById(id);
 
         assertNotNull(messageFromDB);
         assertEquals(testMessage.getId(), messageFromDB.getId());
@@ -89,19 +89,19 @@ class DefaultMessageBaseDaoTest {
 
     @Test
     void getMessagesOnNews() {
-        List<Message> testList = new LinkedList<>();
+        List<MessageDto> testList = new LinkedList<>();
         for (int i = 0; i < 10; i++) {
-            final Message message = new Message
+            final MessageDto message = new MessageDto
                     ("MessageId" + i, getTime(), testUser.getId(), testNews.getId(), testUser.getLogin());
-            final Message m = messageDao.createAndSave(message);
+            final MessageDto m = messageDao.createAndSave(message);
             testList.add(m);
         }
 
-        List<Message> listDB = messageDao.getMessagesOnNews(testNews.getId());
-        assertEquals(testList.size(), listDB.size());
+        List<MessageDto> listFromDB = messageDao.getMessagesOnNews(testNews.getId());
+        assertEquals(testList.size(), listFromDB.size());
         for (int i = 0; i < 10; i++) {
-            final Message testMessage = testList.get(i);
-            final Message messageFromDB = listDB.get(i);
+            final MessageDto testMessage = testList.get(i);
+            final MessageDto messageFromDB = listFromDB.get(i);
             assertNotNull(messageFromDB);
             assertEquals(testMessage.getId(), messageFromDB.getId());
             assertEquals(testMessage.getContent(), messageFromDB.getContent());
@@ -116,18 +116,18 @@ class DefaultMessageBaseDaoTest {
 
     @Test
     void update() {
-        final Message message = new Message
+        final MessageDto message = new MessageDto
                 ("MessageUpdate", getTime(), testUser.getId(), testNews.getId(), testUser.getLogin());
-        final Message testMessage = messageDao.createAndSave(message);
+        final MessageDto testMessage = messageDao.createAndSave(message);
         final long id = testMessage.getId();
-        final Message messageToUpdate = new Message
+        final MessageDto messageToUpdate = new MessageDto
                 (id, "UpdateComplete", message.getCreationTime(),
                         message.getAuthId(), message.getNewsId(), message.getAuthorMessage());
 
         final boolean isUpdated = messageDao.update(messageToUpdate);
         assertTrue(isUpdated);
 
-        final Message afterUpdate = messageDao.getById(id);
+        final MessageDto afterUpdate = messageDao.getById(id);
         assertEquals(messageToUpdate.getContent(), afterUpdate.getContent());
 
         messageDao.delete(id);
@@ -135,17 +135,17 @@ class DefaultMessageBaseDaoTest {
 
     @Test
     void delete() {
-        final Message message = new Message
+        final MessageDto message = new MessageDto
                 ("MessageDelete", getTime(), testUser.getId(), testNews.getId(), testUser.getLogin());
-        final Message testMessage = messageDao.createAndSave(message);
+        final MessageDto testMessage = messageDao.createAndSave(message);
         final long id = testMessage.getId();
-        Message messageToDelete = messageDao.getById(id);
+        MessageDto messageToDelete = messageDao.getById(id);
         assertNotNull(messageToDelete);
 
         final boolean isDeleted = messageDao.delete(id);
         assertTrue(isDeleted);
 
-        final Message afterDelete = messageDao.getById(id);
+        final MessageDto afterDelete = messageDao.getById(id);
         assertNull(afterDelete);
     }
 

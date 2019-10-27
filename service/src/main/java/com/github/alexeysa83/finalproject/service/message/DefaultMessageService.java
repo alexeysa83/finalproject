@@ -2,7 +2,7 @@ package com.github.alexeysa83.finalproject.service.message;
 
 import com.github.alexeysa83.finalproject.dao.message.DefaultMessageBaseDao;
 import com.github.alexeysa83.finalproject.dao.message.MessageBaseDao;
-import com.github.alexeysa83.finalproject.model.Message;
+import com.github.alexeysa83.finalproject.model.dto.MessageDto;
 
 import java.util.List;
 
@@ -26,17 +26,17 @@ public class DefaultMessageService implements MessageService {
     }
 
     @Override
-    public Message createAndSave(Message message) {
+    public MessageDto createAndSave(MessageDto message) {
         return messageDao.createAndSave(message);
     }
 
     @Override
-    public List<Message> getMessagesOnNews(long newsId) {
+    public List<MessageDto> getMessagesOnNews(long newsId) {
         return messageDao.getMessagesOnNews(newsId);
     }
 
     @Override
-    public boolean updateMessage(Message message) {
+    public boolean updateMessage(MessageDto message) {
         return messageDao.update(message);
     }
 

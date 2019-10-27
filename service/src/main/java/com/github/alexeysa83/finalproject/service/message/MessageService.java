@@ -1,16 +1,16 @@
 package com.github.alexeysa83.finalproject.service.message;
 
-import com.github.alexeysa83.finalproject.model.Message;
+import com.github.alexeysa83.finalproject.model.dto.MessageDto;
 
 import java.util.List;
 
 public interface MessageService {
 
-    Message createAndSave (Message message);
+    MessageDto createAndSave (MessageDto message);
 
-    List<Message> getMessagesOnNews (long newsId);
+    List<MessageDto> getMessagesOnNews (long newsId);
 
-    boolean updateMessage (Message message);
+    boolean updateMessage (MessageDto message);
 
     boolean deleteMessage (long id);
 }

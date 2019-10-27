@@ -3,8 +3,8 @@ package com.github.alexeysa83.finalproject.dao.news;
 import com.github.alexeysa83.finalproject.dao.DataSource;
 import com.github.alexeysa83.finalproject.dao.authuser.AuthUserBaseDao;
 import com.github.alexeysa83.finalproject.dao.authuser.DefaultAuthUserBaseDao;
-import com.github.alexeysa83.finalproject.model.AuthUser;
-import com.github.alexeysa83.finalproject.model.News;
+import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
+import com.github.alexeysa83.finalproject.model.dto.NewsDto;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
@@ -18,15 +18,15 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class DefaultNewsDaoTest {
+class DefaultNewsBaseDaoTest {
 
     private final NewsBaseDao newsDao = DefaultNewsBaseDao.getInstance();
     private final static AuthUserBaseDao authUserDao = DefaultAuthUserBaseDao.getInstance();
     private static DataSource mysql = DataSource.getInstance();
-    private final static AuthUser testUser;
+    private final static AuthUserDto testUser;
 
     static {
-        testUser = authUserDao.createAndSave(new AuthUser("NewsTest", "Pass"), new Timestamp(System.currentTimeMillis()));
+        testUser = authUserDao.createAndSave(new AuthUserDto("NewsTest", "Pass"), new Timestamp(System.currentTimeMillis()));
     }
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -43,10 +43,10 @@ class DefaultNewsDaoTest {
 
     @Test
     void createAndSave() {
-        final News testNews = new News
+        final NewsDto testNews = new NewsDto
                 ("NewsCreate", "TestContent",
                         getTime(), testUser.getId(), testUser.getLogin());
-        final News savedNews = newsDao.createAndSave(testNews);
+        final NewsDto savedNews = newsDao.createAndSave(testNews);
         assertNotNull(savedNews);
 
         final Long id = savedNews.getId();
@@ -62,12 +62,12 @@ class DefaultNewsDaoTest {
 
     @Test
     void getById() {
-        final News news = new News
+        final NewsDto news = new NewsDto
                 ("NewsId", "TestContent",
                         getTime(), testUser.getId(), testUser.getLogin());
-        final News testNews = newsDao.createAndSave(news);
+        final NewsDto testNews = newsDao.createAndSave(news);
         final long id = testNews.getId();
-        final News newsFromDB = newsDao.getById(id);
+        final NewsDto newsFromDB = newsDao.getById(id);
 
         assertNotNull(newsFromDB);
         assertEquals(id, newsFromDB.getId());
@@ -75,7 +75,7 @@ class DefaultNewsDaoTest {
         assertEquals(testNews.getContent(), newsFromDB.getContent());
         assertEquals(testNews.getCreationTime(), newsFromDB.getCreationTime());
         assertEquals(testNews.getAuthId(), newsFromDB.getAuthId());
-        assertEquals(testNews.getAuthorNews(), testNews.getAuthorNews());
+        assertEquals(testNews.getAuthorNews(), newsFromDB.getAuthorNews());
 
         newsDao.delete(id);
     }
@@ -85,19 +85,19 @@ class DefaultNewsDaoTest {
      */
     @Test
     void getNewsOnPage() {
-        LinkedList<News> testList = new LinkedList<>();
+        LinkedList<NewsDto> testList = new LinkedList<>();
         for (int i = 0; i < 10; i++) {
-            final News news = new News("NewsOnPage" + i, "TestContentPage" + i,
+            final NewsDto news = new NewsDto("NewsOnPage" + i, "TestContentPage" + i,
                     getTime(), testUser.getId(), testUser.getLogin());
-            final News n = newsDao.createAndSave(news);
+            final NewsDto n = newsDao.createAndSave(news);
             testList.addFirst(n);
         }
 
-        List<News> listDB = newsDao.getNewsOnPage();
+        List<NewsDto> listDB = newsDao.getNewsOnPage();
         assertEquals(testList.size(), listDB.size());
         for (int i = 0; i < 10; i++) {
-            final News testNews = testList.get(i);
-            final News newsFromDB = listDB.get(i);
+            final NewsDto testNews = testList.get(i);
+            final NewsDto newsFromDB = listDB.get(i);
             assertNotNull(newsFromDB);
             assertEquals(testNews.getId(), newsFromDB.getId());
             assertEquals(testNews.getTitle(), newsFromDB.getTitle());
@@ -112,19 +112,19 @@ class DefaultNewsDaoTest {
 
     @Test
     void update() {
-        final News news = new News
+        final NewsDto news = new NewsDto
                 ("NewsUpdate", "TestContent",
                         getTime(), testUser.getId(), testUser.getLogin());
-        final News testNews = newsDao.createAndSave(news);
+        final NewsDto testNews = newsDao.createAndSave(news);
         final long id = testNews.getId();
-        final News newsToUpdate = new News
+        final NewsDto newsToUpdate = new NewsDto
                 (id, "UpdateNewsComplete", "UpdateContentComplete",
                         getTime(), testUser.getId(), testUser.getLogin());
 
         final boolean isUpdated = newsDao.update(newsToUpdate);
         assertTrue(isUpdated);
 
-        final News afterUpdate = newsDao.getById(id);
+        final NewsDto afterUpdate = newsDao.getById(id);
         assertEquals(newsToUpdate.getTitle(), afterUpdate.getTitle());
         assertEquals(newsToUpdate.getContent(), afterUpdate.getContent());
 
@@ -133,18 +133,18 @@ class DefaultNewsDaoTest {
 
     @Test
     void delete() {
-        final News news = new News
+        final NewsDto news = new NewsDto
                 ("NewsDelete", "TestContent",
                         getTime(), testUser.getId(), testUser.getLogin());
-        final News testNews = newsDao.createAndSave(news);
+        final NewsDto testNews = newsDao.createAndSave(news);
         final long id = testNews.getId();
-        News newsToDelete = newsDao.getById(id);
+        NewsDto newsToDelete = newsDao.getById(id);
         assertNotNull(newsToDelete);
 
         final boolean isDeleted = newsDao.delete(id);
         assertTrue(isDeleted);
 
-        final News afterDelete = newsDao.getById(id);
+        final NewsDto afterDelete = newsDao.getById(id);
         assertNull(afterDelete);
     }
 

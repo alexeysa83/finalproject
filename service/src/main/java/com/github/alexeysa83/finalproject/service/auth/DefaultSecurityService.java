@@ -3,9 +3,8 @@ package com.github.alexeysa83.finalproject.service.auth;
 
 import com.github.alexeysa83.finalproject.dao.authuser.AuthUserBaseDao;
 import com.github.alexeysa83.finalproject.dao.authuser.DefaultAuthUserBaseDao;
-import com.github.alexeysa83.finalproject.model.AuthUser;
-import com.github.alexeysa83.finalproject.service.TimeService;
-import com.github.alexeysa83.finalproject.service.UtilsService;
+import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
+import com.github.alexeysa83.finalproject.service.UtilService;
 import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
 
 import java.sql.Timestamp;
@@ -30,8 +29,8 @@ public class DefaultSecurityService implements SecurityService {
     }
 
     @Override
-    public AuthUser createAndSaveAuthUser(AuthUser user) {
-        final Timestamp regTime = TimeService.getTime();
+    public AuthUserDto createAndSaveAuthUser(AuthUserDto user) {
+        final Timestamp regTime = UtilService.getTime();
         return authUserDao.createAndSave(user, regTime);
     }
 
@@ -41,13 +40,13 @@ public class DefaultSecurityService implements SecurityService {
 //    }
 
     @Override
-    public AuthUser getById(long id) {
+    public AuthUserDto getById(long id) {
         return authUserDao.getById(id);
     }
 
     @Override
-    public AuthUser login(AuthUser userFromLogin) {
-        AuthUser userFromDB = authUserDao.getByLogin(userFromLogin.getLogin());
+    public AuthUserDto login(AuthUserDto userFromLogin) {
+        AuthUserDto userFromDB = authUserDao.getByLogin(userFromLogin.getLogin());
         boolean isValidPassword = false;
         if (userFromDB != null) {
             isValidPassword = new AuthValidationService().isPasswordEqual
@@ -62,7 +61,7 @@ public class DefaultSecurityService implements SecurityService {
     }
 
     @Override
-    public boolean update(AuthUser user) {
+    public boolean update(AuthUserDto user) {
         return authUserDao.update(user);
     }
 

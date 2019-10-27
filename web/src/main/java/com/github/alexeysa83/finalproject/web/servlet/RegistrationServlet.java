@@ -1,6 +1,6 @@
 package com.github.alexeysa83.finalproject.web.servlet;
 
-import com.github.alexeysa83.finalproject.model.AuthUser;
+import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
 import com.github.alexeysa83.finalproject.service.auth.DefaultSecurityService;
 import com.github.alexeysa83.finalproject.service.auth.SecurityService;
@@ -31,13 +31,11 @@ public class RegistrationServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-
         forwardToJsp("registration", req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
-
 
         final String login = req.getParameter("login");
         String message = validationService.isLoginValid(login);
@@ -57,7 +55,7 @@ public class RegistrationServlet extends HttpServlet {
             return;
         }
 
-        final AuthUser authUser = securityService.createAndSaveAuthUser(new AuthUser(login, password));
+        final AuthUserDto authUser = securityService.createAndSaveAuthUser(new AuthUserDto(login, password));
         if (authUser == null) {
             req.setAttribute("message", "error.unknown");
             log.error("Failed to registrate user with login: {} pass {}, at: {}", login, password, LocalDateTime.now());

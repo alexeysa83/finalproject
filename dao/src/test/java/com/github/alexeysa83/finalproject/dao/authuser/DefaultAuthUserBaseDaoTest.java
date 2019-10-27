@@ -1,7 +1,7 @@
 package com.github.alexeysa83.finalproject.dao.authuser;
 
 import com.github.alexeysa83.finalproject.dao.DataSource;
-import com.github.alexeysa83.finalproject.model.AuthUser;
+import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.Role;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +12,7 @@ import java.sql.Timestamp;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class DefaultAuthUserDaoTest {
+class DefaultAuthUserBaseDaoTest {
 
     private final AuthUserBaseDao authUserDao = DefaultAuthUserBaseDao.getInstance();
     private DataSource mysql = DataSource.getInstance();
@@ -24,8 +24,8 @@ class DefaultAuthUserDaoTest {
 
     @Test
     void createAndSave() {
-        final AuthUser testUser = new AuthUser("AuthCreate", "Test");
-        final AuthUser savedUser = authUserDao.createAndSave(testUser, new Timestamp(System.currentTimeMillis()));
+        final AuthUserDto testUser = new AuthUserDto("AuthCreate", "Test");
+        final AuthUserDto savedUser = authUserDao.createAndSave(testUser, new Timestamp(System.currentTimeMillis()));
         assertNotNull(savedUser);
 
         final Long id = savedUser.getId();
@@ -40,10 +40,10 @@ class DefaultAuthUserDaoTest {
 
     @Test
     void getByLogin() {
-        final AuthUser testUser = authUserDao.createAndSave
-                (new AuthUser("AuthLogin", "Test"), new Timestamp(System.currentTimeMillis()));
+        final AuthUserDto testUser = authUserDao.createAndSave
+                (new AuthUserDto("AuthLogin", "Test"), new Timestamp(System.currentTimeMillis()));
         final String login = testUser.getLogin();
-        final AuthUser userFromDB = authUserDao.getByLogin(login);
+        final AuthUserDto userFromDB = authUserDao.getByLogin(login);
 
         assertNotNull(userFromDB);
         assertEquals(testUser.getId(), userFromDB.getId());
@@ -57,10 +57,10 @@ class DefaultAuthUserDaoTest {
 
     @Test
     void getById() {
-        final AuthUser testUser = authUserDao.createAndSave
-                (new AuthUser("AuthId", "Test"), new Timestamp(System.currentTimeMillis()));
+        final AuthUserDto testUser = authUserDao.createAndSave
+                (new AuthUserDto("AuthId", "Test"), new Timestamp(System.currentTimeMillis()));
         final long id = testUser.getId();
-        final AuthUser userFromDB = authUserDao.getById(id);
+        final AuthUserDto userFromDB = authUserDao.getById(id);
 
         assertNotNull(userFromDB);
         assertEquals(id, userFromDB.getId());
@@ -74,15 +74,15 @@ class DefaultAuthUserDaoTest {
 
     @Test
     void update() {
-        final AuthUser testUser = authUserDao.createAndSave
-                (new AuthUser("AuthUpdate", "Test"), new Timestamp(System.currentTimeMillis()));
+        final AuthUserDto testUser = authUserDao.createAndSave
+                (new AuthUserDto("AuthUpdate", "Test"), new Timestamp(System.currentTimeMillis()));
         final long id = testUser.getId();
-        final AuthUser userToUpdate = new AuthUser(id, "Updated", "updated", Role.ADMIN, false);
+        final AuthUserDto userToUpdate = new AuthUserDto(id, "Updated", "updated", Role.ADMIN, false);
 
         final boolean isUpdated = authUserDao.update(userToUpdate);
         assertTrue(isUpdated);
 
-        final AuthUser afterUpdate = authUserDao.getById(id);
+        final AuthUserDto afterUpdate = authUserDao.getById(id);
         assertEquals(userToUpdate.getLogin(), afterUpdate.getLogin());
         assertEquals(userToUpdate.getPassword(), afterUpdate.getPassword());
         assertEquals(userToUpdate.getRole(), afterUpdate.getRole());
@@ -92,16 +92,16 @@ class DefaultAuthUserDaoTest {
 
     @Test
     void delete() {
-        final AuthUser testUser = authUserDao.createAndSave
-                (new AuthUser("AuthDelete", "Test"), new Timestamp(System.currentTimeMillis()));
+        final AuthUserDto testUser = authUserDao.createAndSave
+                (new AuthUserDto("AuthDelete", "Test"), new Timestamp(System.currentTimeMillis()));
         final long id = testUser.getId();
-        final AuthUser userToDelete = authUserDao.getById(id);
+        final AuthUserDto userToDelete = authUserDao.getById(id);
         assertNotNull(userToDelete);
 
         final boolean isDeleted = authUserDao.delete(id);
         assertTrue(isDeleted);
 
-        final AuthUser afterDelete = authUserDao.getById(id);
+        final AuthUserDto afterDelete = authUserDao.getById(id);
         assertTrue(afterDelete.isBlocked());
 
         completeDeleteUser(id);

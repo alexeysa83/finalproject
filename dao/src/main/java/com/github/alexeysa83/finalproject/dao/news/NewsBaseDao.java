@@ -1,16 +1,16 @@
 package com.github.alexeysa83.finalproject.dao.news;
 
 import com.github.alexeysa83.finalproject.dao.BaseDao;
-import com.github.alexeysa83.finalproject.model.News;
+import com.github.alexeysa83.finalproject.model.dto.NewsDto;
 
 import java.util.List;
 
-public interface NewsBaseDao extends BaseDao<News> {
+public interface NewsBaseDao extends BaseDao<NewsDto> {
 
-    News createAndSave(News news);
+    NewsDto createAndSave(NewsDto newsDto);
 
     // add page parameter
-    List<News> getNewsOnPage ();
+    List<NewsDto> getNewsOnPage ();
 
     boolean delete (long id);
 }

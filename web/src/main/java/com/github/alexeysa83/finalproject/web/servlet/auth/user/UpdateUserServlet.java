@@ -1,7 +1,7 @@
 package com.github.alexeysa83.finalproject.web.servlet.auth.user;
 
-import com.github.alexeysa83.finalproject.model.User;
-import com.github.alexeysa83.finalproject.service.UtilsService;
+import com.github.alexeysa83.finalproject.model.dto.UserDto;
+import com.github.alexeysa83.finalproject.service.UtilService;
 import com.github.alexeysa83.finalproject.service.user.DefaultUserService;
 import com.github.alexeysa83.finalproject.service.user.UserService;
 import org.slf4j.Logger;
@@ -13,8 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 
-import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJsp;
-import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToServletMessage;
+import static com.github.alexeysa83.finalproject.web.WebUtils.*;
 
 @WebServlet(name = "UpdateUserServlet", urlPatterns = {"/auth/user/update"})
 public class UpdateUserServlet extends HttpServlet {
@@ -25,8 +24,12 @@ public class UpdateUserServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         final String authId = req.getParameter("authId");
-        final long id = UtilsService.stringToLong(authId);
-        final User user = userService.getById(id);
+        final long id = UtilService.stringToLong(authId);
+        final UserDto user = userService.getById(id);
+        if (user == null) {
+            String message = "deleted";
+            forwardToJspMessage("userpage", message, req, resp);
+        }
         req.setAttribute("user", user);
         forwardToJsp("userupdate", req, resp);
     }
@@ -35,12 +38,12 @@ public class UpdateUserServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         final String id = req.getParameter("authId");
-        final long authId = UtilsService.stringToLong(id);
+        final long authId = UtilService.stringToLong(id);
         final String firstName = req.getParameter("firstName");
         final String lastName = req.getParameter("lastName");
         final String email = req.getParameter("email");
         final String phone = req.getParameter("phone");
-        final boolean isUpdated = userService.update(new User(firstName, lastName, email, phone, authId));
+        final boolean isUpdated = userService.update(new UserDto(firstName, lastName, email, phone, authId));
         String message = "update.success";
         String logMessage = "Updated profile to user id: {} , at: {}";
         if (!isUpdated) {

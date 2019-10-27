@@ -1,8 +1,8 @@
 package com.github.alexeysa83.finalproject.web.servlet.admin;
 
-import com.github.alexeysa83.finalproject.model.AuthUser;
+import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.Role;
-import com.github.alexeysa83.finalproject.service.UtilsService;
+import com.github.alexeysa83.finalproject.service.UtilService;
 import com.github.alexeysa83.finalproject.service.auth.DefaultSecurityService;
 import com.github.alexeysa83.finalproject.service.auth.SecurityService;
 import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
@@ -28,7 +28,7 @@ public class UpdateRoleServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         final String authId = req.getParameter("authId");
-        final long id = UtilsService.stringToLong(authId);
+        final long id = UtilService.stringToLong(authId);
         final String r = req.getParameter("role");
         boolean isRoleValid = validationService.isRoleValid(r);
         String message;
@@ -40,9 +40,9 @@ public class UpdateRoleServlet extends HttpServlet {
         }
 
         final Role role = Role.valueOf(r);
-        final AuthUser user = securityService.getById(id);
+        final AuthUserDto user = securityService.getById(id);
         final boolean isUpdated = securityService.update
-                (new AuthUser(user.getId(), user.getLogin(), user.getPassword(), role, user.isBlocked()));
+                (new AuthUserDto(user.getId(), user.getLogin(), user.getPassword(), role, user.isBlocked()));
         message = "update.success";
         if (!isUpdated) {
             message = "update.fail";
@@ -51,7 +51,7 @@ public class UpdateRoleServlet extends HttpServlet {
             return;
         }
         log.info("Updated role to user id: {} , at: {}", authId, LocalDateTime.now());
-        final AuthUser authUser = (AuthUser) req.getSession().getAttribute("authUser");
+        final AuthUserDto authUser = (AuthUserDto) req.getSession().getAttribute("authUser");
         final boolean needLogout = validationService.needLogout(authUser, authId);
         if (needLogout) {
             forwardToServletMessage("/auth/logout", message, req, resp);

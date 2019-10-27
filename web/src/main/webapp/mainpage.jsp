@@ -20,7 +20,7 @@
     <a href="${pageContext.request.contextPath}/auth/news/add">
         <fmt:message key="add.news" bundle="${intr}"/></a>
 </c:if>
-<!-- just for check -->
+
 <c:if test="${requestScope.get('newsList') !=null}">
     <c:forEach items="${requestScope.newsList}" var="news">
         <h2 style="color: #2bb239"><a href="${pageContext.request.contextPath}/news/view?newsId=${news.id}">

@@ -6,11 +6,11 @@ import java.sql.Timestamp;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class TimeServiceTest {
+class UtilServiceTest {
 
     @Test
     void getTime() {
-        final Timestamp time = TimeService.getTime();
+        final Timestamp time = UtilService.getTime();
         assertNotNull(time);
     }
 }

@@ -1,18 +1,18 @@
 package com.github.alexeysa83.finalproject.service.news;
 
-import com.github.alexeysa83.finalproject.model.News;
+import com.github.alexeysa83.finalproject.model.dto.NewsDto;
 
 import java.util.List;
 
 public interface NewsService {
 
-    News createAndSave (News news);
+    NewsDto createAndSave (NewsDto news);
 
-    News getNewsOnId (long id);
+    NewsDto getNewsOnId (long id);
 
-    List<News> getNewsOnPage();
+    List<NewsDto> getNewsOnPage();
 
-    boolean updateNews (News news);
+    boolean updateNews (NewsDto news);
 
     boolean deleteNews (long id);
 }

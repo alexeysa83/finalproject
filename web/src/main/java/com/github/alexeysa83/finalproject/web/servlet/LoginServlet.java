@@ -1,6 +1,6 @@
 package com.github.alexeysa83.finalproject.web.servlet;
 
-import com.github.alexeysa83.finalproject.model.AuthUser;
+import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.service.auth.DefaultSecurityService;
 import com.github.alexeysa83.finalproject.service.auth.SecurityService;
 import org.slf4j.Logger;
@@ -40,7 +40,7 @@ public class LoginServlet extends HttpServlet {
         final String login = req.getParameter("login");
         final String password = req.getParameter("password");
 
-        AuthUser userFromDB = securityService.login(new AuthUser(login, password));
+        AuthUserDto userFromDB = securityService.login(new AuthUserDto(login, password));
         if (userFromDB == null) {
             req.setAttribute("message", "wrong.logpass");
             log.info("Invalid login or password enter for user: {} at: {}", login, LocalDateTime.now());

@@ -1,8 +1,8 @@
 package com.github.alexeysa83.finalproject.web.servlet;
 
-import com.github.alexeysa83.finalproject.model.Message;
-import com.github.alexeysa83.finalproject.model.News;
-import com.github.alexeysa83.finalproject.service.UtilsService;
+import com.github.alexeysa83.finalproject.model.dto.MessageDto;
+import com.github.alexeysa83.finalproject.model.dto.NewsDto;
+import com.github.alexeysa83.finalproject.service.UtilService;
 import com.github.alexeysa83.finalproject.service.message.DefaultMessageService;
 import com.github.alexeysa83.finalproject.service.message.MessageService;
 import com.github.alexeysa83.finalproject.service.news.DefaultNewsService;
@@ -26,10 +26,10 @@ public class NewsViewServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         final String newsId = req.getParameter("newsId");
-        final long id = UtilsService.stringToLong(newsId);
-        final News news = this.newsService.getNewsOnId(id);
+        final long id = UtilService.stringToLong(newsId);
+        final NewsDto news = this.newsService.getNewsOnId(id);
         req.setAttribute("news", news);
-        final List<Message> messageList = messageService.getMessagesOnNews(id);
+        final List<MessageDto> messageList = messageService.getMessagesOnNews(id);
         req.setAttribute("messageList", messageList);
         forwardToJsp("newsview", req, resp);
     }

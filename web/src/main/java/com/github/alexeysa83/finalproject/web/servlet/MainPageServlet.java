@@ -1,6 +1,6 @@
 package com.github.alexeysa83.finalproject.web.servlet;
 
-import com.github.alexeysa83.finalproject.model.News;
+import com.github.alexeysa83.finalproject.model.dto.NewsDto;
 import com.github.alexeysa83.finalproject.service.news.NewsService;
 import com.github.alexeysa83.finalproject.service.news.DefaultNewsService;
 
@@ -15,12 +15,12 @@ import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJsp;
 @WebServlet(name = "MainPageServlet", urlPatterns = "/main")
 public class MainPageServlet extends HttpServlet {
 
-    private NewsService service = DefaultNewsService.getInstance();
+    private NewsService newsService = DefaultNewsService.getInstance();
 
     // Check null
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-        List<News> newsList = service.getNewsOnPage();
+        List<NewsDto> newsList = newsService.getNewsOnPage();
         req.setAttribute("newsList", newsList);
         forwardToJsp("mainpage", req, resp);
     }

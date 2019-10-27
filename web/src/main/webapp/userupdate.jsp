@@ -2,9 +2,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<fmt:setLocale value= "${locale}"/>
-<fmt:setBundle basename = "messages" var = "msgs"/>
-<fmt:setBundle basename = "interface" var = "intr"/>
+<fmt:setLocale value="${locale}"/>
+<fmt:setBundle basename="messages" var="msgs"/>
+<fmt:setBundle basename="interface" var="intr"/>
 <html>
 <head>
     <title>Update user</title>
@@ -12,7 +12,6 @@
 <body>
 <jsp:include page="header.jsp"/>
 
-<%--User deleted message in JSP for deleted users + do not show delete / update buttons--%>
 <c:if test="${requestScope.get('message') != null}">
     <h2 style="color: firebrick">
         <fmt:message key="${requestScope.get('message')}" bundle="${msgs}"/></h2>

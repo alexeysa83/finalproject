@@ -3,8 +3,8 @@ package com.github.alexeysa83.finalproject.dao.user;
 import com.github.alexeysa83.finalproject.dao.DataSource;
 import com.github.alexeysa83.finalproject.dao.authuser.AuthUserBaseDao;
 import com.github.alexeysa83.finalproject.dao.authuser.DefaultAuthUserBaseDao;
-import com.github.alexeysa83.finalproject.model.AuthUser;
-import com.github.alexeysa83.finalproject.model.User;
+import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
+import com.github.alexeysa83.finalproject.model.dto.UserDto;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -15,7 +15,7 @@ import java.text.SimpleDateFormat;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class DefaultUserDaoTest {
+class DefaultUserBaseDaoTest {
 
     private final UserBaseDao userDAO = DefaultUserBaseDao.getInstance();
     private final AuthUserBaseDao authUserDao = DefaultAuthUserBaseDao.getInstance();
@@ -35,13 +35,13 @@ class DefaultUserDaoTest {
 
     @Test
     void getById() {
-        final AuthUser authUser = new AuthUser("UserID", "Test");
+        final AuthUserDto authUser = new AuthUserDto("UserID", "Test");
         final Timestamp regTime = getTime();
-        final AuthUser savedAuthUser = authUserDao.createAndSave(authUser, regTime);
+        final AuthUserDto savedAuthUser = authUserDao.createAndSave(authUser, regTime);
         final long authId = savedAuthUser.getId();
 
         // Testing transaction's second insert into user table
-        final User testUser = userDAO.getById(authId);
+        final UserDto testUser = userDAO.getById(authId);
         assertNotNull(testUser);
 
         final Long userId = testUser.getId();
@@ -60,22 +60,22 @@ class DefaultUserDaoTest {
 
     @Test
     void update() {
-        final AuthUser authUser = new AuthUser("UserUpdate", "Test");
+        final AuthUserDto authUser = new AuthUserDto("UserUpdate", "Test");
         final Timestamp regTime = getTime();
-        final AuthUser savedAuthUser = authUserDao.createAndSave(authUser, regTime);
+        final AuthUserDto savedAuthUser = authUserDao.createAndSave(authUser, regTime);
         final long authId = savedAuthUser.getId();
 
-        final User userToUpdate = new User
+        final UserDto userDtoToUpdate = new UserDto
                 ("First", "Last", "email", "phone", authId);
 
-        final boolean isUpdated = userDAO.update(userToUpdate);
+        final boolean isUpdated = userDAO.update(userDtoToUpdate);
         assertTrue(isUpdated);
 
-        final User afterUpdate = userDAO.getById(authId);
-        assertEquals(userToUpdate.getFirstName(), afterUpdate.getFirstName());
-        assertEquals(userToUpdate.getLastName(), afterUpdate.getLastName());
-        assertEquals(userToUpdate.getEmail(), afterUpdate.getEmail());
-        assertEquals(userToUpdate.getPhone(), afterUpdate.getPhone());
+        final UserDto afterUpdate = userDAO.getById(authId);
+        assertEquals(userDtoToUpdate.getFirstName(), afterUpdate.getFirstName());
+        assertEquals(userDtoToUpdate.getLastName(), afterUpdate.getLastName());
+        assertEquals(userDtoToUpdate.getEmail(), afterUpdate.getEmail());
+        assertEquals(userDtoToUpdate.getPhone(), afterUpdate.getPhone());
 
         completeDeleteUser(authId);
     }

@@ -1,6 +1,8 @@
-package com.github.alexeysa83.finalproject.model;
+package com.github.alexeysa83.finalproject.model.dto;
 
-public class AuthUser {
+import com.github.alexeysa83.finalproject.model.Role;
+
+public class AuthUserDto {
 
     private long id;
     private String login;
@@ -8,18 +10,18 @@ public class AuthUser {
     private Role role;
     private boolean isBlocked;
 
-    public AuthUser() {
+    public AuthUserDto() {
     }
 
     // User created in login/registration servlets
-    public AuthUser(String login, String password) {
+    public AuthUserDto(String login, String password) {
         this.login = login;
         this.password = password;
         role = Role.USER;
         isBlocked = false;
     }
 
-    public AuthUser(long id, String login, String password, Role role, boolean isBlocked) {
+    public AuthUserDto(long id, String login, String password, Role role, boolean isBlocked) {
         this.id = id;
         this.login = login;
         this.password = password;

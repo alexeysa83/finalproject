@@ -80,5 +80,3 @@
 </body>
 </html>
 
-<%-- <jsp:useBean id="news" scope="request" type="com.github.alexeysa83.finalproject.model.News"/>--%>
-<%--<jsp:useBean id="authUser" scope="session" type="com.github.alexeysa83.finalproject.model.AuthUser"/> --%>

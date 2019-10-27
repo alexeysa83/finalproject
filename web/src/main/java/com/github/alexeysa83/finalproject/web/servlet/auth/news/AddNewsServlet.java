@@ -1,8 +1,8 @@
 package com.github.alexeysa83.finalproject.web.servlet.auth.news;
 
-import com.github.alexeysa83.finalproject.model.AuthUser;
-import com.github.alexeysa83.finalproject.model.News;
-import com.github.alexeysa83.finalproject.service.TimeService;
+import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
+import com.github.alexeysa83.finalproject.model.dto.NewsDto;
+import com.github.alexeysa83.finalproject.service.UtilService;
 import com.github.alexeysa83.finalproject.service.news.DefaultNewsService;
 import com.github.alexeysa83.finalproject.service.news.NewsService;
 import com.github.alexeysa83.finalproject.service.validation.NewsValidationservice;
@@ -22,7 +22,7 @@ import static com.github.alexeysa83.finalproject.web.WebUtils.*;
 public class AddNewsServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(AddNewsServlet.class);
-    private NewsService service = DefaultNewsService.getInstance();
+    private NewsService newsService = DefaultNewsService.getInstance();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
@@ -39,9 +39,9 @@ public class AddNewsServlet extends HttpServlet {
             return;
         }
 
-        AuthUser user = (AuthUser) req.getSession().getAttribute("authUser");
-        final Timestamp creationTime = TimeService.getTime();
-        final News news = service.createAndSave(new News(title, content, creationTime, user.getId(), user.getLogin()));
+        AuthUserDto user = (AuthUserDto) req.getSession().getAttribute("authUser");
+        final Timestamp creationTime = UtilService.getTime();
+        final NewsDto news = newsService.createAndSave(new NewsDto(title, content, creationTime, user.getId(), user.getLogin()));
         if (news == null) {
             req.setAttribute("message", "error.unknown");
             log.error("Failed to add news for user id: {}, at: {}", user.getId(), LocalDateTime.now());

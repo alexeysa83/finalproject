@@ -5,10 +5,10 @@
              version="2.0">
     <persistence-unit name="com.github.alexeysa83.finalproject.dao" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <class>com.github.alexeysa83.finalproject.model.AuthUser</class>
-        <class>com.github.alexeysa83.finalproject.model.User</class>
-        <class>com.github.alexeysa83.finalproject.model.News</class>
-        <class>com.github.alexeysa83.finalproject.model.Message</class>
+        <class>com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity</class>
+        <class>com.github.alexeysa83.finalproject.dao.entity.UserEntity</class>
+        <class>com.github.alexeysa83.finalproject.dao.entity.NewsEntity</class>
+        <class>com.github.alexeysa83.finalproject.dao.entity.MessageEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>

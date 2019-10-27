@@ -1,6 +1,6 @@
 package com.github.alexeysa83.finalproject.web.servlet.auth.message;
 
-import com.github.alexeysa83.finalproject.service.UtilsService;
+import com.github.alexeysa83.finalproject.service.UtilService;
 import com.github.alexeysa83.finalproject.service.message.DefaultMessageService;
 import com.github.alexeysa83.finalproject.service.message.MessageService;
 import com.github.alexeysa83.finalproject.web.servlet.auth.news.DeleteNewsServlet;
@@ -24,7 +24,7 @@ public class DeleteMessageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         final String messageId = req.getParameter("messageId");
-        final long messId = UtilsService.stringToLong(messageId);
+        final long messId = UtilService.stringToLong(messageId);
         final boolean isDeleted = messageService.deleteMessage(messId);
         String message = "delete.success";
         String logMessage = "Deleted message id: {} , at: {}";
