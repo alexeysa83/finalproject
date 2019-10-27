@@ -1,7 +1,7 @@
-package com.github.alexeysa83.finalproject.dao.message;
+package com.github.alexeysa83.finalproject.dao.comment;
 
 import com.github.alexeysa83.finalproject.dao.DataSource;
-import com.github.alexeysa83.finalproject.model.dto.MessageDto;
+import com.github.alexeysa83.finalproject.model.dto.CommentDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,20 +10,20 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DefaultMessageBaseDao implements MessageBaseDao {
+public class DefaultCommentBaseDao implements CommentBaseDao {
 
-    private static final Logger log = LoggerFactory.getLogger(DefaultMessageBaseDao.class);
+    private static final Logger log = LoggerFactory.getLogger(DefaultCommentBaseDao.class);
     private DataSource mysql = DataSource.getInstance();
 
-    private static volatile MessageBaseDao instance;
+    private static volatile CommentBaseDao instance;
 
-    public static MessageBaseDao getInstance() {
-        MessageBaseDao localInstance = instance;
+    public static CommentBaseDao getInstance() {
+        CommentBaseDao localInstance = instance;
         if (localInstance == null) {
-            synchronized (MessageBaseDao.class) {
+            synchronized (CommentBaseDao.class) {
                 localInstance = instance;
                 if (localInstance == null) {
-                    instance = localInstance = new DefaultMessageBaseDao();
+                    instance = localInstance = new DefaultCommentBaseDao();
                 }
             }
         }
@@ -32,15 +32,15 @@ public class DefaultMessageBaseDao implements MessageBaseDao {
 
 
     @Override
-    public MessageDto createAndSave(MessageDto messageDto) {
+    public CommentDto createAndSave(CommentDto comment) {
         try (Connection connection = mysql.getConnection();
              PreparedStatement statement = connection.prepareStatement
-                     ("insert into message (content, creation_time, auth_id, news_id) values (?, ?, ?, ?)",
+                     ("insert into comment (content, creation_time, auth_id, news_id) values (?, ?, ?, ?)",
                              Statement.RETURN_GENERATED_KEYS)) {
-            statement.setString(1, messageDto.getContent());
-            statement.setTimestamp(2, messageDto.getCreationTime());
-            statement.setLong(3, messageDto.getAuthId());
-            statement.setLong(4, messageDto.getNewsId());
+            statement.setString(1, comment.getContent());
+            statement.setTimestamp(2, comment.getCreationTime());
+            statement.setLong(3, comment.getAuthId());
+            statement.setLong(4, comment.getNewsId());
             statement.executeUpdate();
             try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
                 final boolean isSaved = generatedKeys.next();
@@ -48,10 +48,10 @@ public class DefaultMessageBaseDao implements MessageBaseDao {
                     return null;
                 }
                 final long id = generatedKeys.getLong(1);
-                log.info("Message id: {} saved to DB at: {}", id, LocalDateTime.now());
-                return new MessageDto
-                        (id, messageDto.getContent(), messageDto.getCreationTime(),
-                                messageDto.getAuthId(), messageDto.getNewsId(), messageDto.getAuthorMessage());
+                log.info("Comment id: {} saved to DB at: {}", id, LocalDateTime.now());
+                return new CommentDto
+                        (id, comment.getContent(), comment.getCreationTime(),
+                                comment.getAuthId(), comment.getNewsId(), comment.getAuthorComment());
             }
 
         } catch (SQLException e) {
@@ -61,11 +61,11 @@ public class DefaultMessageBaseDao implements MessageBaseDao {
     }
 
     @Override
-    public MessageDto getById(long id) {
+    public CommentDto getById(long id) {
         try (Connection connection = mysql.getConnection();
              PreparedStatement statement = connection.prepareStatement
-                     ("select m.content, m.creation_time, m.auth_id, m.news_id, au.login from message m " +
-                             "join auth_user au on m.auth_id = au.id where m.id = ?")) {
+                     ("select c.content, c.creation_time, c.auth_id, c.news_id, au.login from comment c " +
+                             "join auth_user au on c.auth_id = au.id where c.id = ?")) {
             statement.setLong(1, id);
             try (ResultSet resultSet = statement.executeQuery()) {
                 final boolean isExist = resultSet.next();
@@ -77,7 +77,7 @@ public class DefaultMessageBaseDao implements MessageBaseDao {
                 final long authId = resultSet.getLong("auth_id");
                 final long newsId = resultSet.getLong("news_id");
                 final String login = resultSet.getString("login");
-                return new MessageDto(id, content, creationTime, authId, newsId, login);
+                return new CommentDto(id, content, creationTime, authId, newsId, login);
             }
         } catch (SQLException e) {
             log.error("SQLException at: {}", LocalDateTime.now(), e);
@@ -86,33 +86,33 @@ public class DefaultMessageBaseDao implements MessageBaseDao {
     }
 
     @Override
-    public List<MessageDto> getMessagesOnNews(long newsId) {
+    public List<CommentDto> getCommentsOnNews(long newsId) {
         Connection connection = null;
         try {
             connection = mysql.getConnection();
             connection.setAutoCommit(false);
             try (PreparedStatement statement = connection.prepareStatement
-                    ("select m.id, m.content, m.creation_time, m.auth_id, m.news_id, au.login from message m " +
-                            "join auth_user au on m.auth_id = au.id where m.news_id = ?")) {
+                    ("select c.id, c.content, c.creation_time, c.auth_id, c.news_id, au.login from comment c " +
+                            "join auth_user au on c.auth_id = au.id where c.news_id = ?")) {
                 statement.setLong(1, newsId);
                 try (ResultSet resultSet = statement.executeQuery()) {
-                    final List<MessageDto> messageDtoList = new ArrayList<>();
+                    final List<CommentDto> commentList = new ArrayList<>();
                     while (resultSet.next()) {
                         final long id = resultSet.getLong("id");
                         final String content = resultSet.getString("content");
                         final Timestamp creationTime = resultSet.getTimestamp("creation_time");
                         final long authId = resultSet.getLong("auth_id");
                         final String login = resultSet.getString("login");
-                        messageDtoList.add(new MessageDto(id, content, creationTime, authId, newsId, login));
+                        commentList.add(new CommentDto(id, content, creationTime, authId, newsId, login));
                     }
                     connection.commit();
-                    return messageDtoList;
+                    return commentList;
                 }
             }
         } catch (SQLException e) {
             try {
                 connection.rollback();
-                log.error("Unable to get list of messages from DB at: {}", LocalDateTime.now());
+                log.error("Unable to get list of comments from DB at: {}", LocalDateTime.now());
             } catch (SQLException ex) {
                 log.error("Unable to rollback transaction at: {}", LocalDateTime.now(), ex);
                 throw new RuntimeException(ex);
@@ -131,13 +131,13 @@ public class DefaultMessageBaseDao implements MessageBaseDao {
     }
 
     @Override
-    public boolean update(MessageDto messageDto) {
+    public boolean update(CommentDto comment) {
         try (Connection connection = mysql.getConnection();
              PreparedStatement statement = connection.prepareStatement
-                     ("update message set content = ? where id = ?")) {
-            statement.setString(1, messageDto.getContent());
-            statement.setLong(2, messageDto.getId());
-            log.info("Message id: {} updated in DB at: {}", messageDto.getId(), LocalDateTime.now());
+                     ("update comment set content = ? where id = ?")) {
+            statement.setString(1, comment.getContent());
+            statement.setLong(2, comment.getId());
+            log.info("Comment id: {} updated in DB at: {}", comment.getId(), LocalDateTime.now());
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             log.error("SQLException at: {}", LocalDateTime.now(), e);
@@ -149,9 +149,9 @@ public class DefaultMessageBaseDao implements MessageBaseDao {
     public boolean delete(long id) {
         try (Connection connection = mysql.getConnection();
              PreparedStatement statement = connection.prepareStatement
-                     ("delete from message where id = ?")) {
+                     ("delete from comment where id = ?")) {
                         statement.setLong(1, id);
-            log.info("Message id: {} deleted from DB at: {}", id, LocalDateTime.now());
+            log.info("Comment id: {} deleted from DB at: {}", id, LocalDateTime.now());
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             log.error("SQLException at: {}", LocalDateTime.now(), e);

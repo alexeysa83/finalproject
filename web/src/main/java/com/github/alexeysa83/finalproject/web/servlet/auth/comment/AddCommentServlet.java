@@ -1,11 +1,11 @@
-package com.github.alexeysa83.finalproject.web.servlet.auth.message;
+package com.github.alexeysa83.finalproject.web.servlet.auth.comment;
 
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
-import com.github.alexeysa83.finalproject.model.dto.MessageDto;
+import com.github.alexeysa83.finalproject.model.dto.CommentDto;
 import com.github.alexeysa83.finalproject.service.UtilService;
-import com.github.alexeysa83.finalproject.service.message.DefaultMessageService;
-import com.github.alexeysa83.finalproject.service.message.MessageService;
-import com.github.alexeysa83.finalproject.service.validation.MessageValidationService;
+import com.github.alexeysa83.finalproject.service.comment.DefaultCommentService;
+import com.github.alexeysa83.finalproject.service.comment.CommentService;
+import com.github.alexeysa83.finalproject.service.validation.CommentValidationService;
 import com.github.alexeysa83.finalproject.web.servlet.auth.news.AddNewsServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,16 +19,16 @@ import java.time.LocalDateTime;
 
 import static com.github.alexeysa83.finalproject.web.WebUtils.*;
 
-@WebServlet(name = "AddMessageServlet", urlPatterns = {"/auth/message/add"})
-public class AddMessageServlet extends HttpServlet {
+@WebServlet(name = "AddCommentServlet", urlPatterns = {"/auth/comment/add"})
+public class AddCommentServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(AddNewsServlet.class);
-    private MessageService messageService = DefaultMessageService.getInstance();
+    private CommentService commentService = DefaultCommentService.getInstance();
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         final String content = req.getParameter("content");
-        String message = MessageValidationService.isValidContent(content);
+        String message = CommentValidationService.isValidContent(content);
         if (message != null) {
             forwardToServletMessage("/news/view", message, req, resp);
             return;
@@ -38,12 +38,12 @@ public class AddMessageServlet extends HttpServlet {
         final Timestamp creationTime = UtilService.getTime();
         final String newsId = req.getParameter("newsId");
         final long id = UtilService.stringToLong(newsId);
-        final MessageDto mess = messageService.createAndSave
-                (new MessageDto(content, creationTime, authUser.getId(), id, authUser.getLogin()));
+        final CommentDto comment = commentService.createAndSave
+                (new CommentDto(content, creationTime, authUser.getId(), id, authUser.getLogin()));
 
-        String logMessage = "Created message for news id: {} , at: {}";
-        if (mess == null) {
-            logMessage = "Failed to create message for news id: {} , at: {}";
+        String logMessage = "Created comment to news id: {} , at: {}";
+        if (comment == null) {
+            logMessage = "Failed to create comment to news id: {} , at: {}";
         }
         log.info(logMessage, newsId, LocalDateTime.now());
         forwardToServlet("/news/view", req, resp);

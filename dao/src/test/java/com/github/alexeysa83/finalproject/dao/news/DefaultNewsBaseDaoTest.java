@@ -3,7 +3,10 @@ package com.github.alexeysa83.finalproject.dao.news;
 import com.github.alexeysa83.finalproject.dao.DataSource;
 import com.github.alexeysa83.finalproject.dao.authuser.AuthUserBaseDao;
 import com.github.alexeysa83.finalproject.dao.authuser.DefaultAuthUserBaseDao;
+import com.github.alexeysa83.finalproject.dao.comment.CommentBaseDao;
+import com.github.alexeysa83.finalproject.dao.comment.DefaultCommentBaseDao;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
+import com.github.alexeysa83.finalproject.model.dto.CommentDto;
 import com.github.alexeysa83.finalproject.model.dto.NewsDto;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
@@ -22,6 +25,7 @@ class DefaultNewsBaseDaoTest {
 
     private final NewsBaseDao newsDao = DefaultNewsBaseDao.getInstance();
     private final static AuthUserBaseDao authUserDao = DefaultAuthUserBaseDao.getInstance();
+    private final CommentBaseDao commentDao = DefaultCommentBaseDao.getInstance();
     private static DataSource mysql = DataSource.getInstance();
     private final static AuthUserDto testUser;
 
@@ -137,6 +141,8 @@ class DefaultNewsBaseDaoTest {
                 ("NewsDelete", "TestContent",
                         getTime(), testUser.getId(), testUser.getLogin());
         final NewsDto testNews = newsDao.createAndSave(news);
+        commentDao.createAndSave
+                (new CommentDto("Comment", getTime(), testUser.getId(), testNews.getId(), testUser.getLogin()));
         final long id = testNews.getId();
         NewsDto newsToDelete = newsDao.getById(id);
         assertNotNull(newsToDelete);

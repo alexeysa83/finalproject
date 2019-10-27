@@ -16,7 +16,7 @@ public class AuthUserEntity {
 
     private Set<NewsEntity> news;
 
-    private Set<MessageEntity> messages;
+    private Set<CommentEntity> messages;
 
     public AuthUserEntity() {
     }
@@ -77,11 +77,11 @@ public class AuthUserEntity {
         this.news = news;
     }
 
-    public Set<MessageEntity> getMessages() {
+    public Set<CommentEntity> getMessages() {
         return messages;
     }
 
-    public void setMessages(Set<MessageEntity> messages) {
+    public void setMessages(Set<CommentEntity> messages) {
         this.messages = messages;
     }
 

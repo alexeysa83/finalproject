@@ -23,7 +23,7 @@
         ${news.authorNews}</a>
     <fmt:message key="created" bundle="${intr}"/>: ${news.creationTime}</h2>
 <h2>${news.content}</h2>
-<h2><fmt:message key="messages" bundle="${intr}"/>: ${requestScope.get('messageList').size()}</h2>
+<h2><fmt:message key="comments" bundle="${intr}"/>: ${requestScope.get('commentList').size()}</h2>
 
 <c:if test="${authUser.login == news.authorNews || authUser.role == 'ADMIN'}">
     <form action="${pageContext.request.contextPath}/auth/news/update" method="GET">
@@ -40,26 +40,26 @@
     </form>
 </c:if>
 <hr/><hr/>
-<c:if test="${sessionScope.get('authUser') != null && requestScope.get('messageList') !=null}">
+<c:if test="${sessionScope.get('authUser') != null && requestScope.get('commentList') !=null}">
 
-        <c:forEach items="${requestScope.messageList}" var="message">
-            <h4 style="color: #b04db2">${message.content}</h4>
+        <c:forEach items="${requestScope.commentList}" var="comment">
+            <h4 style="color: #b04db2">${comment.content}</h4>
             <h4><fmt:message key="author" bundle="${intr}"/>:
-                <a href="${pageContext.request.contextPath}/auth/user/view?authId=${message.authId}">
-                        ${message.authorMessage}</a></h4>
-            <h4><fmt:message key="created" bundle="${intr}"/>: ${message.creationTime}</h4>
+                <a href="${pageContext.request.contextPath}/auth/user/view?authId=${comment.authId}">
+                        ${comment.authorComment}</a></h4>
+            <h4><fmt:message key="created" bundle="${intr}"/>: ${comment.creationTime}</h4>
             <hr/>
-            <c:if test="${authUser.login == message.authorMessage || authUser.role == 'ADMIN'}">
-                <form action="${pageContext.request.contextPath}/auth/message/update" method="GET">
-                    <input type="submit" value="<fmt:message key="update.message" bundle="${intr}"/>"/>
+            <c:if test="${authUser.login == comment.authorComment || authUser.role == 'ADMIN'}">
+                <form action="${pageContext.request.contextPath}/auth/comment/update" method="GET">
+                    <input type="submit" value="<fmt:message key="update.comment" bundle="${intr}"/>"/>
                     <label>
-                        <input hidden="hidden" type="text" name="messageId" value="${message.id}">
+                        <input hidden="hidden" type="text" name="commentId" value="${comment.id}">
                     </label>
                 </form>
-                <form action="${pageContext.request.contextPath}/auth/message/delete" method="GET">
-                    <input type="submit" value="<fmt:message key="delete.message" bundle="${intr}"/>"/>
+                <form action="${pageContext.request.contextPath}/auth/comment/delete" method="GET">
+                    <input type="submit" value="<fmt:message key="delete.comment" bundle="${intr}"/>"/>
                     <label>
-                        <input hidden="hidden" type="text" name="messageId" value="${message.id}">
+                        <input hidden="hidden" type="text" name="commentId" value="${comment.id}">
                         <input hidden="hidden" type="text" name="newsId" value="${news.id}">
                     </label>
                 </form>
@@ -67,10 +67,10 @@
         </c:forEach>
 
 
-    <form action="${pageContext.request.contextPath}/auth/message/add" method="POST">
+    <form action="${pageContext.request.contextPath}/auth/comment/add" method="POST">
         <label for="content"><strong><fmt:message key="content" bundle="${intr}"/></strong></label>
         <textarea id="content" name="content" rows="10"></textarea>
-        <input type="submit" value="<fmt:message key="add.message" bundle="${intr}"/>"/>
+        <input type="submit" value="<fmt:message key="add.comment" bundle="${intr}"/>"/>
         <label>
             <input hidden="hidden" type="text" name="newsId" value="${news.id}">
         </label>

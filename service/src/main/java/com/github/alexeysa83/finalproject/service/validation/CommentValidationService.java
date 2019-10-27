@@ -1,8 +1,8 @@
 package com.github.alexeysa83.finalproject.service.validation;
 
-public abstract class MessageValidationService {
+public abstract class CommentValidationService {
 
-    private MessageValidationService(){
+    private CommentValidationService(){
             }
 
     public static String isValidContent(String content) {

@@ -1,10 +1,10 @@
 package com.github.alexeysa83.finalproject.web.servlet;
 
-import com.github.alexeysa83.finalproject.model.dto.MessageDto;
+import com.github.alexeysa83.finalproject.model.dto.CommentDto;
 import com.github.alexeysa83.finalproject.model.dto.NewsDto;
 import com.github.alexeysa83.finalproject.service.UtilService;
-import com.github.alexeysa83.finalproject.service.message.DefaultMessageService;
-import com.github.alexeysa83.finalproject.service.message.MessageService;
+import com.github.alexeysa83.finalproject.service.comment.DefaultCommentService;
+import com.github.alexeysa83.finalproject.service.comment.CommentService;
 import com.github.alexeysa83.finalproject.service.news.DefaultNewsService;
 import com.github.alexeysa83.finalproject.service.news.NewsService;
 
@@ -21,7 +21,7 @@ import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJsp;
 public class NewsViewServlet extends HttpServlet {
 
     private NewsService newsService = DefaultNewsService.getInstance();
-    private MessageService messageService = DefaultMessageService.getInstance();
+    private CommentService commentService = DefaultCommentService.getInstance();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
@@ -29,8 +29,8 @@ public class NewsViewServlet extends HttpServlet {
         final long id = UtilService.stringToLong(newsId);
         final NewsDto news = this.newsService.getNewsOnId(id);
         req.setAttribute("news", news);
-        final List<MessageDto> messageList = messageService.getMessagesOnNews(id);
-        req.setAttribute("messageList", messageList);
+        final List<CommentDto> commentList = commentService.getCommentsOnNews(id);
+        req.setAttribute("commentList", commentList);
         forwardToJsp("newsview", req, resp);
     }
 

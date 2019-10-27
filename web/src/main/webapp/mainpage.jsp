@@ -30,7 +30,7 @@
             <a href="${pageContext.request.contextPath}/auth/user/view?authId=${news.authId}">
                 ${news.authorNews}</a></h3>
         <h3><fmt:message key="created" bundle="${intr}"/>: ${news.creationTime}</h3>
-        <h4><fmt:message key="messages" bundle="${intr}"/>: 0</h4>
+        <h4><fmt:message key="comments" bundle="${intr}"/>: 0</h4>
         <hr/>
     </c:forEach>
 </c:if>

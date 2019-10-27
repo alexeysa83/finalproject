@@ -218,12 +218,16 @@ public class DefaultNewsBaseDao implements NewsBaseDao {
         try {
             connection = mysql.getConnection();
             connection.setAutoCommit(false);
-            try (PreparedStatement statement = connection.prepareStatement("delete from news where id = ?")) {
-                statement.setLong(1, id);
-                final int i = statement.executeUpdate();
+            try (PreparedStatement statementComment = connection.prepareStatement("delete from comment where news_id = ?");
+                 PreparedStatement statementNews = connection.prepareStatement("delete from news where id = ?")
+            ) {
+                statementComment.setLong(1,id);
+                final int b = statementComment.executeUpdate();
+                statementNews.setLong(1, id);
+                final int i = statementNews.executeUpdate();
                 connection.commit();
                 log.info("News id: {} deleted from DB at: {}", id, LocalDateTime.now());
-                return i > 0;
+                return b > 0 && i > 0;
             }
         } catch (SQLException e) {
             try {

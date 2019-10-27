@@ -2,30 +2,30 @@ package com.github.alexeysa83.finalproject.model.dto;
 
 import java.sql.Timestamp;
 
-public class MessageDto {
+public class CommentDto {
 
     private long id;
     private String content;
     private Timestamp creationTime;
     private long authId;
     private long newsId;
-    private String authorMessage;
+    private String authorComment;
 
-    public MessageDto(String content, Timestamp creationTime, long authId, long newsId, String authorMessage) {
+    public CommentDto(String content, Timestamp creationTime, long authId, long newsId, String authorComment) {
         this.content = content;
         this.creationTime = creationTime;
         this.authId = authId;
         this.newsId = newsId;
-        this.authorMessage = authorMessage;
+        this.authorComment = authorComment;
     }
 
-    public MessageDto(long id, String content, Timestamp creationTime, long authId, long newsId, String authorMessage) {
+    public CommentDto(long id, String content, Timestamp creationTime, long authId, long newsId, String authorComment) {
         this.id = id;
         this.content = content;
         this.creationTime = creationTime;
         this.authId = authId;
         this.newsId = newsId;
-        this.authorMessage = authorMessage;
+        this.authorComment = authorComment;
     }
 
     public long getId() {
@@ -48,8 +48,8 @@ public class MessageDto {
         return newsId;
     }
 
-    public String getAuthorMessage() {
-        return authorMessage;
+    public String getAuthorComment() {
+        return authorComment;
     }
 
     @Override
@@ -60,7 +60,7 @@ public class MessageDto {
                 ", creationTime=" + creationTime +
                 ", authId=" + authId +
                 ", newsId=" + newsId +
-                ", authorMessage=" + authorMessage +
+                ", authorComment=" + authorComment +
                 '}';
     }
 }

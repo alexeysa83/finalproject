@@ -3,7 +3,7 @@ package com.github.alexeysa83.finalproject.dao.entity;
 import java.sql.Timestamp;
 import java.util.Objects;
 
-public class MessageEntity {
+public class CommentEntity {
 
     private long id;
     private String content;
@@ -15,7 +15,7 @@ public class MessageEntity {
 
     private NewsEntity news;
 
-    public MessageEntity() {
+    public CommentEntity() {
     }
 
     public long getId() {
@@ -89,7 +89,7 @@ public class MessageEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MessageEntity message = (MessageEntity) o;
+        CommentEntity message = (CommentEntity) o;
         return Objects.equals(id, message.id);
     }
 
