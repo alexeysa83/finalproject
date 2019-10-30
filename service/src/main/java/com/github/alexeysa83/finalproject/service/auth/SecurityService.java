@@ -4,7 +4,7 @@ import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 
 public interface SecurityService {
 
-    AuthUserDto createAndSaveAuthUser (AuthUserDto user);
+    AuthUserDto createAndSaveAuthUser (String login, String password);
 
 //    AuthUser getByLogin (String login);
 

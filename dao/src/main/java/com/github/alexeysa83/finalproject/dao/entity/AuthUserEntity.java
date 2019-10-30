@@ -2,8 +2,11 @@ package com.github.alexeysa83.finalproject.dao.entity;
 
 import com.github.alexeysa83.finalproject.model.Role;
 
+import javax.persistence.*;
 import java.util.Set;
 
+@Entity
+@Table(name = "auth_user")
 public class AuthUserEntity {
 
     private long id;
@@ -21,6 +24,8 @@ public class AuthUserEntity {
     public AuthUserEntity() {
     }
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public long getId() {
         return id;
     }
@@ -29,6 +34,7 @@ public class AuthUserEntity {
         this.id = id;
     }
 
+    @Column (unique = true, nullable = false, length = 64)
     public String getLogin() {
         return login;
     }
@@ -37,6 +43,7 @@ public class AuthUserEntity {
         this.login = login;
     }
 
+    @Column (nullable = false, length = 64)
     public String getPassword() {
         return password;
     }
@@ -45,6 +52,8 @@ public class AuthUserEntity {
         this.password = password;
     }
 
+    @Column (nullable = false, length = 64)
+    @Enumerated(EnumType.STRING)
     public Role getRole() {
         return role;
     }
@@ -53,6 +62,7 @@ public class AuthUserEntity {
         this.role = role;
     }
 
+    @Column(name = "is_blocked", nullable = false)
     public boolean isBlocked() {
         return isBlocked;
     }
@@ -61,14 +71,18 @@ public class AuthUserEntity {
         isBlocked = blocked;
     }
 
+    @OneToOne(mappedBy = "authUser", cascade = CascadeType.ALL , orphanRemoval = true)
     public UserEntity getUser() {
         return user;
     }
+
+//    cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE}
 
     public void setUser(UserEntity user) {
         this.user = user;
     }
 
+    @OneToMany(mappedBy = "authUser")
     public Set<NewsEntity> getNews() {
         return news;
     }
@@ -77,6 +91,7 @@ public class AuthUserEntity {
         this.news = news;
     }
 
+    @OneToMany(mappedBy = "authUser")
     public Set<CommentEntity> getMessages() {
         return messages;
     }

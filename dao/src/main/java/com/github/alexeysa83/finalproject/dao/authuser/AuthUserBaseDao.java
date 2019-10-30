@@ -7,7 +7,7 @@ import java.sql.Timestamp;
 
 public interface AuthUserBaseDao extends BaseDao<AuthUserDto> {
 
-    AuthUserDto createAndSave(AuthUserDto user, Timestamp regTime);
+    AuthUserDto createAndSave(AuthUserDto user);
 
     AuthUserDto getByLogin(String login);
 

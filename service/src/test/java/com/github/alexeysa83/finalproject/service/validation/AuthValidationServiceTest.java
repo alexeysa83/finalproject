@@ -63,15 +63,15 @@ class AuthValidationServiceTest {
 //
 //    }
 
-    @Test
-    void needLogout() {
-        AuthUserDto testUser = new AuthUserDto(1, "Test", "Test", null, false);
-        boolean result = validationService.needLogout(testUser, "1");
-        assertTrue(result);
-
-        result = validationService.needLogout(testUser, "2");
-        assertFalse(result);
-    }
+//    @Test
+//    void needLogout() {
+//        AuthUserDto testUser = new AuthUserDto(1, "Test", "Test", null, false);
+//        boolean result = validationService.needLogout(testUser, "1");
+//        assertTrue(result);
+//
+//        result = validationService.needLogout(testUser, "2");
+//        assertFalse(result);
+//    }
 
     @Test
     void isRoleValid() {

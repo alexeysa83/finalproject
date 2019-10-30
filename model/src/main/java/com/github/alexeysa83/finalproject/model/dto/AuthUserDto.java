@@ -10,43 +10,75 @@ public class AuthUserDto {
     private Role role;
     private boolean isBlocked;
 
+    private UserDto userDto;
+
     public AuthUserDto() {
     }
 
     // User created in login/registration servlets
-    public AuthUserDto(String login, String password) {
+    public AuthUserDto(String login, String password, UserDto userDto) {
         this.login = login;
         this.password = password;
         role = Role.USER;
         isBlocked = false;
+        this.userDto = userDto;
     }
 
-    public AuthUserDto(long id, String login, String password, Role role, boolean isBlocked) {
+    public AuthUserDto(long id, String login, String password, Role role, boolean isBlocked, UserDto userDto) {
         this.id = id;
         this.login = login;
         this.password = password;
         this.role = role;
         this.isBlocked = isBlocked;
+        this.userDto = userDto;
     }
 
     public long getId() {
         return id;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public String getLogin() {
         return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
     }
 
     public String getPassword() {
         return password;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public Role getRole() {
         return role;
     }
 
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
     public boolean isBlocked() {
         return isBlocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        isBlocked = blocked;
+    }
+
+    public UserDto getUserDto() {
+        return userDto;
+    }
+
+    public void setUserDto(UserDto userDto) {
+        this.userDto = userDto;
     }
 
     @Override

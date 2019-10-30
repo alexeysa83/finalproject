@@ -37,7 +37,8 @@ public class UpdateLoginServlet extends HttpServlet {
         final AuthUserDto userOld = securityService.getById(id);
 
         final boolean isUpdated = securityService.update
-                (new AuthUserDto(userOld.getId(), loginNew, userOld.getPassword(), userOld.getRole(), userOld.isBlocked()));
+                (new AuthUserDto(userOld.getId(), loginNew, userOld.getPassword(),
+                        userOld.getRole(), userOld.isBlocked(), userOld.getUserDto()));
         message = "update.success";
         if (!isUpdated) {
             message = "update.fail";

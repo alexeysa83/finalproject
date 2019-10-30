@@ -1,38 +1,32 @@
 package com.github.alexeysa83.finalproject.dao;
 
-import org.hibernate.boot.Metadata;
-import org.hibernate.boot.MetadataSources;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.cfg.Environment;
-import org.hibernate.service.ServiceRegistry;
+import org.hibernate.Session;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import java.util.HashMap;
-import java.util.Map;
 
 public class HibernateUtil {
 
+    private final static String DEFAULT_UNIT = "com.github.alexeysa83.finalproject.dao";
     private static final EntityManagerFactory emFactory;
 
     static {
-        emFactory =  Persistence.createEntityManagerFactory("com.github.alexeysa83.finalproject.dao");
+        emFactory =  Persistence.createEntityManagerFactory
+                (DEFAULT_UNIT);
     }
 
     public static EntityManager getEntityManager () {
         return emFactory.createEntityManager();
     }
 
-//    public static Session getSession() {
-//        return getEntityManager().unwrap(Session.class);
-//    }
+    public static Session getSession() {
+        return getEntityManager().unwrap(Session.class);
+    }
 
     public static void close() {
         emFactory.close();
     }
-
-
 
 
 

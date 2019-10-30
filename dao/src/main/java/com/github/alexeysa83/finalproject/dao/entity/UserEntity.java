@@ -1,7 +1,10 @@
 package com.github.alexeysa83.finalproject.dao.entity;
 
+import javax.persistence.*;
 import java.sql.Timestamp;
 
+@Entity
+@Table(name = "user")
 public class UserEntity {
 
     private long id;
@@ -10,13 +13,15 @@ public class UserEntity {
     private Timestamp registrationTime;
     private String email;
     private String phone;
-    private long authId;
+//    private long authId;
 
     private AuthUserEntity authUser;
 
     public UserEntity() {
     }
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public long getId() {
         return id;
     }
@@ -25,6 +30,7 @@ public class UserEntity {
         this.id = id;
     }
 
+    @Column(name = "first_name", length = 64, insertable = false)
     public String getFirstName() {
         return firstName;
     }
@@ -33,6 +39,7 @@ public class UserEntity {
         this.firstName = firstName;
     }
 
+    @Column(name = "last_name", length = 64, insertable = false)
     public String getLastName() {
         return lastName;
     }
@@ -41,6 +48,7 @@ public class UserEntity {
         this.lastName = lastName;
     }
 
+    @Column(name = "registration_time", nullable = false, updatable = false)
     public Timestamp getRegistrationTime() {
         return registrationTime;
     }
@@ -49,6 +57,7 @@ public class UserEntity {
         this.registrationTime = registrationTime;
     }
 
+    @Column (length = 64, insertable = false)
     public String getEmail() {
         return email;
     }
@@ -57,6 +66,7 @@ public class UserEntity {
         this.email = email;
     }
 
+    @Column (length = 64, insertable = false)
     public String getPhone() {
         return phone;
     }
@@ -65,14 +75,17 @@ public class UserEntity {
         this.phone = phone;
     }
 
-    public long getAuthId() {
-        return authId;
-    }
+//    @Column (name = "auth_id")
+//    public long getAuthId() {
+//        return authId;
+//    }
+//
+//    public void setAuthId(long authId) {
+//        this.authId = authId;
+//    }
 
-    public void setAuthId(long authId) {
-        this.authId = authId;
-    }
-
+    @OneToOne
+    @JoinColumn (name = "auth_id")
     public AuthUserEntity getAuthUser() {
         return authUser;
     }
@@ -81,7 +94,7 @@ public class UserEntity {
         this.authUser = authUser;
     }
 
-           @Override
+    @Override
     public String toString() {
         return "UserEntity{" +
                 "id=" + id +
@@ -90,7 +103,7 @@ public class UserEntity {
                 ", registrationTime=" + registrationTime + '\n' +
                 ", email=" + email +
                 ", phone=" + phone +
-                ", authId=" + authId +
+//                ", authId=" + authId +
                 ", authUser=" + authUser +
                 '}';
     }

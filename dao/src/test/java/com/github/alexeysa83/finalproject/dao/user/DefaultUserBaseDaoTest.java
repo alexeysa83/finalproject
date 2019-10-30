@@ -1,15 +1,16 @@
 package com.github.alexeysa83.finalproject.dao.user;
 
-import com.github.alexeysa83.finalproject.dao.DataSource;
+import com.github.alexeysa83.finalproject.dao.HibernateUtil;
 import com.github.alexeysa83.finalproject.dao.authuser.AuthUserBaseDao;
 import com.github.alexeysa83.finalproject.dao.authuser.DefaultAuthUserBaseDao;
+import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.dto.UserDto;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import javax.persistence.EntityManager;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
@@ -19,7 +20,8 @@ class DefaultUserBaseDaoTest {
 
     private final UserBaseDao userDAO = DefaultUserBaseDao.getInstance();
     private final AuthUserBaseDao authUserDao = DefaultAuthUserBaseDao.getInstance();
-    private DataSource mysql = DataSource.getInstance();
+
+    private static EntityManager entityManager;
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -28,50 +30,54 @@ class DefaultUserBaseDaoTest {
         return Timestamp.valueOf(time);
     }
 
-    @Test
-    void getInstance() {
-        assertNotNull(userDAO);
+    private AuthUserDto createTestAuthUser(String name) {
+        UserDto userDto = new UserDto(getTime());
+        return new AuthUserDto(name, name + "Pass", userDto);
+    }
+
+    @BeforeAll
+    static void init() {
+        entityManager = HibernateUtil.getEntityManager();
     }
 
     @Test
     void getById() {
-        final AuthUserDto authUser = new AuthUserDto("UserID", "Test");
-        final Timestamp regTime = getTime();
-        final AuthUserDto savedAuthUser = authUserDao.createAndSave(authUser, regTime);
-        final long authId = savedAuthUser.getId();
+        final AuthUserDto user = createTestAuthUser("GetByIdTestUser");
+        final AuthUserDto authUser = authUserDao.createAndSave(user);
+        UserDto testUser = authUser.getUserDto();
+        final long authId = testUser.getAuthId();
 
-        // Testing transaction's second insert into user table
-        final UserDto testUser = userDAO.getById(authId);
-        assertNotNull(testUser);
+        final UserDto userFromDB = userDAO.getById(authId);
+        assertNotNull(userFromDB);
 
-        final Long userId = testUser.getId();
-        assertNotNull(userId);
-        assertEquals(regTime, testUser.getRegistrationTime());
-        assertEquals(authId, testUser.getAuthId());
-        assertEquals(savedAuthUser.getLogin(), testUser.getUserLogin());
+        assertEquals(testUser.getId(), userFromDB.getId());
+        assertEquals(testUser.getRegistrationTime(), userFromDB.getRegistrationTime());
+        assertEquals(testUser.getAuthId(), userFromDB.getAuthId());
+        assertEquals(testUser.getUserLogin(), userFromDB.getUserLogin());
 
-        assertNull(testUser.getFirstName());
-        assertNull(testUser.getLastName());
-        assertNull(testUser.getEmail());
-        assertNull(testUser.getPhone());
+        assertNull(userFromDB.getFirstName());
+        assertNull(userFromDB.getLastName());
+        assertNull(userFromDB.getEmail());
+        assertNull(userFromDB.getPhone());
 
         completeDeleteUser(authId);
     }
 
     @Test
     void update() {
-        final AuthUserDto authUser = new AuthUserDto("UserUpdate", "Test");
-        final Timestamp regTime = getTime();
-        final AuthUserDto savedAuthUser = authUserDao.createAndSave(authUser, regTime);
-        final long authId = savedAuthUser.getId();
+        final AuthUserDto user = createTestAuthUser("UpdateTestUser");
+        final AuthUserDto authUser = authUserDao.createAndSave(user);
 
+        final long userId = authUser.getUserDto().getId();
         final UserDto userDtoToUpdate = new UserDto
-                ("First", "Last", "email", "phone", authId);
+                (userId, "First", "Last", "email", "phone");
 
         final boolean isUpdated = userDAO.update(userDtoToUpdate);
         assertTrue(isUpdated);
 
+        final long authId = authUser.getId();
         final UserDto afterUpdate = userDAO.getById(authId);
+
         assertEquals(userDtoToUpdate.getFirstName(), afterUpdate.getFirstName());
         assertEquals(userDtoToUpdate.getLastName(), afterUpdate.getLastName());
         assertEquals(userDtoToUpdate.getEmail(), afterUpdate.getEmail());
@@ -81,14 +87,15 @@ class DefaultUserBaseDaoTest {
     }
 
     private void completeDeleteUser(long id) {
-        authUserDao.delete(id);
-        try (Connection connection = mysql.getConnection();
-             PreparedStatement statement = connection.prepareStatement
-                     ("delete from auth_user where id = ?")) {
-            statement.setLong(1, id);
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        entityManager.getTransaction().begin();
+        final AuthUserEntity toDelete = entityManager.find(AuthUserEntity.class, id);
+        entityManager.remove(toDelete);
+        entityManager.getTransaction().commit();
+        entityManager.clear();
+    }
+
+    @AfterAll
+    static void close() {
+        entityManager.close();
     }
 }

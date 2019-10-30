@@ -1,35 +1,52 @@
 package com.github.alexeysa83.finalproject.dao.authuser;
 
-import com.github.alexeysa83.finalproject.dao.DataSource;
-import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
+import com.github.alexeysa83.finalproject.dao.HibernateUtil;
+import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
 import com.github.alexeysa83.finalproject.model.Role;
+import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
+import com.github.alexeysa83.finalproject.model.dto.UserDto;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import javax.persistence.EntityManager;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class DefaultAuthUserBaseDaoTest {
 
     private final AuthUserBaseDao authUserDao = DefaultAuthUserBaseDao.getInstance();
-    private DataSource mysql = DataSource.getInstance();
 
-    @Test
-    void getInstance() {
-        assertNotNull(authUserDao);
+    private static EntityManager entityManager;
+
+    private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    private static Timestamp getTime() {
+        String time = sdf.format(System.currentTimeMillis());
+        return Timestamp.valueOf(time);
+    }
+
+    private AuthUserDto createTestAuthUser(String name) {
+        UserDto userDto = new UserDto(getTime());
+        return new AuthUserDto(name, name + "Pass", userDto);
+    }
+
+    @BeforeAll
+    static void init() {
+        entityManager = HibernateUtil.getEntityManager();
     }
 
     @Test
     void createAndSave() {
-        final AuthUserDto testUser = new AuthUserDto("AuthCreate", "Test");
-        final AuthUserDto savedUser = authUserDao.createAndSave(testUser, new Timestamp(System.currentTimeMillis()));
+        final AuthUserDto testUser = createTestAuthUser("CreateTestAuth");
+        final AuthUserDto savedUser = authUserDao.createAndSave(testUser);
         assertNotNull(savedUser);
 
         final Long id = savedUser.getId();
         assertNotNull(id);
+
         assertEquals(testUser.getLogin(), savedUser.getLogin());
         assertEquals(testUser.getPassword(), savedUser.getPassword());
         assertEquals(testUser.getRole(), savedUser.getRole());
@@ -40,8 +57,8 @@ class DefaultAuthUserBaseDaoTest {
 
     @Test
     void getByLogin() {
-        final AuthUserDto testUser = authUserDao.createAndSave
-                (new AuthUserDto("AuthLogin", "Test"), new Timestamp(System.currentTimeMillis()));
+        final AuthUserDto user = createTestAuthUser("GetByLoginTestAuth");
+        final AuthUserDto testUser = authUserDao.createAndSave(user);
         final String login = testUser.getLogin();
         final AuthUserDto userFromDB = authUserDao.getByLogin(login);
 
@@ -57,8 +74,8 @@ class DefaultAuthUserBaseDaoTest {
 
     @Test
     void getById() {
-        final AuthUserDto testUser = authUserDao.createAndSave
-                (new AuthUserDto("AuthId", "Test"), new Timestamp(System.currentTimeMillis()));
+        final AuthUserDto user = createTestAuthUser("GetByIdTestAuth");
+        final AuthUserDto testUser = authUserDao.createAndSave(user);
         final long id = testUser.getId();
         final AuthUserDto userFromDB = authUserDao.getById(id);
 
@@ -68,16 +85,24 @@ class DefaultAuthUserBaseDaoTest {
         assertEquals(testUser.getPassword(), userFromDB.getPassword());
         assertEquals(testUser.getRole(), userFromDB.getRole());
         assertEquals(testUser.isBlocked(), userFromDB.isBlocked());
+        assertEquals(testUser.getUserDto().getId(), userFromDB.getUserDto().getId());
 
         completeDeleteUser(id);
     }
 
     @Test
-    void update() {
-        final AuthUserDto testUser = authUserDao.createAndSave
-                (new AuthUserDto("AuthUpdate", "Test"), new Timestamp(System.currentTimeMillis()));
+    void updateSuccess() {
+        final AuthUserDto user = createTestAuthUser("UpdateTestAuth");
+        final AuthUserDto testUser = authUserDao.createAndSave(user);
         final long id = testUser.getId();
-        final AuthUserDto userToUpdate = new AuthUserDto(id, "Updated", "updated", Role.ADMIN, false);
+        // Create updated UserDto entity which has not to be updated in AuthUserDao update method
+        UserDto userDtoToUpdate = new UserDto(getTime());
+        userDtoToUpdate.setFirstName("Update");
+        userDtoToUpdate.setId(testUser.getUserDto().getId());
+        userDtoToUpdate.setAuthId(testUser.getUserDto().getAuthId());
+
+        final AuthUserDto userToUpdate = new AuthUserDto
+                (id, "Updated", "updated", Role.ADMIN, true, userDtoToUpdate);
 
         final boolean isUpdated = authUserDao.update(userToUpdate);
         assertTrue(isUpdated);
@@ -86,14 +111,30 @@ class DefaultAuthUserBaseDaoTest {
         assertEquals(userToUpdate.getLogin(), afterUpdate.getLogin());
         assertEquals(userToUpdate.getPassword(), afterUpdate.getPassword());
         assertEquals(userToUpdate.getRole(), afterUpdate.getRole());
+        assertEquals(userToUpdate.isBlocked(), afterUpdate.isBlocked());
+//         check UserEntity is not updated
+        assertEquals(testUser.getUserDto().getFirstName(), afterUpdate.getUserDto().getFirstName());
+        completeDeleteUser(id);
+    }
+
+    @Test
+    void updateFail() {
+        final AuthUserDto user = createTestAuthUser("UpdateTestAuthFail");
+        final AuthUserDto testUser = authUserDao.createAndSave(user);
+        final long id = testUser.getId();
+        final AuthUserDto userToUpdate = new AuthUserDto
+                (0, "Updated", "updated", Role.ADMIN, true, null);
+
+        final boolean isUpdated = authUserDao.update(userToUpdate);
+        assertFalse(isUpdated);
 
         completeDeleteUser(id);
     }
 
     @Test
     void delete() {
-        final AuthUserDto testUser = authUserDao.createAndSave
-                (new AuthUserDto("AuthDelete", "Test"), new Timestamp(System.currentTimeMillis()));
+        final AuthUserDto user = createTestAuthUser("DeleteTestAuth");
+        final AuthUserDto testUser = authUserDao.createAndSave(user);
         final long id = testUser.getId();
         final AuthUserDto userToDelete = authUserDao.getById(id);
         assertNotNull(userToDelete);
@@ -108,14 +149,15 @@ class DefaultAuthUserBaseDaoTest {
     }
 
     private void completeDeleteUser(long id) {
-        authUserDao.delete(id);
-        try (Connection connection = mysql.getConnection();
-             PreparedStatement statement = connection.prepareStatement
-                     ("delete from auth_user where id = ?")) {
-            statement.setLong(1, id);
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        entityManager.getTransaction().begin();
+        final AuthUserEntity toDelete = entityManager.find(AuthUserEntity.class, id);
+        entityManager.remove(toDelete);
+        entityManager.getTransaction().commit();
+        entityManager.clear();
+    }
+
+    @AfterAll
+    static void close() {
+        entityManager.close();
     }
 }

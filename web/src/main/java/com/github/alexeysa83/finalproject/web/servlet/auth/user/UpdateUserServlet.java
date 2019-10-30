@@ -29,6 +29,7 @@ public class UpdateUserServlet extends HttpServlet {
         if (user == null) {
             String message = "deleted";
             forwardToJspMessage("userpage", message, req, resp);
+            return;
         }
         req.setAttribute("user", user);
         forwardToJsp("userupdate", req, resp);

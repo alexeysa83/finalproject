@@ -1,15 +1,18 @@
 package com.github.alexeysa83.finalproject.dao.entity;
 
+import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Objects;
 
+@Entity
+@Table(name = "comment")
 public class CommentEntity {
 
     private long id;
     private String content;
     private Timestamp creationTime;
-    private long authId;
-    private long newsId;
+//    private long authId;
+//    private long newsId;
 
     private AuthUserEntity authUser;
 
@@ -18,6 +21,8 @@ public class CommentEntity {
     public CommentEntity() {
     }
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public long getId() {
         return id;
     }
@@ -26,6 +31,7 @@ public class CommentEntity {
         this.id = id;
     }
 
+    @Column
     public String getContent() {
         return content;
     }
@@ -34,6 +40,7 @@ public class CommentEntity {
         this.content = content;
     }
 
+    @Column (name = "creation_time")
     public Timestamp getCreationTime() {
         return creationTime;
     }
@@ -42,22 +49,26 @@ public class CommentEntity {
         this.creationTime = creationTime;
     }
 
-    public long getAuthId() {
-        return authId;
-    }
+//    @Column (name = "auth_id")
+//    public long getAuthId() {
+//        return authId;
+//    }
+//
+//    public void setAuthId(long authId) {
+//        this.authId = authId;
+//    }
+//
+//    @Column (name = "news_id")
+//    public long getNewsId() {
+//        return newsId;
+//    }
+//
+//    public void setNewsId(long newsId) {
+//        this.newsId = newsId;
+//    }
 
-    public void setAuthId(long authId) {
-        this.authId = authId;
-    }
-
-    public long getNewsId() {
-        return newsId;
-    }
-
-    public void setNewsId(long newsId) {
-        this.newsId = newsId;
-    }
-
+    @ManyToOne
+    @JoinColumn (name = "auth_id")
     public AuthUserEntity getAuthUser() {
         return authUser;
     }
@@ -66,6 +77,8 @@ public class CommentEntity {
         this.authUser = authUser;
     }
 
+    @ManyToOne
+    @JoinColumn (name = "news_id")
     public NewsEntity getNews() {
         return news;
     }
@@ -80,8 +93,8 @@ public class CommentEntity {
                 "id=" + id +
                 ", content=" + content +
                 ", creationTime=" + creationTime +
-                ", authId=" + authId +
-                ", newsId=" + newsId +
+//                ", authId=" + authId +
+//                ", newsId=" + newsId +
                 '}';
     }
 
@@ -89,12 +102,14 @@ public class CommentEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CommentEntity message = (CommentEntity) o;
-        return Objects.equals(id, message.id);
+        CommentEntity comm = (CommentEntity) o;
+        return id == comm.id &&
+                content.equals(comm.content) &&
+                creationTime.equals(comm.creationTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, content, creationTime);
     }
 }

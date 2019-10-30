@@ -1,16 +1,19 @@
 package com.github.alexeysa83.finalproject.dao.entity;
 
+import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Objects;
 import java.util.Set;
 
+@Entity
+@Table(name = "news")
 public class NewsEntity {
 
     private long id;
     private String title;
     private String content;
     private Timestamp creationTime;
-    private long authId;
+//    private long authId;
 
     private AuthUserEntity authUser;
 
@@ -19,6 +22,8 @@ public class NewsEntity {
     public NewsEntity() {
     }
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public long getId() {
         return id;
     }
@@ -27,6 +32,7 @@ public class NewsEntity {
         this.id = id;
     }
 
+    @Column
     public String getTitle() {
         return title;
     }
@@ -35,6 +41,8 @@ public class NewsEntity {
         this.title = title;
     }
 
+    @Column
+    @Lob
     public String getContent() {
         return content;
     }
@@ -43,6 +51,7 @@ public class NewsEntity {
         this.content = content;
     }
 
+    @Column (name = "creation_time")
     public Timestamp getCreationTime() {
         return creationTime;
     }
@@ -51,14 +60,17 @@ public class NewsEntity {
         this.creationTime = creationTime;
     }
 
-    public long getAuthId() {
-        return authId;
-    }
+//    @Column (name = "auth_id")
+//    public long getAuthId() {
+//        return authId;
+//    }
+//
+//    public void setAuthId(long authId) {
+//        this.authId = authId;
+//    }
 
-    public void setAuthId(long authId) {
-        this.authId = authId;
-    }
-
+    @ManyToOne
+    @JoinColumn (name = "auth_id")
     public AuthUserEntity getAuthUser() {
         return authUser;
     }
@@ -67,6 +79,7 @@ public class NewsEntity {
         this.authUser = authUser;
     }
 
+    @OneToMany (mappedBy = "news")
     public Set<CommentEntity> getMessages() {
         return messages;
     }
@@ -81,17 +94,17 @@ public class NewsEntity {
                 "id=" + id +
                 ", title=" + title +
                 ", creation time=" + creationTime +
-                ", authId=" + authId +
+//                ", authId=" + authId +
                 '}';
     }
 
-    @Override
+           @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         NewsEntity news = (NewsEntity) o;
         return id == news.id &&
-                authId == news.authId &&
+//                authId == news.authId &&
                 title.equals(news.title) &&
                 content.equals(news.content) &&
                 creationTime.equals(news.creationTime);
@@ -99,6 +112,6 @@ public class NewsEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, content, creationTime, authId);
+        return Objects.hash(id, title, content, creationTime);
     }
 }

@@ -1,6 +1,7 @@
 package com.github.alexeysa83.finalproject.model.dto;
 
 import java.sql.Timestamp;
+import java.util.Objects;
 
 public class UserDto {
 
@@ -13,9 +14,12 @@ public class UserDto {
     private long authId;
     private String userLogin;
 
-    public UserDto(Timestamp registrationTime, long authId) {
+    public UserDto() {
+    }
+
+    public UserDto(Timestamp registrationTime) {
         this.registrationTime = registrationTime;
-        this.authId = authId;
+//        this.authId = authId;
     }
 
     public UserDto(String firstName, String lastName, String email, String phone, long authId) {
@@ -42,32 +46,64 @@ public class UserDto {
         return id;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public String getFirstName() {
         return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
     public String getLastName() {
         return lastName;
     }
 
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
     public Timestamp getRegistrationTime() {
         return registrationTime;
+    }
+
+    public void setRegistrationTime(Timestamp registrationTime) {
+        this.registrationTime = registrationTime;
     }
 
     public String getEmail() {
         return email;
     }
 
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getPhone() {
         return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public long getAuthId() {
         return authId;
     }
 
+    public void setAuthId(long authId) {
+        this.authId = authId;
+    }
+
     public String getUserLogin() {
         return userLogin;
+    }
+
+    public void setUserLogin(String userLogin) {
+        this.userLogin = userLogin;
     }
 
     @Override
@@ -76,11 +112,30 @@ public class UserDto {
                 "id=" + id +
                 ", firstName=" + firstName +
                 ", lastName=" + lastName +
-                ", registrationTime=" + registrationTime + '\n' +
+                ", registrationTime=" + registrationTime +
                 ", email=" + email +
                 ", phone=" + phone +
                 ", authId=" + authId +
                 ", userLogin=" + userLogin +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserDto userDto = (UserDto) o;
+        return id == userDto.id &&
+                authId == userDto.authId &&
+                Objects.equals(firstName, userDto.firstName) &&
+                Objects.equals(lastName, userDto.lastName) &&
+                registrationTime.equals(userDto.registrationTime) &&
+                Objects.equals(email, userDto.email) &&
+                Objects.equals(phone, userDto.phone);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, firstName, lastName, registrationTime, email, phone, authId);
     }
 }
