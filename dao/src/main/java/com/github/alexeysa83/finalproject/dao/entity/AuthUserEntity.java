@@ -19,7 +19,7 @@ public class AuthUserEntity {
 
     private Set<NewsEntity> news;
 
-    private Set<CommentEntity> messages;
+    private Set<CommentEntity> comments;
 
     public AuthUserEntity() {
     }
@@ -71,7 +71,7 @@ public class AuthUserEntity {
         isBlocked = blocked;
     }
 
-    @OneToOne(mappedBy = "authUser", cascade = CascadeType.ALL , orphanRemoval = true)
+    @OneToOne(mappedBy = "authUser", fetch = FetchType.EAGER, cascade = CascadeType.ALL , orphanRemoval = true)
     public UserEntity getUser() {
         return user;
     }
@@ -82,7 +82,10 @@ public class AuthUserEntity {
         this.user = user;
     }
 
-    @OneToMany(mappedBy = "authUser")
+    @OneToMany(targetEntity =com.github.alexeysa83.finalproject.dao.entity.NewsEntity.class,
+            mappedBy = "authUser",
+            fetch = FetchType.LAZY,
+        orphanRemoval = true)
     public Set<NewsEntity> getNews() {
         return news;
     }
@@ -91,13 +94,15 @@ public class AuthUserEntity {
         this.news = news;
     }
 
-    @OneToMany(mappedBy = "authUser")
-    public Set<CommentEntity> getMessages() {
-        return messages;
+    @OneToMany(targetEntity = com.github.alexeysa83.finalproject.dao.entity.CommentEntity.class,
+            mappedBy = "authUser",
+            fetch = FetchType.LAZY)
+    public Set<CommentEntity> getComments() {
+        return comments;
     }
 
-    public void setMessages(Set<CommentEntity> messages) {
-        this.messages = messages;
+    public void setComments(Set<CommentEntity> comments) {
+        this.comments = comments;
     }
 
     @Override

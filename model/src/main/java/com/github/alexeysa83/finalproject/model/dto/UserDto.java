@@ -5,13 +5,12 @@ import java.util.Objects;
 
 public class UserDto {
 
-    private long id;
+    private long authId;
     private String firstName;
     private String lastName;
     private Timestamp registrationTime;
     private String email;
     private String phone;
-    private long authId;
     private String userLogin;
 
     public UserDto() {
@@ -22,32 +21,30 @@ public class UserDto {
 //        this.authId = authId;
     }
 
-    public UserDto(String firstName, String lastName, String email, String phone, long authId) {
+    public UserDto(long authId, String firstName, String lastName, String email, String phone) {
+        this.authId = authId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.phone = phone;
-        this.authId = authId;
     }
 
-    public UserDto(long id, String firstName, String lastName, Timestamp registrationTime,
-                   String email, String phone, long authId, String userLogin) {
-        this.id = id;
+    public UserDto(long authId, String firstName, String lastName, Timestamp registrationTime, String email, String phone, String userLogin) {
+        this.authId = authId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.registrationTime = registrationTime;
         this.email = email;
         this.phone = phone;
-        this.authId = authId;
         this.userLogin = userLogin;
     }
 
-    public long getId() {
-        return id;
+    public long getAuthId() {
+        return authId;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setAuthId(long authId) {
+        this.authId = authId;
     }
 
     public String getFirstName() {
@@ -90,14 +87,6 @@ public class UserDto {
         this.phone = phone;
     }
 
-    public long getAuthId() {
-        return authId;
-    }
-
-    public void setAuthId(long authId) {
-        this.authId = authId;
-    }
-
     public String getUserLogin() {
         return userLogin;
     }
@@ -109,33 +98,32 @@ public class UserDto {
     @Override
     public String toString() {
         return "User{" +
-                "id=" + id +
+                "authId=" + authId +
                 ", firstName=" + firstName +
                 ", lastName=" + lastName +
                 ", registrationTime=" + registrationTime +
                 ", email=" + email +
                 ", phone=" + phone +
-                ", authId=" + authId +
                 ", userLogin=" + userLogin +
                 '}';
     }
 
+    // UserLogin filed is not included as it references to AuthUser
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserDto userDto = (UserDto) o;
-        return id == userDto.id &&
-                authId == userDto.authId &&
+        return authId == userDto.authId &&
                 Objects.equals(firstName, userDto.firstName) &&
                 Objects.equals(lastName, userDto.lastName) &&
-                registrationTime.equals(userDto.registrationTime) &&
+                Objects.equals(registrationTime, userDto.registrationTime) &&
                 Objects.equals(email, userDto.email) &&
                 Objects.equals(phone, userDto.phone);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, firstName, lastName, registrationTime, email, phone, authId);
+        return Objects.hash(authId, firstName, lastName, registrationTime, email, phone);
     }
 }

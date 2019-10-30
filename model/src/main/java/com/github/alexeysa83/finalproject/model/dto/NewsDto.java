@@ -11,6 +11,9 @@ public class NewsDto {
     private long authId;
     private String authorNews;
 
+    public NewsDto() {
+    }
+
     public NewsDto(long id, String title, String content) {
         this.id = id;
         this.title = title;
@@ -38,24 +41,48 @@ public class NewsDto {
         return id;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public String getTitle() {
         return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getContent() {
         return content;
     }
 
+    public void setContent(String content) {
+        this.content = content;
+    }
+
     public Timestamp getCreationTime() {
         return creationTime;
+    }
+
+    public void setCreationTime(Timestamp creationTime) {
+        this.creationTime = creationTime;
     }
 
     public long getAuthId() {
         return authId;
     }
 
+    public void setAuthId(long authId) {
+        this.authId = authId;
+    }
+
     public String getAuthorNews() {
         return authorNews;
+    }
+
+    public void setAuthorNews(String authorNews) {
+        this.authorNews = authorNews;
     }
 
     @Override

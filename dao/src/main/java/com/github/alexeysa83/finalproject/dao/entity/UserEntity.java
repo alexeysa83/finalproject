@@ -1,13 +1,16 @@
 package com.github.alexeysa83.finalproject.dao.entity;
 
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "user")
+@Table(name = "user_info")
 public class UserEntity {
 
-    private long id;
+    private long authId;
     private String firstName;
     private String lastName;
     private Timestamp registrationTime;
@@ -21,13 +24,17 @@ public class UserEntity {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public long getId() {
-        return id;
+    @Column (name = "auth_id", updatable = false)
+    @GenericGenerator(name = "gen",
+            strategy = "foreign",
+            parameters = @Parameter(name = "property", value = "authUser"))
+    @GeneratedValue(generator = "gen")
+    public long getAuthId() {
+        return authId;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setAuthId(long id) {
+        this.authId = id;
     }
 
     @Column(name = "first_name", length = 64, insertable = false)
@@ -57,7 +64,7 @@ public class UserEntity {
         this.registrationTime = registrationTime;
     }
 
-    @Column (length = 64, insertable = false)
+    @Column(length = 64, insertable = false)
     public String getEmail() {
         return email;
     }
@@ -66,7 +73,7 @@ public class UserEntity {
         this.email = email;
     }
 
-    @Column (length = 64, insertable = false)
+    @Column(length = 64, insertable = false)
     public String getPhone() {
         return phone;
     }
@@ -84,8 +91,10 @@ public class UserEntity {
 //        this.authId = authId;
 //    }
 
-    @OneToOne
-    @JoinColumn (name = "auth_id")
+    @OneToOne (fetch = FetchType.EAGER)
+    @PrimaryKeyJoinColumn (name = "auth_id",
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey(ConstraintMode.CONSTRAINT))
     public AuthUserEntity getAuthUser() {
         return authUser;
     }
@@ -94,17 +103,17 @@ public class UserEntity {
         this.authUser = authUser;
     }
 
-    @Override
-    public String toString() {
-        return "UserEntity{" +
-                "id=" + id +
-                ", firstName=" + firstName +
-                ", lastName=" + lastName +
-                ", registrationTime=" + registrationTime + '\n' +
-                ", email=" + email +
-                ", phone=" + phone +
-//                ", authId=" + authId +
-                ", authUser=" + authUser +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "UserEntity{" +
+//                "id=" + authId +
+//                ", firstName=" + firstName +
+//                ", lastName=" + lastName +
+//                ", registrationTime=" + registrationTime + '\n' +
+//                ", email=" + email +
+//                ", phone=" + phone +
+////                ", authId=" + authId +
+//                ", authUser=" + authUser +
+//                '}';
+//    }
 }

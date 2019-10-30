@@ -44,7 +44,7 @@ public class UpdateUserServlet extends HttpServlet {
         final String lastName = req.getParameter("lastName");
         final String email = req.getParameter("email");
         final String phone = req.getParameter("phone");
-        final boolean isUpdated = userService.update(new UserDto(firstName, lastName, email, phone, authId));
+        final boolean isUpdated = userService.update(new UserDto(authId, firstName, lastName, email, phone));
         String message = "update.success";
         String logMessage = "Updated profile to user id: {} , at: {}";
         if (!isUpdated) {

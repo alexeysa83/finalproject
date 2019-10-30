@@ -1,11 +1,17 @@
 package com.github.alexeysa83.finalproject.dao.news;
 
+import com.github.alexeysa83.finalproject.dao.ConvertEntityDTO;
 import com.github.alexeysa83.finalproject.dao.DataSource;
+import com.github.alexeysa83.finalproject.dao.HibernateUtil;
+import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
+import com.github.alexeysa83.finalproject.dao.entity.NewsEntity;
 import com.github.alexeysa83.finalproject.model.dto.NewsDto;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.*;
+import javax.persistence.PersistenceException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,223 +36,95 @@ public class DefaultNewsBaseDao implements NewsBaseDao {
         return localInstance;
     }
 
-    // In this class methods with transactions just for practice
-    // Duplicate code
-    // add page and limit parameters to get news on page method
 
     @Override
     public NewsDto createAndSave(NewsDto newsDto) {
-        Connection connection = null;
+        final NewsEntity newsEntity = ConvertEntityDTO.NewsToEntity(newsDto);
         try {
-            connection = mysql.getConnection();
-            connection.setAutoCommit(false);
-            try (PreparedStatement statement = connection.prepareStatement
-                    ("insert into news (title, content, creation_time, auth_id) values (?, ?,?, ?)",
-                            Statement.RETURN_GENERATED_KEYS)) {
-                statement.setString(1, newsDto.getTitle());
-                statement.setString(2, newsDto.getContent());
-                statement.setTimestamp(3, newsDto.getCreationTime());
-                statement.setLong(4, newsDto.getAuthId());
-                statement.executeUpdate();
-                try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
-                    final boolean isSaved = generatedKeys.next();
-                    if (!isSaved) {
-                        return null;
-                    }
-                    final long id = generatedKeys.getLong(1);
-                    connection.commit();
-                    log.info("News id: {} saved to DB at: {}", id, LocalDateTime.now());
-                    return new NewsDto
-                            (id, newsDto.getTitle(), newsDto.getContent(),
-                                    newsDto.getCreationTime(), newsDto.getAuthId(), newsDto.getAuthorNews());
-                }
-            }
-        } catch (SQLException e) {
-            try {
-                connection.rollback();
-                log.error("Unable to save new news to DB at: {}", LocalDateTime.now());
-            } catch (SQLException ex) {
-                log.error("Unable to rollback transaction at: {}", LocalDateTime.now(), ex);
-                throw new RuntimeException(ex);
-            }
-            log.error("SQLException at: {}", LocalDateTime.now(), e);
-            throw new RuntimeException(e);
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    log.error("Unable to close connection at: {}", LocalDateTime.now(), e);
-                }
-            }
+            Session session = HibernateUtil.getSession();
+            session.beginTransaction();
+            final AuthUserEntity authUserEntity = session.get(AuthUserEntity.class, newsDto.getAuthId());
+            newsEntity.setAuthUser(authUserEntity);
+            session.save(newsEntity);
+            session.getTransaction().commit();
+            session.close();
+        } catch (PersistenceException | NullPointerException e) {
+            log.error("Fail to save new news to DB: {}, at: {}", newsDto, LocalDateTime.now(), e);
+            return null;
         }
+        log.info("News id: {} saved to DB at: {}", newsEntity.getId(), LocalDateTime.now());
+        return ConvertEntityDTO.NewsToDto(newsEntity);
     }
 
     @Override
     public NewsDto getById(long id) {
-        Connection connection = null;
-        try {
-            connection = mysql.getConnection();
-            connection.setAutoCommit(false);
-            try (PreparedStatement statement = connection.prepareStatement
-                    ("select n.title, n.content, n.creation_time, n.auth_id, au.login from news n " +
-                            "join auth_user au on n.auth_id = au.id where n.id = ?")) {
-                statement.setLong(1, id);
-                try (ResultSet resultSet = statement.executeQuery()) {
-                    final boolean exist = resultSet.next();
-                    if (!exist) {
-                        return null;
-                    }
-                    final String title = resultSet.getString("title");
-                    final String content = resultSet.getString("content");
-                    final Timestamp creationTime = resultSet.getTimestamp("creation_time");
-                    final long authId = resultSet.getLong("auth_id");
-                    final String login = resultSet.getString("login");
-                    connection.commit();
-                    return new NewsDto(id, title, content, creationTime, authId, login);
-                }
-            }
-        } catch (SQLException e) {
-            try {
-                connection.rollback();
-                log.error("Unable to get news id: {} from DB at: {}", id, LocalDateTime.now());
-            } catch (SQLException ex) {
-                log.error("Unable to rollback transaction at: {}", LocalDateTime.now(), ex);
-                throw new RuntimeException(ex);
-            }
-            log.error("SQLException at: {}", LocalDateTime.now(), e);
-            throw new RuntimeException(e);
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    log.error("Unable to close connection at: {}", LocalDateTime.now(), e);
-                }
-            }
-        }
+        Session session = HibernateUtil.getSession();
+        session.beginTransaction();
+        final NewsEntity newsEntity = session.get(NewsEntity.class, id);
+        session.getTransaction().commit();
+        session.close();
+        return ConvertEntityDTO.NewsToDto(newsEntity);
     }
 
+    // add page and limit parameters to get news on page method
     @Override
     public List<NewsDto> getNewsOnPage() {
-        Connection connection = null;
+        List<NewsDto> newsList = new ArrayList<>();
+
         try {
-            connection = mysql.getConnection();
-            connection.setAutoCommit(false);
-            try (PreparedStatement statement = connection.prepareStatement
-                    ("select n.id, n.title, n.content, n.creation_time, n.auth_id, au.login from news n " +
-                            "join auth_user au on n.auth_id = au.id order by n.id desc limit 10")) {
-                //statement.setInt(1, page); page parameter
-                try (ResultSet resultSet = statement.executeQuery()) {
-                    final List<NewsDto> newsDtoList = new ArrayList<>();
-                    while (resultSet.next()) {
-                        final long id = resultSet.getLong("id");
-                        final String title = resultSet.getString("title");
-                        final String content = resultSet.getString("content");
-                        final Timestamp creationTime = resultSet.getTimestamp("creation_time");
-                        final long authId = resultSet.getLong("auth_id");
-                        final String login = resultSet.getString("login");
-                        newsDtoList.add(new NewsDto(id, title, content, creationTime, authId, login));
-                    }
-                    connection.commit();
-                    return newsDtoList;
-                }
-            }
-        } catch (SQLException e) {
-            try {
-                connection.rollback();
-                log.error("Unable to get list of news from DB at: {}", LocalDateTime.now());
-            } catch (SQLException ex) {
-                log.error("Unable to rollback transaction at: {}", LocalDateTime.now(), ex);
-                throw new RuntimeException(ex);
-            }
-            log.error("SQLException at: {}", LocalDateTime.now(), e);
-            throw new RuntimeException(e);
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    log.error("Unable to close connection at: {}", LocalDateTime.now(), e);
-                }
-            }
+            Session session = HibernateUtil.getSession();
+            session.beginTransaction();
+
+            Query query = session.createQuery("from NewsEntity as n order by n.id desc ")
+                    .setMaxResults(10)
+                    .setReadOnly(true);
+            List <NewsEntity>list = query.list();
+            list.forEach(newsEntity -> {
+                NewsDto newsDto = ConvertEntityDTO.NewsToDto(newsEntity);
+                newsList.add(newsDto);
+            });
+            return newsList;
+        } catch (PersistenceException e) {
+            log.error("Fail to get list of news from DB at: {}", LocalDateTime.now(), e);
+           return null;
         }
     }
 
     @Override
     public boolean update(NewsDto newsDto) {
-        Connection connection = null;
-        final long id = newsDto.getId();
         try {
-            connection = mysql.getConnection();
-            connection.setAutoCommit(false);
-            try (PreparedStatement statement = connection.prepareStatement
-                    ("update news set title = ?, content = ? where id = ?")) {
-                statement.setString(1, newsDto.getTitle());
-                statement.setString(2, newsDto.getContent());
-                statement.setLong(3, id);
-                final int i = statement.executeUpdate();
-                connection.commit();
-                log.info("News id: {} updated in DB at: {}", id, LocalDateTime.now());
-                return i > 0;
-            }
-        } catch (SQLException e) {
-            try {
-                connection.rollback();
-                log.error("Unable to update news id: {} in DB at: {}", id, LocalDateTime.now());
-            } catch (SQLException ex) {
-                log.error("Unable to rollback transaction at: {}", LocalDateTime.now(), ex);
-                throw new RuntimeException(ex);
-            }
-            log.error("SQLException at: {}", LocalDateTime.now(), e);
-            throw new RuntimeException(e);
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    log.error("Unable to close connection at: {}", LocalDateTime.now(), e);
-                }
-            }
+            Session session = HibernateUtil.getSession();
+            session.beginTransaction();
+
+            NewsEntity newsEntityToUpdate = session.get(NewsEntity.class, newsDto.getId());
+            newsEntityToUpdate.setTitle(newsDto.getTitle());
+            newsEntityToUpdate.setContent(newsDto.getContent());
+            session.save(newsEntityToUpdate);
+            session.getTransaction().commit();
+            session.close();
+            log.info("News id: {} updated in DB at: {}", newsDto.getId(), LocalDateTime.now());
+            return true;
+        } catch (PersistenceException | NullPointerException e) {
+            log.error("Fail to update news in DB: {}, at: {}", newsDto, LocalDateTime.now(), e);
+            return false;
         }
     }
 
-    // Messages delete
     @Override
     public boolean delete(long id) {
-        Connection connection = null;
+
         try {
-            connection = mysql.getConnection();
-            connection.setAutoCommit(false);
-            try (PreparedStatement statementComment = connection.prepareStatement("delete from comment where news_id = ?");
-                 PreparedStatement statementNews = connection.prepareStatement("delete from news where id = ?")
-            ) {
-                statementComment.setLong(1,id);
-                final int b = statementComment.executeUpdate();
-                statementNews.setLong(1, id);
-                final int i = statementNews.executeUpdate();
-                connection.commit();
-                log.info("News id: {} deleted from DB at: {}", id, LocalDateTime.now());
-                return b > 0 && i > 0;
-            }
-        } catch (SQLException e) {
-            try {
-                connection.rollback();
-                log.error("Unable to delete news id: {} from DB at: {}", id, LocalDateTime.now());
-            } catch (SQLException ex) {
-                log.error("Unable to rollback transaction at: {}", LocalDateTime.now(), ex);
-                throw new RuntimeException(ex);
-            }
-            log.error("SQLException at: {}", LocalDateTime.now(), e);
-            throw new RuntimeException(e);
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    log.error("Unable to close connection at: {}", LocalDateTime.now(), e);
-                }
-            }
+            Session session = HibernateUtil.getSession();
+            session.beginTransaction();
+            NewsEntity newsEntityToDelete = session.get(NewsEntity.class, id);
+            session.delete(newsEntityToDelete);
+            session.getTransaction().commit();
+            session.close();
+            log.info("News id: {} deleted from DB at: {}", id, LocalDateTime.now());
+            return true;
+        } catch (PersistenceException e) {
+            log.error("Fail to delete news id from DB: {}, at: {}", id, LocalDateTime.now(), e);
+            return false;
         }
     }
 }

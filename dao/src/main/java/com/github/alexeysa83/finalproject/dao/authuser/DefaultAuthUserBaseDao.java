@@ -37,11 +37,17 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
     @Override
     public AuthUserDto createAndSave(AuthUserDto user) {
         final AuthUserEntity authUserEntity = ConvertEntityDTO.AuthUserToEntity(user);
-        Session session = HibernateUtil.getSession();
-        session.beginTransaction();
-        session.save(authUserEntity);
-        session.getTransaction().commit();
-        session.close();
+        try {
+            Session session = HibernateUtil.getSession();
+            session.beginTransaction();
+            session.save(authUserEntity);
+            session.getTransaction().commit();
+            session.close();
+        } catch (PersistenceException e) {
+            log.error("Fail to save new user to DB: {}, at: {}", user, LocalDateTime.now(), e);
+            return null;
+        }
+        log.info("AuthUser id: {} saved to DB at: {}", authUserEntity.getId(), LocalDateTime.now());
         return ConvertEntityDTO.AuthUserToDto(authUserEntity);
     }
 
@@ -110,6 +116,7 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
 
             return ConvertEntityDTO.AuthUserToDto(authUserEntity);
         } catch (PersistenceException e) {
+            log.error("Fail to get user from DB by login: {}, at: {}", login, LocalDateTime.now(), e);
             return null;
         }
     }
@@ -190,7 +197,7 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
             session.close();
             log.info("AuthUser id: {} updated in DB at: {}", user.getId(), LocalDateTime.now());
             return true;
-        } catch (HibernateException | NullPointerException e) {
+        } catch (PersistenceException | NullPointerException e) {
             log.error("Fail to update in DB AuthUser: {} at: {}", user, LocalDateTime.now(), e);
             return false;
         }
@@ -245,10 +252,10 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
             session.update(authUserToDelete);
             session.getTransaction().commit();
             session.close();
-            log.info("AuthUser id (User auth_id): {} deleted from DB at: {}", id, LocalDateTime.now());
+            log.info("AuthUser id : {} deleted from DB at: {}", id, LocalDateTime.now());
             return true;
-        } catch (HibernateException e) {
-            log.error("Unable to delete AuthUser id: {} from DB, at: {}", id, LocalDateTime.now());
+        } catch (PersistenceException e) {
+            log.error("Fail to delete AuthUser id: {} from DB, at: {}", id, LocalDateTime.now());
             return false;
         }
     }

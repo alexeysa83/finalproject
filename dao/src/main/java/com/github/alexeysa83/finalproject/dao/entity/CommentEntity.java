@@ -31,7 +31,7 @@ public class CommentEntity {
         this.id = id;
     }
 
-    @Column
+    @Column (nullable = false, length = 2012)
     public String getContent() {
         return content;
     }
@@ -40,7 +40,7 @@ public class CommentEntity {
         this.content = content;
     }
 
-    @Column (name = "creation_time")
+    @Column (name = "creation_time", nullable = false, updatable = false)
     public Timestamp getCreationTime() {
         return creationTime;
     }
@@ -67,8 +67,8 @@ public class CommentEntity {
 //        this.newsId = newsId;
 //    }
 
-    @ManyToOne
-    @JoinColumn (name = "auth_id")
+    @ManyToOne (fetch = FetchType.EAGER)
+    @JoinColumn (name = "auth_id", nullable = false, updatable = false)
     public AuthUserEntity getAuthUser() {
         return authUser;
     }
@@ -77,8 +77,8 @@ public class CommentEntity {
         this.authUser = authUser;
     }
 
-    @ManyToOne
-    @JoinColumn (name = "news_id")
+    @ManyToOne (fetch = FetchType.EAGER)
+    @JoinColumn (name = "news_id", nullable = false, updatable = false)
     public NewsEntity getNews() {
         return news;
     }

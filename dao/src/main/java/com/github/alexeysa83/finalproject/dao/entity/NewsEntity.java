@@ -17,7 +17,7 @@ public class NewsEntity {
 
     private AuthUserEntity authUser;
 
-    private Set<CommentEntity> messages;
+    private Set<CommentEntity> comments;
 
     public NewsEntity() {
     }
@@ -32,7 +32,7 @@ public class NewsEntity {
         this.id = id;
     }
 
-    @Column
+    @Column (nullable = false)
     public String getTitle() {
         return title;
     }
@@ -41,7 +41,7 @@ public class NewsEntity {
         this.title = title;
     }
 
-    @Column
+    @Column (nullable = false)
     @Lob
     public String getContent() {
         return content;
@@ -51,7 +51,7 @@ public class NewsEntity {
         this.content = content;
     }
 
-    @Column (name = "creation_time")
+    @Column (name = "creation_time", nullable = false, updatable = false)
     public Timestamp getCreationTime() {
         return creationTime;
     }
@@ -60,7 +60,7 @@ public class NewsEntity {
         this.creationTime = creationTime;
     }
 
-//    @Column (name = "auth_id")
+//    @JoinColumn (name = "auth_id")
 //    public long getAuthId() {
 //        return authId;
 //    }
@@ -69,8 +69,8 @@ public class NewsEntity {
 //        this.authId = authId;
 //    }
 
-    @ManyToOne
-    @JoinColumn (name = "auth_id")
+    @ManyToOne (fetch = FetchType.EAGER)
+    @JoinColumn (name = "auth_id", nullable = false, updatable = false)
     public AuthUserEntity getAuthUser() {
         return authUser;
     }
@@ -79,13 +79,13 @@ public class NewsEntity {
         this.authUser = authUser;
     }
 
-    @OneToMany (mappedBy = "news")
-    public Set<CommentEntity> getMessages() {
-        return messages;
+    @OneToMany (mappedBy = "news", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    public Set<CommentEntity> getComments() {
+        return comments;
     }
 
-    public void setMessages(Set<CommentEntity> messages) {
-        this.messages = messages;
+    public void setComments(Set<CommentEntity> comments) {
+        this.comments = comments;
     }
 
     @Override

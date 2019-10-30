@@ -44,15 +44,14 @@ class DefaultUserBaseDaoTest {
     void getById() {
         final AuthUserDto user = createTestAuthUser("GetByIdTestUser");
         final AuthUserDto authUser = authUserDao.createAndSave(user);
-        UserDto testUser = authUser.getUserDto();
+        final UserDto testUser = authUser.getUserDto();
         final long authId = testUser.getAuthId();
 
         final UserDto userFromDB = userDAO.getById(authId);
         assertNotNull(userFromDB);
 
-        assertEquals(testUser.getId(), userFromDB.getId());
-        assertEquals(testUser.getRegistrationTime(), userFromDB.getRegistrationTime());
         assertEquals(testUser.getAuthId(), userFromDB.getAuthId());
+        assertEquals(testUser.getRegistrationTime(), userFromDB.getRegistrationTime());
         assertEquals(testUser.getUserLogin(), userFromDB.getUserLogin());
 
         assertNull(userFromDB.getFirstName());
@@ -67,15 +66,14 @@ class DefaultUserBaseDaoTest {
     void update() {
         final AuthUserDto user = createTestAuthUser("UpdateTestUser");
         final AuthUserDto authUser = authUserDao.createAndSave(user);
-
-        final long userId = authUser.getUserDto().getId();
+        final UserDto testUser = authUser.getUserDto();
+        final long authId = testUser.getAuthId();
         final UserDto userDtoToUpdate = new UserDto
-                (userId, "First", "Last", "email", "phone");
+                (authId, "First", "Last", getTime(), "email", "phone", "FakeLogin");
 
         final boolean isUpdated = userDAO.update(userDtoToUpdate);
         assertTrue(isUpdated);
 
-        final long authId = authUser.getId();
         final UserDto afterUpdate = userDAO.getById(authId);
 
         assertEquals(userDtoToUpdate.getFirstName(), afterUpdate.getFirstName());
@@ -83,19 +81,23 @@ class DefaultUserBaseDaoTest {
         assertEquals(userDtoToUpdate.getEmail(), afterUpdate.getEmail());
         assertEquals(userDtoToUpdate.getPhone(), afterUpdate.getPhone());
 
+        assertEquals(authId, afterUpdate.getAuthId());
+        assertEquals(testUser.getRegistrationTime(), afterUpdate.getRegistrationTime());
+        assertEquals(testUser.getUserLogin(), afterUpdate.getUserLogin());
+
         completeDeleteUser(authId);
     }
 
     private void completeDeleteUser(long id) {
         entityManager.getTransaction().begin();
-        final AuthUserEntity toDelete = entityManager.find(AuthUserEntity.class, id);
+        AuthUserEntity toDelete = entityManager.find(AuthUserEntity.class, id);
         entityManager.remove(toDelete);
         entityManager.getTransaction().commit();
-        entityManager.clear();
+        entityManager.close();
     }
 
     @AfterAll
     static void close() {
-        entityManager.close();
+        HibernateUtil.close();
     }
 }

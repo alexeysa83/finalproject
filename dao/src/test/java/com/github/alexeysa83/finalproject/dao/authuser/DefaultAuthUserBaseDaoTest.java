@@ -52,6 +52,9 @@ class DefaultAuthUserBaseDaoTest {
         assertEquals(testUser.getRole(), savedUser.getRole());
         assertEquals(testUser.isBlocked(), savedUser.isBlocked());
 
+        assertEquals(id, savedUser.getUserDto().getAuthId());
+        assertEquals(testUser.getUserDto().getRegistrationTime(), savedUser.getUserDto().getRegistrationTime());
+
         completeDeleteUser(id);
     }
 
@@ -68,6 +71,7 @@ class DefaultAuthUserBaseDaoTest {
         assertEquals(testUser.getPassword(), userFromDB.getPassword());
         assertEquals(testUser.getRole(), userFromDB.getRole());
         assertEquals(testUser.isBlocked(), userFromDB.isBlocked());
+        assertEquals(testUser.getUserDto(), userFromDB.getUserDto());
 
         completeDeleteUser(userFromDB.getId());
     }
@@ -85,7 +89,7 @@ class DefaultAuthUserBaseDaoTest {
         assertEquals(testUser.getPassword(), userFromDB.getPassword());
         assertEquals(testUser.getRole(), userFromDB.getRole());
         assertEquals(testUser.isBlocked(), userFromDB.isBlocked());
-        assertEquals(testUser.getUserDto().getId(), userFromDB.getUserDto().getId());
+        assertEquals(testUser.getUserDto(), userFromDB.getUserDto());
 
         completeDeleteUser(id);
     }
@@ -98,8 +102,7 @@ class DefaultAuthUserBaseDaoTest {
         // Create updated UserDto entity which has not to be updated in AuthUserDao update method
         UserDto userDtoToUpdate = new UserDto(getTime());
         userDtoToUpdate.setFirstName("Update");
-        userDtoToUpdate.setId(testUser.getUserDto().getId());
-        userDtoToUpdate.setAuthId(testUser.getUserDto().getAuthId());
+        userDtoToUpdate.setAuthId(testUser.getId());
 
         final AuthUserDto userToUpdate = new AuthUserDto
                 (id, "Updated", "updated", Role.ADMIN, true, userDtoToUpdate);
@@ -113,7 +116,7 @@ class DefaultAuthUserBaseDaoTest {
         assertEquals(userToUpdate.getRole(), afterUpdate.getRole());
         assertEquals(userToUpdate.isBlocked(), afterUpdate.isBlocked());
 //         check UserEntity is not updated
-        assertEquals(testUser.getUserDto().getFirstName(), afterUpdate.getUserDto().getFirstName());
+        assertEquals(testUser.getUserDto(), afterUpdate.getUserDto());
         completeDeleteUser(id);
     }
 
@@ -121,9 +124,9 @@ class DefaultAuthUserBaseDaoTest {
     void updateFail() {
         final AuthUserDto user = createTestAuthUser("UpdateTestAuthFail");
         final AuthUserDto testUser = authUserDao.createAndSave(user);
-        final long id = testUser.getId();
+        long id = testUser.getId();
         final AuthUserDto userToUpdate = new AuthUserDto
-                (0, "Updated", "updated", Role.ADMIN, true, null);
+                (id, null, "updated", Role.ADMIN, true, null);
 
         final boolean isUpdated = authUserDao.update(userToUpdate);
         assertFalse(isUpdated);
@@ -150,14 +153,14 @@ class DefaultAuthUserBaseDaoTest {
 
     private void completeDeleteUser(long id) {
         entityManager.getTransaction().begin();
-        final AuthUserEntity toDelete = entityManager.find(AuthUserEntity.class, id);
+        AuthUserEntity toDelete = entityManager.find(AuthUserEntity.class, id);
         entityManager.remove(toDelete);
         entityManager.getTransaction().commit();
-        entityManager.clear();
+        entityManager.close();
     }
 
     @AfterAll
     static void close() {
-        entityManager.close();
+        HibernateUtil.close();
     }
 }
