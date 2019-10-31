@@ -50,7 +50,7 @@ class DefaultAuthUserBaseDaoTest {
         assertEquals(testUser.getLogin(), savedUser.getLogin());
         assertEquals(testUser.getPassword(), savedUser.getPassword());
         assertEquals(testUser.getRole(), savedUser.getRole());
-        assertEquals(testUser.isBlocked(), savedUser.isBlocked());
+        assertEquals(testUser.isDeleted(), savedUser.isDeleted());
 
         assertEquals(id, savedUser.getUserInfoDto().getAuthId());
         assertEquals(testUser.getUserInfoDto().getRegistrationTime(), savedUser.getUserInfoDto().getRegistrationTime());
@@ -70,7 +70,7 @@ class DefaultAuthUserBaseDaoTest {
         assertEquals(login, userFromDB.getLogin());
         assertEquals(testUser.getPassword(), userFromDB.getPassword());
         assertEquals(testUser.getRole(), userFromDB.getRole());
-        assertEquals(testUser.isBlocked(), userFromDB.isBlocked());
+        assertEquals(testUser.isDeleted(), userFromDB.isDeleted());
         assertEquals(testUser.getUserInfoDto(), userFromDB.getUserInfoDto());
 
         completeDeleteUser(userFromDB.getId());
@@ -88,7 +88,7 @@ class DefaultAuthUserBaseDaoTest {
         assertEquals(testUser.getLogin(), userFromDB.getLogin());
         assertEquals(testUser.getPassword(), userFromDB.getPassword());
         assertEquals(testUser.getRole(), userFromDB.getRole());
-        assertEquals(testUser.isBlocked(), userFromDB.isBlocked());
+        assertEquals(testUser.isDeleted(), userFromDB.isDeleted());
         assertEquals(testUser.getUserInfoDto(), userFromDB.getUserInfoDto());
 
         completeDeleteUser(id);
@@ -114,7 +114,7 @@ class DefaultAuthUserBaseDaoTest {
         assertEquals(userToUpdate.getLogin(), afterUpdate.getLogin());
         assertEquals(userToUpdate.getPassword(), afterUpdate.getPassword());
         assertEquals(userToUpdate.getRole(), afterUpdate.getRole());
-        assertEquals(userToUpdate.isBlocked(), afterUpdate.isBlocked());
+        assertEquals(userToUpdate.isDeleted(), afterUpdate.isDeleted());
 //         check UserEntity is not updated
         assertEquals(testUser.getUserInfoDto(), afterUpdate.getUserInfoDto());
         completeDeleteUser(id);
@@ -146,7 +146,7 @@ class DefaultAuthUserBaseDaoTest {
         assertTrue(isDeleted);
 
         final AuthUserDto afterDelete = authUserDao.getById(id);
-        assertTrue(afterDelete.isBlocked());
+        assertTrue(afterDelete.isDeleted());
 
         completeDeleteUser(id);
     }

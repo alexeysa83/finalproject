@@ -41,7 +41,7 @@ class DefaultSecurityServiceTest {
         assertEquals(testLogin, userFromDB.getLogin());
         assertEquals(testPassword, userFromDB.getPassword());
         assertEquals(testAuthUser.getRole(), userFromDB.getRole());
-        assertEquals(testAuthUser.isBlocked(), userFromDB.isBlocked());
+        assertEquals(testAuthUser.isDeleted(), userFromDB.isDeleted());
         assertEquals(testAuthUser.getUserInfoDto(), userFromDB.getUserInfoDto());
     }
 

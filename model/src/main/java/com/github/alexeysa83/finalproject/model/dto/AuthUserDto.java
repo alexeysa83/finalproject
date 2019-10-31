@@ -8,7 +8,7 @@ public class AuthUserDto {
     private String login;
     private String password;
     private Role role;
-    private boolean isBlocked;
+    private boolean isDeleted;
 
     private UserInfoDto userInfoDto;
 
@@ -20,16 +20,16 @@ public class AuthUserDto {
         this.login = login;
         this.password = password;
         role = Role.USER;
-        isBlocked = false;
+        isDeleted = false;
         this.userInfoDto = userInfoDto;
     }
 
-    public AuthUserDto(long id, String login, String password, Role role, boolean isBlocked, UserInfoDto userInfoDto) {
+    public AuthUserDto(long id, String login, String password, Role role, boolean isDeleted, UserInfoDto userInfoDto) {
         this.id = id;
         this.login = login;
         this.password = password;
         this.role = role;
-        this.isBlocked = isBlocked;
+        this.isDeleted = isDeleted;
         this.userInfoDto = userInfoDto;
     }
 
@@ -65,12 +65,12 @@ public class AuthUserDto {
         this.role = role;
     }
 
-    public boolean isBlocked() {
-        return isBlocked;
+    public boolean isDeleted() {
+        return isDeleted;
     }
 
-    public void setBlocked(boolean blocked) {
-        isBlocked = blocked;
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
     }
 
     public UserInfoDto getUserInfoDto() {
@@ -87,6 +87,6 @@ public class AuthUserDto {
                 "id=" + id +
                 ", login=" + login +
                 ", role=" + role +
-                ", isBlocked=" + isBlocked + '}';
+                ", isDeleted=" + isDeleted + '}';
     }
 }

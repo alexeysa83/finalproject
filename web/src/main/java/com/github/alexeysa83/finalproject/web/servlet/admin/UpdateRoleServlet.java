@@ -43,7 +43,7 @@ public class UpdateRoleServlet extends HttpServlet {
         final AuthUserDto user = securityService.getById(id);
         final boolean isUpdated = securityService.update
                 (new AuthUserDto(user.getId(), user.getLogin(),
-                        user.getPassword(), role, user.isBlocked(), user.getUserInfoDto()));
+                        user.getPassword(), role, user.isDeleted(), user.getUserInfoDto()));
         message = "update.success";
         if (!isUpdated) {
             message = "update.fail";

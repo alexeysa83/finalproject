@@ -28,9 +28,9 @@ public class AuthFilter implements Filter {
         if (authUserDto == null) {
             request.setAttribute("message", "access.auth");
             forwardToJsp("login", request, response);
-        } else if (authUserDto.isBlocked()) {
-            String message = "blocked";
-            log.error("Blocked user id: {}, is logged in at: {}", authUserDto.getId(), LocalDateTime.now());
+        } else if (authUserDto.isDeleted()) {
+            String message = "deleted";
+            log.error("Deleted user id: {}, is logged in at: {}", authUserDto.getId(), LocalDateTime.now());
             forwardToServletMessage("/auth/logout", message, request, response);
 //            request.setAttribute("error", "User" + authUser.getLogin() + "is blocked");
 //            String path = request.getContextPath() + "/logout";

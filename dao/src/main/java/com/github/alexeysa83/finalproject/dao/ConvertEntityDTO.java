@@ -23,7 +23,7 @@ public abstract class ConvertEntityDTO {
         authUserDto.setLogin(authUserEntity.getLogin());
         authUserDto.setPassword(authUserEntity.getPassword());
         authUserDto.setRole(authUserEntity.getRole());
-        authUserDto.setBlocked(authUserEntity.isBlocked());
+        authUserDto.setDeleted(authUserEntity.isDeleted());
 
         final UserInfoDto userInfoDto = UserToDto(authUserEntity.getUser());
         authUserDto.setUserInfoDto(userInfoDto);
@@ -39,7 +39,7 @@ public abstract class ConvertEntityDTO {
         authUserEntity.setLogin(authUserDto.getLogin());
         authUserEntity.setPassword(authUserDto.getPassword());
         authUserEntity.setRole(authUserDto.getRole());
-        authUserEntity.setBlocked(authUserDto.isBlocked());
+        authUserEntity.setDeleted(authUserDto.isDeleted());
 
         final UserInfoEntity userInfoEntity = UserToEntity(authUserDto.getUserInfoDto());
         if (userInfoEntity != null) {

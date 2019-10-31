@@ -13,7 +13,7 @@ public class AuthUserEntity {
     private String login;
     private String password;
     private Role role;
-    private boolean isBlocked;
+    private boolean isDeleted;
 
     private UserInfoEntity user;
 
@@ -62,13 +62,13 @@ public class AuthUserEntity {
         this.role = role;
     }
 
-    @Column(name = "is_blocked", nullable = false)
-    public boolean isBlocked() {
-        return isBlocked;
+    @Column(name = "is_deleted", nullable = false)
+    public boolean isDeleted() {
+        return isDeleted;
     }
 
-    public void setBlocked(boolean blocked) {
-        isBlocked = blocked;
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
     }
 
     @OneToOne(mappedBy = "authUser", fetch = FetchType.EAGER, cascade = CascadeType.ALL , orphanRemoval = true)
@@ -110,6 +110,6 @@ public class AuthUserEntity {
                 "id=" + id +
                 ", login=" + login +
                 ", role=" + role +
-                ", isBlocked=" + isBlocked + '}';
+                ", isDeleted=" + isDeleted + '}';
     }
 }

@@ -187,7 +187,7 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
             authUserToUpdate.setLogin(user.getLogin());
             authUserToUpdate.setPassword(user.getPassword());
             authUserToUpdate.setRole(user.getRole());
-            authUserToUpdate.setBlocked(user.isBlocked());
+            authUserToUpdate.setDeleted(user.isDeleted());
 
             session.update(authUserToUpdate);
             session.getTransaction().commit();
@@ -243,7 +243,7 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
             Session session = HibernateUtil.getSession();
             session.getTransaction().begin();
             AuthUserEntity authUserToDelete = session.get(AuthUserEntity.class, id);
-            authUserToDelete.setBlocked(true);
+            authUserToDelete.setDeleted(true);
             authUserToDelete.setUser(null);
 //            authUserToDelete.getUser().setAuthUser(null);
             session.update(authUserToDelete);

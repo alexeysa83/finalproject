@@ -48,7 +48,7 @@ public class LoginServlet extends HttpServlet {
             return;
         }
         // Translation
-        if (userFromDB.isBlocked()) {
+        if (userFromDB.isDeleted()) {
             req.setAttribute("message", "deleted");
             log.info("Deleted user: {} tried to login at: {}", login, LocalDateTime.now());
             forwardToJsp("login", req, resp);
