@@ -4,7 +4,7 @@ import com.github.alexeysa83.finalproject.dao.HibernateUtil;
 import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
 import com.github.alexeysa83.finalproject.model.Role;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
-import com.github.alexeysa83.finalproject.model.dto.UserDto;
+import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -29,8 +29,8 @@ class DefaultAuthUserBaseDaoTest {
     }
 
     private AuthUserDto createTestAuthUser(String name) {
-        UserDto userDto = new UserDto(getTime());
-        return new AuthUserDto(name, name + "Pass", userDto);
+        UserInfoDto userInfoDto = new UserInfoDto(getTime());
+        return new AuthUserDto(name, name + "Pass", userInfoDto);
     }
 
     @BeforeAll
@@ -52,8 +52,8 @@ class DefaultAuthUserBaseDaoTest {
         assertEquals(testUser.getRole(), savedUser.getRole());
         assertEquals(testUser.isBlocked(), savedUser.isBlocked());
 
-        assertEquals(id, savedUser.getUserDto().getAuthId());
-        assertEquals(testUser.getUserDto().getRegistrationTime(), savedUser.getUserDto().getRegistrationTime());
+        assertEquals(id, savedUser.getUserInfoDto().getAuthId());
+        assertEquals(testUser.getUserInfoDto().getRegistrationTime(), savedUser.getUserInfoDto().getRegistrationTime());
 
         completeDeleteUser(id);
     }
@@ -71,7 +71,7 @@ class DefaultAuthUserBaseDaoTest {
         assertEquals(testUser.getPassword(), userFromDB.getPassword());
         assertEquals(testUser.getRole(), userFromDB.getRole());
         assertEquals(testUser.isBlocked(), userFromDB.isBlocked());
-        assertEquals(testUser.getUserDto(), userFromDB.getUserDto());
+        assertEquals(testUser.getUserInfoDto(), userFromDB.getUserInfoDto());
 
         completeDeleteUser(userFromDB.getId());
     }
@@ -89,7 +89,7 @@ class DefaultAuthUserBaseDaoTest {
         assertEquals(testUser.getPassword(), userFromDB.getPassword());
         assertEquals(testUser.getRole(), userFromDB.getRole());
         assertEquals(testUser.isBlocked(), userFromDB.isBlocked());
-        assertEquals(testUser.getUserDto(), userFromDB.getUserDto());
+        assertEquals(testUser.getUserInfoDto(), userFromDB.getUserInfoDto());
 
         completeDeleteUser(id);
     }
@@ -100,12 +100,12 @@ class DefaultAuthUserBaseDaoTest {
         final AuthUserDto testUser = authUserDao.createAndSave(user);
         final long id = testUser.getId();
         // Create updated UserDto entity which has not to be updated in AuthUserDao update method
-        UserDto userDtoToUpdate = new UserDto(getTime());
-        userDtoToUpdate.setFirstName("Update");
-        userDtoToUpdate.setAuthId(testUser.getId());
+        UserInfoDto userInfoDtoToUpdate = new UserInfoDto(getTime());
+        userInfoDtoToUpdate.setFirstName("Update");
+        userInfoDtoToUpdate.setAuthId(testUser.getId());
 
         final AuthUserDto userToUpdate = new AuthUserDto
-                (id, "Updated", "updated", Role.ADMIN, true, userDtoToUpdate);
+                (id, "Updated", "updated", Role.ADMIN, true, userInfoDtoToUpdate);
 
         final boolean isUpdated = authUserDao.update(userToUpdate);
         assertTrue(isUpdated);
@@ -116,7 +116,7 @@ class DefaultAuthUserBaseDaoTest {
         assertEquals(userToUpdate.getRole(), afterUpdate.getRole());
         assertEquals(userToUpdate.isBlocked(), afterUpdate.isBlocked());
 //         check UserEntity is not updated
-        assertEquals(testUser.getUserDto(), afterUpdate.getUserDto());
+        assertEquals(testUser.getUserInfoDto(), afterUpdate.getUserInfoDto());
         completeDeleteUser(id);
     }
 

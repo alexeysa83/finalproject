@@ -6,7 +6,7 @@
     <persistence-unit name="com.github.alexeysa83.finalproject.dao" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <class>com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity</class>
-        <class>com.github.alexeysa83.finalproject.dao.entity.UserEntity</class>
+        <class>com.github.alexeysa83.finalproject.dao.entity.UserInfoEntity</class>
         <class>com.github.alexeysa83.finalproject.dao.entity.NewsEntity</class>
         <class>com.github.alexeysa83.finalproject.dao.entity.CommentEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>

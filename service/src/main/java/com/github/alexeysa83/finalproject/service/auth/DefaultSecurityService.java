@@ -4,7 +4,7 @@ package com.github.alexeysa83.finalproject.service.auth;
 import com.github.alexeysa83.finalproject.dao.authuser.AuthUserBaseDao;
 import com.github.alexeysa83.finalproject.dao.authuser.DefaultAuthUserBaseDao;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
-import com.github.alexeysa83.finalproject.model.dto.UserDto;
+import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
 import com.github.alexeysa83.finalproject.service.UtilService;
 import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
 
@@ -32,8 +32,8 @@ public class DefaultSecurityService implements SecurityService {
     @Override
     public AuthUserDto createAndSaveAuthUser(String login, String password) {
         final Timestamp regTime = UtilService.getTime();
-        final UserDto userDto = new UserDto(regTime);
-        AuthUserDto authUserDto = new AuthUserDto(login, password, userDto);
+        final UserInfoDto userInfoDto = new UserInfoDto(regTime);
+        AuthUserDto authUserDto = new AuthUserDto(login, password, userInfoDto);
         return authUserDao.createAndSave(authUserDto);
     }
 

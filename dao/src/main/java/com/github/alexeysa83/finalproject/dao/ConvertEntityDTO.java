@@ -3,11 +3,11 @@ package com.github.alexeysa83.finalproject.dao;
 import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
 import com.github.alexeysa83.finalproject.dao.entity.CommentEntity;
 import com.github.alexeysa83.finalproject.dao.entity.NewsEntity;
-import com.github.alexeysa83.finalproject.dao.entity.UserEntity;
+import com.github.alexeysa83.finalproject.dao.entity.UserInfoEntity;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.dto.CommentDto;
 import com.github.alexeysa83.finalproject.model.dto.NewsDto;
-import com.github.alexeysa83.finalproject.model.dto.UserDto;
+import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
 
 public abstract class ConvertEntityDTO {
 
@@ -25,8 +25,8 @@ public abstract class ConvertEntityDTO {
         authUserDto.setRole(authUserEntity.getRole());
         authUserDto.setBlocked(authUserEntity.isBlocked());
 
-        final UserDto userDto = UserToDto(authUserEntity.getUser());
-        authUserDto.setUserDto(userDto);
+        final UserInfoDto userInfoDto = UserToDto(authUserEntity.getUser());
+        authUserDto.setUserInfoDto(userInfoDto);
         return authUserDto;
     }
 
@@ -41,43 +41,43 @@ public abstract class ConvertEntityDTO {
         authUserEntity.setRole(authUserDto.getRole());
         authUserEntity.setBlocked(authUserDto.isBlocked());
 
-        final UserEntity userEntity = UserToEntity(authUserDto.getUserDto());
-        if (userEntity != null) {
-            userEntity.setAuthUser(authUserEntity);
+        final UserInfoEntity userInfoEntity = UserToEntity(authUserDto.getUserInfoDto());
+        if (userInfoEntity != null) {
+            userInfoEntity.setAuthUser(authUserEntity);
         }
-        authUserEntity.setUser(userEntity);
+        authUserEntity.setUser(userInfoEntity);
         return authUserEntity;
     }
 
-    public static UserDto UserToDto(UserEntity userEntity) {
-        if (userEntity == null) {
+    public static UserInfoDto UserToDto(UserInfoEntity userInfoEntity) {
+        if (userInfoEntity == null) {
             return null;
         }
-        final UserDto userDto = new UserDto();
-        userDto.setAuthId(userEntity.getAuthId());
-        userDto.setFirstName(userEntity.getFirstName());
-        userDto.setLastName(userEntity.getLastName());
-        userDto.setRegistrationTime(userEntity.getRegistrationTime());
-        userDto.setEmail(userEntity.getEmail());
-        userDto.setPhone(userEntity.getPhone());
-        userDto.setUserLogin(userEntity.getAuthUser().getLogin());
+        final UserInfoDto userInfoDto = new UserInfoDto();
+        userInfoDto.setAuthId(userInfoEntity.getAuthId());
+        userInfoDto.setFirstName(userInfoEntity.getFirstName());
+        userInfoDto.setLastName(userInfoEntity.getLastName());
+        userInfoDto.setRegistrationTime(userInfoEntity.getRegistrationTime());
+        userInfoDto.setEmail(userInfoEntity.getEmail());
+        userInfoDto.setPhone(userInfoEntity.getPhone());
+        userInfoDto.setUserLogin(userInfoEntity.getAuthUser().getLogin());
 
-        return userDto;
+        return userInfoDto;
     }
 
-    public static UserEntity UserToEntity(UserDto userDto) {
-        if (userDto == null) {
+    public static UserInfoEntity UserToEntity(UserInfoDto userInfoDto) {
+        if (userInfoDto == null) {
             return null;
         }
-        final UserEntity userEntity = new UserEntity();
-        userEntity.setAuthId(userDto.getAuthId());
-        userEntity.setFirstName(userDto.getFirstName());
-        userEntity.setLastName(userDto.getLastName());
-        userEntity.setRegistrationTime(userDto.getRegistrationTime());
-        userEntity.setEmail(userDto.getEmail());
-        userEntity.setPhone(userDto.getPhone());
+        final UserInfoEntity userInfoEntity = new UserInfoEntity();
+        userInfoEntity.setAuthId(userInfoDto.getAuthId());
+        userInfoEntity.setFirstName(userInfoDto.getFirstName());
+        userInfoEntity.setLastName(userInfoDto.getLastName());
+        userInfoEntity.setRegistrationTime(userInfoDto.getRegistrationTime());
+        userInfoEntity.setEmail(userInfoDto.getEmail());
+        userInfoEntity.setPhone(userInfoDto.getPhone());
 
-        return userEntity;
+        return userInfoEntity;
     }
 
     public static NewsDto NewsToDto(NewsEntity newsEntity) {

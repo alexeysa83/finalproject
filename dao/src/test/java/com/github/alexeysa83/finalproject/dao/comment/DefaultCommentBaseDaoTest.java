@@ -10,7 +10,7 @@ import com.github.alexeysa83.finalproject.dao.news.NewsBaseDao;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.dto.CommentDto;
 import com.github.alexeysa83.finalproject.model.dto.NewsDto;
-import com.github.alexeysa83.finalproject.model.dto.UserDto;
+import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -41,8 +41,8 @@ class DefaultCommentBaseDaoTest {
 
     @BeforeAll
     static void init() {
-        UserDto userDto = new UserDto(getTime());
-        AuthUserDto authUserDto = new AuthUserDto("CommentTestUser", "Pass", userDto);
+        UserInfoDto userInfoDto = new UserInfoDto(getTime());
+        AuthUserDto authUserDto = new AuthUserDto("CommentTestUser", "Pass", userInfoDto);
         testUser = authUserDao.createAndSave(authUserDto);
         NewsDto newsDto = new NewsDto("CommentTestNews", "CommentTest", getTime(), testUser.getId(), testUser.getLogin());
         testNews = newsDao.createAndSave(newsDto);

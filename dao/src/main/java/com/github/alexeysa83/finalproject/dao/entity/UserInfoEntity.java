@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name = "user_info")
-public class UserEntity {
+public class UserInfoEntity {
 
     private long authId;
     private String firstName;
@@ -20,7 +20,7 @@ public class UserEntity {
 
     private AuthUserEntity authUser;
 
-    public UserEntity() {
+    public UserInfoEntity() {
     }
 
     @Id

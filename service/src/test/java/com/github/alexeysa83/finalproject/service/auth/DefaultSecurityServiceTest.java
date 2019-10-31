@@ -3,7 +3,7 @@ package com.github.alexeysa83.finalproject.service.auth;
 import com.github.alexeysa83.finalproject.dao.authuser.AuthUserBaseDao;
 import com.github.alexeysa83.finalproject.model.Role;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
-import com.github.alexeysa83.finalproject.model.dto.UserDto;
+import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,7 +31,7 @@ class DefaultSecurityServiceTest {
         final String testPassword = "TestPass";
         final AuthUserDto testAuthUser = new AuthUserDto
                 (1, testLogin, testPassword, Role.USER,
-                        false, new UserDto(null));
+                        false, new UserInfoDto(null));
 
         when(authUserDao.createAndSave(any())).thenReturn(testAuthUser);
         final AuthUserDto userFromDB = service.createAndSaveAuthUser(testLogin, testPassword);
@@ -42,13 +42,13 @@ class DefaultSecurityServiceTest {
         assertEquals(testPassword, userFromDB.getPassword());
         assertEquals(testAuthUser.getRole(), userFromDB.getRole());
         assertEquals(testAuthUser.isBlocked(), userFromDB.isBlocked());
-        assertEquals(testAuthUser.getUserDto(), userFromDB.getUserDto());
+        assertEquals(testAuthUser.getUserInfoDto(), userFromDB.getUserInfoDto());
     }
 
     // if needed
     private AuthUserDto createTestAuthUser(String name) {
-        UserDto userDto = new UserDto(new Timestamp(System.currentTimeMillis()));
-        return new AuthUserDto(name, name + "Pass", userDto);
+        UserInfoDto userInfoDto = new UserInfoDto(new Timestamp(System.currentTimeMillis()));
+        return new AuthUserDto(name, name + "Pass", userInfoDto);
     }
 
 //    @Test

@@ -1,6 +1,6 @@
 package com.github.alexeysa83.finalproject.web.servlet.auth.user;
 
-import com.github.alexeysa83.finalproject.model.dto.UserDto;
+import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
 import com.github.alexeysa83.finalproject.service.UtilService;
 import com.github.alexeysa83.finalproject.service.user.DefaultUserService;
 import com.github.alexeysa83.finalproject.service.user.UserService;
@@ -25,7 +25,7 @@ public class UpdateUserServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         final String authId = req.getParameter("authId");
         final long id = UtilService.stringToLong(authId);
-        final UserDto user = userService.getById(id);
+        final UserInfoDto user = userService.getById(id);
         if (user == null) {
             String message = "deleted";
             forwardToJspMessage("userpage", message, req, resp);
@@ -44,7 +44,7 @@ public class UpdateUserServlet extends HttpServlet {
         final String lastName = req.getParameter("lastName");
         final String email = req.getParameter("email");
         final String phone = req.getParameter("phone");
-        final boolean isUpdated = userService.update(new UserDto(authId, firstName, lastName, email, phone));
+        final boolean isUpdated = userService.update(new UserInfoDto(authId, firstName, lastName, email, phone));
         String message = "update.success";
         String logMessage = "Updated profile to user id: {} , at: {}";
         if (!isUpdated) {

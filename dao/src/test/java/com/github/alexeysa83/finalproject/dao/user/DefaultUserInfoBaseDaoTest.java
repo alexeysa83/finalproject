@@ -5,7 +5,7 @@ import com.github.alexeysa83.finalproject.dao.authuser.AuthUserBaseDao;
 import com.github.alexeysa83.finalproject.dao.authuser.DefaultAuthUserBaseDao;
 import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
-import com.github.alexeysa83.finalproject.model.dto.UserDto;
+import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -16,9 +16,9 @@ import java.text.SimpleDateFormat;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class DefaultUserBaseDaoTest {
+class DefaultUserInfoBaseDaoTest {
 
-    private final UserBaseDao userDAO = DefaultUserBaseDao.getInstance();
+    private final UserInfoBaseDao userDAO = DefaultUserInfoBaseDao.getInstance();
     private final AuthUserBaseDao authUserDao = DefaultAuthUserBaseDao.getInstance();
 
     private static EntityManager entityManager;
@@ -31,8 +31,8 @@ class DefaultUserBaseDaoTest {
     }
 
     private AuthUserDto createTestAuthUser(String name) {
-        UserDto userDto = new UserDto(getTime());
-        return new AuthUserDto(name, name + "Pass", userDto);
+        UserInfoDto userInfoDto = new UserInfoDto(getTime());
+        return new AuthUserDto(name, name + "Pass", userInfoDto);
     }
 
     @BeforeAll
@@ -44,10 +44,10 @@ class DefaultUserBaseDaoTest {
     void getById() {
         final AuthUserDto user = createTestAuthUser("GetByIdTestUser");
         final AuthUserDto authUser = authUserDao.createAndSave(user);
-        final UserDto testUser = authUser.getUserDto();
+        final UserInfoDto testUser = authUser.getUserInfoDto();
         final long authId = testUser.getAuthId();
 
-        final UserDto userFromDB = userDAO.getById(authId);
+        final UserInfoDto userFromDB = userDAO.getById(authId);
         assertNotNull(userFromDB);
 
         assertEquals(testUser.getAuthId(), userFromDB.getAuthId());
@@ -66,20 +66,20 @@ class DefaultUserBaseDaoTest {
     void update() {
         final AuthUserDto user = createTestAuthUser("UpdateTestUser");
         final AuthUserDto authUser = authUserDao.createAndSave(user);
-        final UserDto testUser = authUser.getUserDto();
+        final UserInfoDto testUser = authUser.getUserInfoDto();
         final long authId = testUser.getAuthId();
-        final UserDto userDtoToUpdate = new UserDto
+        final UserInfoDto userInfoDtoToUpdate = new UserInfoDto
                 (authId, "First", "Last", getTime(), "email", "phone", "FakeLogin");
 
-        final boolean isUpdated = userDAO.update(userDtoToUpdate);
+        final boolean isUpdated = userDAO.update(userInfoDtoToUpdate);
         assertTrue(isUpdated);
 
-        final UserDto afterUpdate = userDAO.getById(authId);
+        final UserInfoDto afterUpdate = userDAO.getById(authId);
 
-        assertEquals(userDtoToUpdate.getFirstName(), afterUpdate.getFirstName());
-        assertEquals(userDtoToUpdate.getLastName(), afterUpdate.getLastName());
-        assertEquals(userDtoToUpdate.getEmail(), afterUpdate.getEmail());
-        assertEquals(userDtoToUpdate.getPhone(), afterUpdate.getPhone());
+        assertEquals(userInfoDtoToUpdate.getFirstName(), afterUpdate.getFirstName());
+        assertEquals(userInfoDtoToUpdate.getLastName(), afterUpdate.getLastName());
+        assertEquals(userInfoDtoToUpdate.getEmail(), afterUpdate.getEmail());
+        assertEquals(userInfoDtoToUpdate.getPhone(), afterUpdate.getPhone());
 
         assertEquals(authId, afterUpdate.getAuthId());
         assertEquals(testUser.getRegistrationTime(), afterUpdate.getRegistrationTime());

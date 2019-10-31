@@ -4,7 +4,6 @@ import com.github.alexeysa83.finalproject.model.Role;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "auth_user")
@@ -16,7 +15,7 @@ public class AuthUserEntity {
     private Role role;
     private boolean isBlocked;
 
-    private UserEntity user;
+    private UserInfoEntity user;
 
     private List<NewsEntity> news;
 
@@ -73,13 +72,13 @@ public class AuthUserEntity {
     }
 
     @OneToOne(mappedBy = "authUser", fetch = FetchType.EAGER, cascade = CascadeType.ALL , orphanRemoval = true)
-    public UserEntity getUser() {
+    public UserInfoEntity getUser() {
         return user;
     }
 
 //    cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE}
 
-    public void setUser(UserEntity user) {
+    public void setUser(UserInfoEntity user) {
         this.user = user;
     }
 

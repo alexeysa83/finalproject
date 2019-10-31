@@ -3,7 +3,7 @@ package com.github.alexeysa83.finalproject.model.dto;
 import java.sql.Timestamp;
 import java.util.Objects;
 
-public class UserDto {
+public class UserInfoDto {
 
     private long authId;
     private String firstName;
@@ -13,15 +13,15 @@ public class UserDto {
     private String phone;
     private String userLogin;
 
-    public UserDto() {
+    public UserInfoDto() {
     }
 
-    public UserDto(Timestamp registrationTime) {
+    public UserInfoDto(Timestamp registrationTime) {
         this.registrationTime = registrationTime;
 //        this.authId = authId;
     }
 
-    public UserDto(long authId, String firstName, String lastName, String email, String phone) {
+    public UserInfoDto(long authId, String firstName, String lastName, String email, String phone) {
         this.authId = authId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -29,7 +29,7 @@ public class UserDto {
         this.phone = phone;
     }
 
-    public UserDto(long authId, String firstName, String lastName, Timestamp registrationTime, String email, String phone, String userLogin) {
+    public UserInfoDto(long authId, String firstName, String lastName, Timestamp registrationTime, String email, String phone, String userLogin) {
         this.authId = authId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -113,13 +113,13 @@ public class UserDto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UserDto userDto = (UserDto) o;
-        return authId == userDto.authId &&
-                Objects.equals(firstName, userDto.firstName) &&
-                Objects.equals(lastName, userDto.lastName) &&
-                Objects.equals(registrationTime, userDto.registrationTime) &&
-                Objects.equals(email, userDto.email) &&
-                Objects.equals(phone, userDto.phone);
+        UserInfoDto userInfoDto = (UserInfoDto) o;
+        return authId == userInfoDto.authId &&
+                Objects.equals(firstName, userInfoDto.firstName) &&
+                Objects.equals(lastName, userInfoDto.lastName) &&
+                Objects.equals(registrationTime, userInfoDto.registrationTime) &&
+                Objects.equals(email, userInfoDto.email) &&
+                Objects.equals(phone, userInfoDto.phone);
     }
 
     @Override

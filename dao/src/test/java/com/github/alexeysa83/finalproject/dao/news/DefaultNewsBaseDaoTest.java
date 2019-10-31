@@ -9,7 +9,7 @@ import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.dto.CommentDto;
 import com.github.alexeysa83.finalproject.model.dto.NewsDto;
-import com.github.alexeysa83.finalproject.model.dto.UserDto;
+import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -39,21 +39,10 @@ class DefaultNewsBaseDaoTest {
 
     @BeforeAll
     static void init() {
-        UserDto userDto = new UserDto(getTime());
-        AuthUserDto authUserDto = new AuthUserDto("NewsTestUser", "Pass", userDto);
+        UserInfoDto userInfoDto = new UserInfoDto(getTime());
+        AuthUserDto authUserDto = new AuthUserDto("NewsTestUser", "Pass", userInfoDto);
         testUser = authUserDao.createAndSave(authUserDto);
     }
-
-    @Test
-    void addNews() {
-
-        for (int i = 0; i < 100; i++) {
-            final NewsDto testNews = new NewsDto
-                    ("CreateNewsTest" +i, "TestContent",
-                            getTime(), testUser.getId(), testUser.getLogin());
-            final NewsDto savedNews = newsDao.createAndSave(testNews);
-        }
-           }
 
     @Test
     void createAndSave() {
@@ -204,15 +193,15 @@ class DefaultNewsBaseDaoTest {
         assertNull(afterDelete);
     }
 
-//    @AfterAll
-//    static void close() {
-//        EntityManager entityManager = HibernateUtil.getEntityManager();
-//        entityManager.getTransaction().begin();
-//        AuthUserEntity authUserEntity = entityManager.find(AuthUserEntity.class, testUser.getId());
-//        entityManager.remove(authUserEntity);
-//        entityManager.getTransaction().commit();
-//        entityManager.close();
-//    }
+    @AfterAll
+    static void close() {
+        EntityManager entityManager = HibernateUtil.getEntityManager();
+        entityManager.getTransaction().begin();
+        AuthUserEntity authUserEntity = entityManager.find(AuthUserEntity.class, testUser.getId());
+        entityManager.remove(authUserEntity);
+        entityManager.getTransaction().commit();
+        entityManager.close();
+    }
 
     // getNewsOnPage is not Deleted
 //    @AfterAll

@@ -10,27 +10,27 @@ public class AuthUserDto {
     private Role role;
     private boolean isBlocked;
 
-    private UserDto userDto;
+    private UserInfoDto userInfoDto;
 
     public AuthUserDto() {
     }
 
     // User created in login/registration servlets
-    public AuthUserDto(String login, String password, UserDto userDto) {
+    public AuthUserDto(String login, String password, UserInfoDto userInfoDto) {
         this.login = login;
         this.password = password;
         role = Role.USER;
         isBlocked = false;
-        this.userDto = userDto;
+        this.userInfoDto = userInfoDto;
     }
 
-    public AuthUserDto(long id, String login, String password, Role role, boolean isBlocked, UserDto userDto) {
+    public AuthUserDto(long id, String login, String password, Role role, boolean isBlocked, UserInfoDto userInfoDto) {
         this.id = id;
         this.login = login;
         this.password = password;
         this.role = role;
         this.isBlocked = isBlocked;
-        this.userDto = userDto;
+        this.userInfoDto = userInfoDto;
     }
 
     public long getId() {
@@ -73,12 +73,12 @@ public class AuthUserDto {
         isBlocked = blocked;
     }
 
-    public UserDto getUserDto() {
-        return userDto;
+    public UserInfoDto getUserInfoDto() {
+        return userInfoDto;
     }
 
-    public void setUserDto(UserDto userDto) {
-        this.userDto = userDto;
+    public void setUserInfoDto(UserInfoDto userInfoDto) {
+        this.userInfoDto = userInfoDto;
     }
 
     @Override
