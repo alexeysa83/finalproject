@@ -4,7 +4,6 @@ import com.github.alexeysa83.finalproject.dao.ConvertEntityDTO;
 import com.github.alexeysa83.finalproject.dao.HibernateUtil;
 import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
@@ -113,14 +112,12 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
             AuthUserEntity authUserEntity = (AuthUserEntity) query.setParameter("login", login).getSingleResult();
             session.getTransaction().commit();
             session.close();
-
             return ConvertEntityDTO.AuthUserToDto(authUserEntity);
         } catch (PersistenceException e) {
             log.error("Fail to get user from DB by login: {}, at: {}", login, LocalDateTime.now(), e);
             return null;
         }
     }
-
 
 //    @Override
 //    public AuthUserDto getByLogin(String login) {
@@ -215,7 +212,7 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
 //            session.close();
 //            log.info("AuthUser id: {} updated in DB at: {}", user.getId(), LocalDateTime.now());
 //            return true;
-//        } catch (HibernateException e) {
+//        } catch (PersistenceException e) {
 //            log.error("Fail to update in DB AuthUser id: {} at: {}", user.getId(), LocalDateTime.now(), e);
 //            return false;
 //        }
@@ -259,7 +256,6 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
             return false;
         }
     }
-
 
 //    @Override
 //    public boolean delete(long id) {

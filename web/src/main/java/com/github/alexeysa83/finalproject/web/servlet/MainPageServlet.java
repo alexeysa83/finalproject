@@ -20,8 +20,19 @@ public class MainPageServlet extends HttpServlet {
     // Check null
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-        List<NewsDto> newsList = newsService.getNewsOnPage();
+
+        String currentPage = req.getParameter("currentPage");
+        if (currentPage == null) {
+            currentPage = "1";
+        }
+        final int page = Integer.parseInt(currentPage);
+        req.setAttribute("currentPage", page);
+
+        List<NewsDto> newsList = newsService.getNewsOnCurrentPage(page);
         req.setAttribute("newsList", newsList);
+
+        int totalPages = newsService.getNewsTotalPages();
+        req.setAttribute("totalPages", totalPages);
         forwardToJsp("mainpage", req, resp);
     }
 }

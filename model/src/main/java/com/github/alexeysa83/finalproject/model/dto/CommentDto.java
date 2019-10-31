@@ -11,6 +11,9 @@ public class CommentDto {
     private long newsId;
     private String authorComment;
 
+    public CommentDto() {
+    }
+
     public CommentDto(String content, Timestamp creationTime, long authId, long newsId, String authorComment) {
         this.content = content;
         this.creationTime = creationTime;
@@ -32,24 +35,48 @@ public class CommentDto {
         return id;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public String getContent() {
         return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public Timestamp getCreationTime() {
         return creationTime;
     }
 
+    public void setCreationTime(Timestamp creationTime) {
+        this.creationTime = creationTime;
+    }
+
     public long getAuthId() {
         return authId;
+    }
+
+    public void setAuthId(long authId) {
+        this.authId = authId;
     }
 
     public long getNewsId() {
         return newsId;
     }
 
+    public void setNewsId(long newsId) {
+        this.newsId = newsId;
+    }
+
     public String getAuthorComment() {
         return authorComment;
+    }
+
+    public void setAuthorComment(String authorComment) {
+        this.authorComment = authorComment;
     }
 
     @Override

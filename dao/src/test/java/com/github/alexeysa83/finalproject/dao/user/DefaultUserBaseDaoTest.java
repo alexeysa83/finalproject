@@ -93,11 +93,11 @@ class DefaultUserBaseDaoTest {
         AuthUserEntity toDelete = entityManager.find(AuthUserEntity.class, id);
         entityManager.remove(toDelete);
         entityManager.getTransaction().commit();
-        entityManager.close();
+        entityManager.clear();
     }
 
     @AfterAll
     static void close() {
-        HibernateUtil.close();
+        entityManager.close();
     }
 }

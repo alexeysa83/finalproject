@@ -8,6 +8,11 @@ import java.util.List;
 
 public class DefaultNewsService implements NewsService {
 
+    //select count * from NewsEntity/page size + 1
+
+    // In service page size select
+    private final int PAGE_SIZE = 10;
+
     private NewsBaseDao newsDao = DefaultNewsBaseDao.getInstance();
 
     private static volatile NewsService instance;
@@ -35,10 +40,20 @@ public class DefaultNewsService implements NewsService {
         return newsDao.getById(id);
     }
 
+    @Override
+    public int getNewsTotalPages() {
+        int rowsNews = newsDao.getRowsNews();
+        int totalPages = rowsNews/PAGE_SIZE;
+        if (rowsNews%PAGE_SIZE > 0) {
+            totalPages++;
+        }
+        return totalPages;
+    }
+
     //Add page parameter
     @Override
-    public List<NewsDto> getNewsOnPage() {
-        return newsDao.getNewsOnPage();
+    public List<NewsDto> getNewsOnCurrentPage(int page) {
+        return newsDao.getNewsOnPage(page, PAGE_SIZE);
     }
 
     @Override

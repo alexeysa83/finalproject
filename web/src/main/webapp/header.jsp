@@ -15,14 +15,14 @@
         <fmt:message key="choose.lang" bundle="${intr}"/>
     </button>
     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <a class="dropdown-item" href="${pageContext.request.contextPath}/index.jsp?locale=en_US">
+        <a class="dropdown-item" href="${pageContext.request.contextPath}/main?locale=en_US">
             <fmt:message key="english" bundle="${intr}"/></a>
-        <a class="dropdown-item" href="${pageContext.request.contextPath}/index.jsp?locale=ru_RU">
+        <a class="dropdown-item" href="${pageContext.request.contextPath}/main?locale=ru_RU">
             <fmt:message key="russian" bundle="${intr}"/></a>
     </div>
 </div>
 
-<a href="${pageContext.request.contextPath}/index.jsp"><fmt:message key="main" bundle="${intr}"/></a>
+<a href="${pageContext.request.contextPath}/main"><fmt:message key="main" bundle="${intr}"/></a>
 <c:choose>
     <c:when test="${sessionScope.get('authUser') != null}">
         <a href="${pageContext.request.contextPath}/auth/user/view?authId=${authUser.id}">${authUser.login}</a>

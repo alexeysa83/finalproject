@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+    <Appenders>
+        <RollingFile name="fileLogger" fileName="../logs/final_project.log" filePattern="../logs/final_project-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
+
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout   pattern=" %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [%-5level] %c{1} - %msg%n" />
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Logger name="com.github.alexeysa83.finalproject" level="debug" additivity="true">
+            <appender-ref ref="fileLogger" level="debug" />
+        </Logger>
+        <Logger name="org.hibernate.type.descriptor.sql" level="trace" additivity="false">
+            <AppenderRef ref="Console" />
+        </Logger>
+        <Root level="INFO" additivity="false">
+            <appender-ref ref="console" />
+        </Root>
+    </Loggers>
+</Configuration>
+
+
+
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<Configuration>-->
+<!--    <Appenders>-->
+<!--        <Console name="Console" target="SYSTEM_OUT">-->
+<!--            <PatternLayout pattern="HQL -> %msg%n" />-->
+<!--            &lt;!&ndash;<PatternLayout pattern="Relation -> %d{yyyy-MMM-dd HH:mm:ss a} [%t] %-5level %logger{36} - %msg%n" />&ndash;&gt;-->
+<!--        </Console>-->
+<!--    </Appenders>-->
+
+<!--    <Loggers>-->
+<!--        &lt;!&ndash; Log everything in hibernate &ndash;&gt;-->
+<!--        <Logger name="org.hibernate" level="error" additivity="false">-->
+<!--            <AppenderRef ref="Console" />-->
+<!--        </Logger>-->
+<!--        &lt;!&ndash; Log SQL statements &ndash;&gt;-->
+<!--        <Logger name="org.hibernate.SQL" level="trace" additivity="false">-->
+<!--            <AppenderRef ref="Console" />-->
+<!--        </Logger>-->
+<!--        &lt;!&ndash; Log JDBC bind parameters &ndash;&gt;-->
+<!--        <Logger name="org.hibernate.type.descriptor.sql" level="trace" additivity="false">-->
+<!--            <AppenderRef ref="Console" />-->
+<!--        </Logger>-->
+<!--        &lt;!&ndash; Log custom packages &ndash;&gt;-->
+<!--        <Logger name="com.boraji.tutorial.hibernate" level="debug" additivity="false">-->
+<!--            <AppenderRef ref="Console" />-->
+<!--        </Logger>-->
+<!--    </Loggers>-->
+<!--</Configuration>-->

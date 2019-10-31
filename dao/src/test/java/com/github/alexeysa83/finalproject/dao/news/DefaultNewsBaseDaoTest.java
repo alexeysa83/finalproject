@@ -45,9 +45,20 @@ class DefaultNewsBaseDaoTest {
     }
 
     @Test
+    void addNews() {
+
+        for (int i = 0; i < 100; i++) {
+            final NewsDto testNews = new NewsDto
+                    ("CreateNewsTest" +i, "TestContent",
+                            getTime(), testUser.getId(), testUser.getLogin());
+            final NewsDto savedNews = newsDao.createAndSave(testNews);
+        }
+           }
+
+    @Test
     void createAndSave() {
         final NewsDto testNews = new NewsDto
-                ("NewsCreateTest", "TestContent",
+                ("CreateNewsTest", "TestContent",
                         getTime(), testUser.getId(), testUser.getLogin());
         final NewsDto savedNews = newsDao.createAndSave(testNews);
         assertNotNull(savedNews);
@@ -67,7 +78,7 @@ class DefaultNewsBaseDaoTest {
     @Test
     void getById() {
         final NewsDto news = new NewsDto
-                ("GetByIdTestNews", "TestContent",
+                ("GetByIdNewsTest", "TestContent",
                         getTime(), testUser.getId(), testUser.getLogin());
         final NewsDto testNews = newsDao.createAndSave(news);
         final long id = testNews.getId();
@@ -84,35 +95,69 @@ class DefaultNewsBaseDaoTest {
         newsDao.delete(id);
     }
 
-    /**
-     * Variable "i" in cycles equals to parameter "limit" in SQL select in getNewsOnPage method
-     */
+//    @Test
+//    void getCountNews() {
+//        System.out.println(newsDao.getCountNews());
+//    }
+
+    private final int PAGE_SIZE = 10;
+
     @Test
     void getNewsOnPage() {
         LinkedList<NewsDto> testList = new LinkedList<>();
-        for (int i = 0; i < 10; i++) {
-            final NewsDto news = new NewsDto("NewsOnPageTest" + i, "TestContentPage" + i,
+        for (int i = 0; i < PAGE_SIZE * 2; i++) {
+            final NewsDto news = new NewsDto("GetNewsOnPageTest" + i, "TestContentPage" + i,
                     getTime(), testUser.getId(), testUser.getLogin());
             final NewsDto n = newsDao.createAndSave(news);
             testList.addFirst(n);
         }
 
-        List<NewsDto> listDB = newsDao.getNewsOnPage();
-        assertEquals(testList.size(), listDB.size());
-        for (int i = 0; i < 10; i++) {
-            final NewsDto testNews = testList.get(i);
-            final NewsDto newsFromDB = listDB.get(i);
-            assertNotNull(newsFromDB);
-            assertEquals(testNews.getId(), newsFromDB.getId());
-            assertEquals(testNews.getTitle(), newsFromDB.getTitle());
-            assertEquals(testNews.getContent(), newsFromDB.getContent());
-            assertEquals(testNews.getCreationTime(), newsFromDB.getCreationTime());
-            assertEquals(testNews.getAuthId(), newsFromDB.getAuthId());
-            assertEquals(testNews.getAuthorNews(), newsFromDB.getAuthorNews());
+        for (int page = 2; page > 0; page--) {
+            List<NewsDto> listDB = newsDao.getNewsOnPage(page, PAGE_SIZE);
+            assertEquals(PAGE_SIZE, listDB.size());
+            int offset = (page - 1) * PAGE_SIZE;
+            for (int i = 0; i < PAGE_SIZE; i++) {
+                final NewsDto testNews = testList.get(i + offset);
+                final NewsDto newsFromDB = listDB.get(i);
+                assertNotNull(newsFromDB);
+                assertEquals(testNews.getId(), newsFromDB.getId());
+                assertEquals(testNews.getTitle(), newsFromDB.getTitle());
+                assertEquals(testNews.getContent(), newsFromDB.getContent());
+                assertEquals(testNews.getCreationTime(), newsFromDB.getCreationTime());
+                assertEquals(testNews.getAuthId(), newsFromDB.getAuthId());
+                assertEquals(testNews.getAuthorNews(), newsFromDB.getAuthorNews());
 
-            newsDao.delete(newsFromDB.getId());
+                newsDao.delete(newsFromDB.getId());
+            }
         }
     }
+
+//    @Test
+//    void getNewsOnPage() {
+//        LinkedList<NewsDto> testList = new LinkedList<>();
+//        for (int i = 0; i < 10; i++) {
+//            final NewsDto news = new NewsDto("GetNewsOnPageTest" + i, "TestContentPage" + i,
+//                    getTime(), testUser.getId(), testUser.getLogin());
+//            final NewsDto n = newsDao.createAndSave(news);
+//            testList.addFirst(n);
+//        }
+//
+//        List<NewsDto> listDB = newsDao.getNewsOnPage();
+//        assertEquals(testList.size(), listDB.size());
+//        for (int i = 0; i < 10; i++) {
+//            final NewsDto testNews = testList.get(i);
+//            final NewsDto newsFromDB = listDB.get(i);
+//            assertNotNull(newsFromDB);
+//            assertEquals(testNews.getId(), newsFromDB.getId());
+//            assertEquals(testNews.getTitle(), newsFromDB.getTitle());
+//            assertEquals(testNews.getContent(), newsFromDB.getContent());
+//            assertEquals(testNews.getCreationTime(), newsFromDB.getCreationTime());
+//            assertEquals(testNews.getAuthId(), newsFromDB.getAuthId());
+//            assertEquals(testNews.getAuthorNews(), newsFromDB.getAuthorNews());
+//
+//            newsDao.delete(newsFromDB.getId());
+//        }
+//    }
 
     @Test
     void update() {
@@ -140,7 +185,7 @@ class DefaultNewsBaseDaoTest {
         newsDao.delete(id);
     }
 
-        @Test
+    @Test
     void delete() {
         final NewsDto news = new NewsDto
                 ("DeleteNewsTest", "TestContent",
@@ -159,16 +204,15 @@ class DefaultNewsBaseDaoTest {
         assertNull(afterDelete);
     }
 
-    @AfterAll
-    static void close() {
-        EntityManager entityManager = HibernateUtil.getEntityManager();
-        entityManager.getTransaction().begin();
-        AuthUserEntity authUserEntity = entityManager.find(AuthUserEntity.class, testUser.getId());
-        entityManager.remove(authUserEntity);
-        entityManager.getTransaction().commit();
-        entityManager.close();
-        HibernateUtil.close();
-    }
+//    @AfterAll
+//    static void close() {
+//        EntityManager entityManager = HibernateUtil.getEntityManager();
+//        entityManager.getTransaction().begin();
+//        AuthUserEntity authUserEntity = entityManager.find(AuthUserEntity.class, testUser.getId());
+//        entityManager.remove(authUserEntity);
+//        entityManager.getTransaction().commit();
+//        entityManager.close();
+//    }
 
     // getNewsOnPage is not Deleted
 //    @AfterAll

@@ -9,8 +9,10 @@ public interface NewsBaseDao extends BaseDao<NewsDto> {
 
     NewsDto createAndSave(NewsDto newsDto);
 
+    int getRowsNews ();
+
     // add page parameter
-    List<NewsDto> getNewsOnPage ();
+    List<NewsDto> getNewsOnPage (int page, int pageSize);
 
     boolean delete (long id);
 }

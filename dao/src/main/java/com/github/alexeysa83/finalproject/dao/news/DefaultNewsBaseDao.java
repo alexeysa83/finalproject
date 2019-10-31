@@ -1,12 +1,12 @@
 package com.github.alexeysa83.finalproject.dao.news;
 
 import com.github.alexeysa83.finalproject.dao.ConvertEntityDTO;
-import com.github.alexeysa83.finalproject.dao.DataSource;
 import com.github.alexeysa83.finalproject.dao.HibernateUtil;
 import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
 import com.github.alexeysa83.finalproject.dao.entity.NewsEntity;
 import com.github.alexeysa83.finalproject.model.dto.NewsDto;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +19,6 @@ import java.util.List;
 public class DefaultNewsBaseDao implements NewsBaseDao {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultNewsBaseDao.class);
-    private DataSource mysql = DataSource.getInstance();
 
     private static volatile NewsBaseDao instance;
 
@@ -66,9 +65,20 @@ public class DefaultNewsBaseDao implements NewsBaseDao {
         return ConvertEntityDTO.NewsToDto(newsEntity);
     }
 
+    // Cast to int
+    @Override
+    public int getRowsNews() {
+        Session session = HibernateUtil.getSession();
+        Transaction tr = session.beginTransaction();
+        long count = session.createQuery("select count (*) from NewsEntity", Long.class).getSingleResult();
+        tr.commit();
+        session.close();
+        return (int) count;
+    }
+
     // add page and limit parameters to get news on page method
     @Override
-    public List<NewsDto> getNewsOnPage() {
+    public List<NewsDto> getNewsOnPage(int page, int pageSize) {
         List<NewsDto> newsList = new ArrayList<>();
 
         try {
@@ -76,43 +86,96 @@ public class DefaultNewsBaseDao implements NewsBaseDao {
             session.beginTransaction();
 
             Query query = session.createQuery("from NewsEntity as n order by n.id desc ")
-                    .setMaxResults(10)
+                    .setMaxResults(pageSize)
+                    .setFirstResult((page - 1) * pageSize)
                     .setReadOnly(true);
-            List <NewsEntity>list = query.list();
+            List<NewsEntity> list = query.list();
             list.forEach(newsEntity -> {
                 NewsDto newsDto = ConvertEntityDTO.NewsToDto(newsEntity);
                 newsList.add(newsDto);
             });
+            session.getTransaction().commit();
+            session.close();
             return newsList;
         } catch (PersistenceException e) {
             log.error("Fail to get list of news from DB at: {}", LocalDateTime.now(), e);
-           return null;
+            return null;
         }
     }
+
+//    @Override
+//    public List<NewsDto> getNewsOnPage() {
+//        List<NewsDto> newsList = new ArrayList<>();
+//
+//        try {
+//            Session session = HibernateUtil.getSession();
+//            session.beginTransaction();
+//
+//            Query query = session.createQuery("from NewsEntity as n order by n.id desc ")
+//                    .setMaxResults(PAGE_SIZE)
+//                    .setReadOnly(true);
+//            List <NewsEntity>list = query.list();
+//            list.forEach(newsEntity -> {
+//                NewsDto newsDto = ConvertEntityDTO.NewsToDto(newsEntity);
+//                newsList.add(newsDto);
+//                            });
+//            session.getTransaction().commit();
+//            session.close();
+//            return newsList;
+//        } catch (PersistenceException e) {
+//            log.error("Fail to get list of news from DB at: {}", LocalDateTime.now(), e);
+//           return null;
+//        }
+//    }
 
     @Override
     public boolean update(NewsDto newsDto) {
         try {
             Session session = HibernateUtil.getSession();
             session.beginTransaction();
-
-            NewsEntity newsEntityToUpdate = session.get(NewsEntity.class, newsDto.getId());
-            newsEntityToUpdate.setTitle(newsDto.getTitle());
-            newsEntityToUpdate.setContent(newsDto.getContent());
-            session.save(newsEntityToUpdate);
+            final int i = session.createQuery
+                    ("update NewsEntity n set n.title = :title, n.content = :content where n.id = :id")
+                    .setParameter("title", newsDto.getTitle())
+                    .setParameter("content", newsDto.getContent())
+                    .setParameter("id", newsDto.getId())
+                    .executeUpdate();
             session.getTransaction().commit();
             session.close();
             log.info("News id: {} updated in DB at: {}", newsDto.getId(), LocalDateTime.now());
-            return true;
-        } catch (PersistenceException | NullPointerException e) {
+            return i > 0;
+        } catch (PersistenceException e) {
             log.error("Fail to update news in DB: {}, at: {}", newsDto, LocalDateTime.now(), e);
             return false;
         }
     }
 
+    /*
+    One additional select comparing to update in HQL
+     */
+
+//        @Override
+//    public boolean update(NewsDto newsDto) {
+//        try {
+//            Session session = HibernateUtil.getSession();
+//            session.beginTransaction();
+//
+//            NewsEntity newsEntityToUpdate = session.get(NewsEntity.class, newsDto.getId());
+//            newsEntityToUpdate.setTitle(newsDto.getTitle());
+//            newsEntityToUpdate.setContent(newsDto.getContent());
+//            session.save(newsEntityToUpdate);
+//            session.getTransaction().commit();
+//            session.close();
+//            log.info("News id: {} updated in DB at: {}", newsDto.getId(), LocalDateTime.now());
+//            return true;
+//        } catch (PersistenceException | NullPointerException e) {
+//            log.error("Fail to update news in DB: {}, at: {}", newsDto, LocalDateTime.now(), e);
+//            return false;
+//        }
+//    }
+
+
     @Override
     public boolean delete(long id) {
-
         try {
             Session session = HibernateUtil.getSession();
             session.beginTransaction();
@@ -127,4 +190,19 @@ public class DefaultNewsBaseDao implements NewsBaseDao {
             return false;
         }
     }
+
+    /*
+    Do not cascade delete comments
+     */
+//    @Override
+//    public boolean delete(long id) {
+//        Session session = HibernateUtil.getSession();
+//        session.beginTransaction();
+//        final int i = session.createQuery("delete from NewsEntity n where n.id=:id")
+//                .setParameter("id", id)
+//                .executeUpdate();
+//        session.getTransaction().commit();
+//        session.close();
+//        return i > 0;
+//    }
 }

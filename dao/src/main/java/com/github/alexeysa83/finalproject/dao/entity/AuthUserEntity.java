@@ -3,6 +3,7 @@ package com.github.alexeysa83.finalproject.dao.entity;
 import com.github.alexeysa83.finalproject.model.Role;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -17,9 +18,9 @@ public class AuthUserEntity {
 
     private UserEntity user;
 
-    private Set<NewsEntity> news;
+    private List<NewsEntity> news;
 
-    private Set<CommentEntity> comments;
+    private List<CommentEntity> comments;
 
     public AuthUserEntity() {
     }
@@ -84,24 +85,23 @@ public class AuthUserEntity {
 
     @OneToMany(targetEntity =com.github.alexeysa83.finalproject.dao.entity.NewsEntity.class,
             mappedBy = "authUser",
-            fetch = FetchType.LAZY,
-        orphanRemoval = true)
-    public Set<NewsEntity> getNews() {
+            fetch = FetchType.LAZY)
+    public List<NewsEntity> getNews() {
         return news;
     }
 
-    public void setNews(Set<NewsEntity> news) {
+    public void setNews(List<NewsEntity> news) {
         this.news = news;
     }
 
     @OneToMany(targetEntity = com.github.alexeysa83.finalproject.dao.entity.CommentEntity.class,
             mappedBy = "authUser",
             fetch = FetchType.LAZY)
-    public Set<CommentEntity> getComments() {
+    public List<CommentEntity> getComments() {
         return comments;
     }
 
-    public void setComments(Set<CommentEntity> comments) {
+    public void setComments(List<CommentEntity> comments) {
         this.comments = comments;
     }
 

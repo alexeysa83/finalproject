@@ -10,7 +10,9 @@ public interface NewsService {
 
     NewsDto getNewsOnId (long id);
 
-    List<NewsDto> getNewsOnPage();
+    int getNewsTotalPages ();
+
+    List<NewsDto> getNewsOnCurrentPage(int page);
 
     boolean updateNews (NewsDto news);
 

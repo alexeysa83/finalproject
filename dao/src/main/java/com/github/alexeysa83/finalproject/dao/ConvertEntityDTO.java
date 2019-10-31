@@ -1,9 +1,11 @@
 package com.github.alexeysa83.finalproject.dao;
 
 import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
+import com.github.alexeysa83.finalproject.dao.entity.CommentEntity;
 import com.github.alexeysa83.finalproject.dao.entity.NewsEntity;
 import com.github.alexeysa83.finalproject.dao.entity.UserEntity;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
+import com.github.alexeysa83.finalproject.model.dto.CommentDto;
 import com.github.alexeysa83.finalproject.model.dto.NewsDto;
 import com.github.alexeysa83.finalproject.model.dto.UserDto;
 
@@ -98,10 +100,36 @@ public abstract class ConvertEntityDTO {
             return null;
         }
         final NewsEntity newsEntity = new NewsEntity();
+        newsEntity.setId(newsDto.getId());
         newsEntity.setTitle(newsDto.getTitle());
         newsEntity.setContent(newsDto.getContent());
         newsEntity.setCreationTime(newsDto.getCreationTime());
         return newsEntity;
     }
 
+    public static CommentDto CommentToDto (CommentEntity commentEntity) {
+        if (commentEntity==null) {
+            return null;
+        }
+        final CommentDto commentDto = new CommentDto();
+        commentDto.setId(commentEntity.getId());
+        commentDto.setContent(commentEntity.getContent());
+        commentDto.setCreationTime(commentEntity.getCreationTime());
+        commentDto.setAuthId(commentEntity.getAuthUser().getId());
+        commentDto.setNewsId(commentEntity.getNews().getId());
+        commentDto.setAuthorComment(commentEntity.getAuthUser().getLogin());
+
+        return commentDto;
+    }
+
+    public static CommentEntity CommentToEntity (CommentDto commentDto) {
+        if (commentDto==null) {
+            return null;
+        }
+        final CommentEntity commentEntity = new CommentEntity();
+        commentEntity.setId(commentDto.getId());
+        commentEntity.setContent(commentDto.getContent());
+        commentEntity.setCreationTime(commentDto.getCreationTime());
+        return commentEntity;
+    }
 }

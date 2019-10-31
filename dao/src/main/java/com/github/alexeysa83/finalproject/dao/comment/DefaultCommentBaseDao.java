@@ -1,11 +1,16 @@
 package com.github.alexeysa83.finalproject.dao.comment;
 
-import com.github.alexeysa83.finalproject.dao.DataSource;
+import com.github.alexeysa83.finalproject.dao.ConvertEntityDTO;
+import com.github.alexeysa83.finalproject.dao.HibernateUtil;
+import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
+import com.github.alexeysa83.finalproject.dao.entity.CommentEntity;
+import com.github.alexeysa83.finalproject.dao.entity.NewsEntity;
 import com.github.alexeysa83.finalproject.model.dto.CommentDto;
+import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.*;
+import javax.persistence.PersistenceException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +18,6 @@ import java.util.List;
 public class DefaultCommentBaseDao implements CommentBaseDao {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultCommentBaseDao.class);
-    private DataSource mysql = DataSource.getInstance();
 
     private static volatile CommentBaseDao instance;
 
@@ -30,132 +34,140 @@ public class DefaultCommentBaseDao implements CommentBaseDao {
         return localInstance;
     }
 
-
     @Override
-    public CommentDto createAndSave(CommentDto comment) {
-        try (Connection connection = mysql.getConnection();
-             PreparedStatement statement = connection.prepareStatement
-                     ("insert into comment (content, creation_time, auth_id, news_id) values (?, ?, ?, ?)",
-                             Statement.RETURN_GENERATED_KEYS)) {
-            statement.setString(1, comment.getContent());
-            statement.setTimestamp(2, comment.getCreationTime());
-            statement.setLong(3, comment.getAuthId());
-            statement.setLong(4, comment.getNewsId());
-            statement.executeUpdate();
-            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
-                final boolean isSaved = generatedKeys.next();
-                if (!isSaved) {
-                    return null;
-                }
-                final long id = generatedKeys.getLong(1);
-                log.info("Comment id: {} saved to DB at: {}", id, LocalDateTime.now());
-                return new CommentDto
-                        (id, comment.getContent(), comment.getCreationTime(),
-                                comment.getAuthId(), comment.getNewsId(), comment.getAuthorComment());
-            }
+    public CommentDto createAndSave(CommentDto commentDto) {
+        final CommentEntity commentEntity = ConvertEntityDTO.CommentToEntity(commentDto);
 
-        } catch (SQLException e) {
-            log.error("SQLException at: {}", LocalDateTime.now(), e);
-            throw new RuntimeException(e);
+        try {
+            Session session = HibernateUtil.getSession();
+            session.beginTransaction();
+            final AuthUserEntity authUserEntity = session.get(AuthUserEntity.class, commentDto.getAuthId());
+            final NewsEntity newsEntity = session.get(NewsEntity.class, commentDto.getNewsId());
+            commentEntity.setAuthUser(authUserEntity);
+            commentEntity.setNews(newsEntity);
+            session.save(commentEntity);
+            session.getTransaction().commit();
+            session.close();
+        } catch (PersistenceException | NullPointerException e) {
+            log.error("Fail to save new comment to DB: {}, at: {}", commentDto, LocalDateTime.now(), e);
+            return null;
         }
+        log.info("Comment id: {} saved to DB at: {}", commentEntity.getId(), LocalDateTime.now());
+        return ConvertEntityDTO.CommentToDto(commentEntity);
     }
 
     @Override
     public CommentDto getById(long id) {
-        try (Connection connection = mysql.getConnection();
-             PreparedStatement statement = connection.prepareStatement
-                     ("select c.content, c.creation_time, c.auth_id, c.news_id, au.login from comment c " +
-                             "join auth_user au on c.auth_id = au.id where c.id = ?")) {
-            statement.setLong(1, id);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                final boolean isExist = resultSet.next();
-                if (!isExist) {
-                    return null;
-                }
-                final String content = resultSet.getString("content");
-                final Timestamp creationTime = resultSet.getTimestamp("creation_time");
-                final long authId = resultSet.getLong("auth_id");
-                final long newsId = resultSet.getLong("news_id");
-                final String login = resultSet.getString("login");
-                return new CommentDto(id, content, creationTime, authId, newsId, login);
-            }
-        } catch (SQLException e) {
-            log.error("SQLException at: {}", LocalDateTime.now(), e);
-            throw new RuntimeException(e);
-        }
+        Session session = HibernateUtil.getSession();
+        session.beginTransaction();
+        final CommentEntity commentEntity = session.get(CommentEntity.class, id);
+        session.getTransaction().commit();
+        session.close();
+        return ConvertEntityDTO.CommentToDto(commentEntity);
     }
 
     @Override
     public List<CommentDto> getCommentsOnNews(long newsId) {
-        Connection connection = null;
+        List <CommentDto> commentDtoList = new ArrayList<>();
+
         try {
-            connection = mysql.getConnection();
-            connection.setAutoCommit(false);
-            try (PreparedStatement statement = connection.prepareStatement
-                    ("select c.id, c.content, c.creation_time, c.auth_id, c.news_id, au.login from comment c " +
-                            "join auth_user au on c.auth_id = au.id where c.news_id = ?")) {
-                statement.setLong(1, newsId);
-                try (ResultSet resultSet = statement.executeQuery()) {
-                    final List<CommentDto> commentList = new ArrayList<>();
-                    while (resultSet.next()) {
-                        final long id = resultSet.getLong("id");
-                        final String content = resultSet.getString("content");
-                        final Timestamp creationTime = resultSet.getTimestamp("creation_time");
-                        final long authId = resultSet.getLong("auth_id");
-                        final String login = resultSet.getString("login");
-                        commentList.add(new CommentDto(id, content, creationTime, authId, newsId, login));
-                    }
-                    connection.commit();
-                    return commentList;
-                }
-            }
-        } catch (SQLException e) {
-            try {
-                connection.rollback();
-                log.error("Unable to get list of comments from DB at: {}", LocalDateTime.now());
-            } catch (SQLException ex) {
-                log.error("Unable to rollback transaction at: {}", LocalDateTime.now(), ex);
-                throw new RuntimeException(ex);
-            }
-            log.error("SQLException at: {}", LocalDateTime.now(), e);
-            throw new RuntimeException(e);
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    log.error("Unable to close connection at: {}", LocalDateTime.now(), e);
-                }
-            }
+            Session session = HibernateUtil.getSession();
+            session.beginTransaction();
+
+            final NewsEntity newsEntity = session.get(NewsEntity.class, newsId);
+            List<CommentEntity> entityComments = newsEntity.getComments();
+            entityComments.forEach(commentEntity -> {
+                CommentDto commentDto = ConvertEntityDTO.CommentToDto(commentEntity);
+                commentDtoList.add(commentDto);
+            });
+            session.getTransaction().commit();
+            session.close();
+            return commentDtoList;
+        } catch (PersistenceException e) {
+            log.error("Fail to get list of comments on news id: {},  at: {}", newsId, LocalDateTime.now(), e);
+            return null;
         }
     }
 
+    //    @Override
+//    public List<CommentDto> getCommentsOnNews(long newsId) {
+//        Connection connection = null;
+//        try {
+//            connection = mysql.getConnection();
+//            connection.setAutoCommit(false);
+//            try (PreparedStatement statement = connection.prepareStatement
+//                    ("select c.id, c.content, c.creation_time, c.auth_id, c.news_id, au.login from comment c " +
+//                            "join auth_user au on c.auth_id = au.id where c.news_id = ?")) {
+//                statement.setLong(1, newsId);
+//                try (ResultSet resultSet = statement.executeQuery()) {
+//                    final List<CommentDto> commentList = new ArrayList<>();
+//                    while (resultSet.next()) {
+//                        final long id = resultSet.getLong("id");
+//                        final String content = resultSet.getString("content");
+//                        final Timestamp creationTime = resultSet.getTimestamp("creation_time");
+//                        final long authId = resultSet.getLong("auth_id");
+//                        final String login = resultSet.getString("login");
+//                        commentList.add(new CommentDto(id, content, creationTime, authId, newsId, login));
+//                    }
+//                    connection.commit();
+//                    return commentList;
+//                }
+//            }
+//        } catch (SQLException e) {
+//            try {
+//                connection.rollback();
+//                log.error("Unable to get list of comments from DB at: {}", LocalDateTime.now());
+//            } catch (SQLException ex) {
+//                log.error("Unable to rollback transaction at: {}", LocalDateTime.now(), ex);
+//                throw new RuntimeException(ex);
+//            }
+//            log.error("SQLException at: {}", LocalDateTime.now(), e);
+//            throw new RuntimeException(e);
+//        } finally {
+//            if (connection != null) {
+//                try {
+//                    connection.close();
+//                } catch (SQLException e) {
+//                    log.error("Unable to close connection at: {}", LocalDateTime.now(), e);
+//                }
+//            }
+//        }
+//    }
+
     @Override
-    public boolean update(CommentDto comment) {
-        try (Connection connection = mysql.getConnection();
-             PreparedStatement statement = connection.prepareStatement
-                     ("update comment set content = ? where id = ?")) {
-            statement.setString(1, comment.getContent());
-            statement.setLong(2, comment.getId());
-            log.info("Comment id: {} updated in DB at: {}", comment.getId(), LocalDateTime.now());
-            return statement.executeUpdate() > 0;
-        } catch (SQLException e) {
-            log.error("SQLException at: {}", LocalDateTime.now(), e);
-            throw new RuntimeException(e);
+    public boolean update(CommentDto commentDto) {
+        try {
+            Session session = HibernateUtil.getSession();
+            session.beginTransaction();
+            final int i = session.createQuery("update CommentEntity c set c.content=:content where c.id=:id")
+                    .setParameter("content", commentDto.getContent())
+                    .setParameter("id", commentDto.getId())
+                    .executeUpdate();
+            session.getTransaction().commit();
+            session.close();
+            log.info("Comment id: {} updated in DB at: {}", commentDto.getId(), LocalDateTime.now());
+            return i > 0;
+        } catch (PersistenceException e) {
+            log.error("Fail to update comment in DB: {}, at: {}", commentDto, LocalDateTime.now(), e);
+            return false;
         }
     }
 
     @Override
     public boolean delete(long id) {
-        try (Connection connection = mysql.getConnection();
-             PreparedStatement statement = connection.prepareStatement
-                     ("delete from comment where id = ?")) {
-                        statement.setLong(1, id);
+        try {
+            Session session = HibernateUtil.getSession();
+            session.beginTransaction();
+            final int i = session.createQuery("delete CommentEntity c where c.id=:id")
+                    .setParameter("id", id)
+                    .executeUpdate();
+            session.getTransaction().commit();
+            session.close();
             log.info("Comment id: {} deleted from DB at: {}", id, LocalDateTime.now());
-            return statement.executeUpdate() > 0;
-        } catch (SQLException e) {
-            log.error("SQLException at: {}", LocalDateTime.now(), e);
-            throw new RuntimeException(e);
+            return i > 0;
+        } catch (PersistenceException e) {
+            log.error("Fail to delete comment id in DB: {}, at: {}", id, LocalDateTime.now(), e);
+            return false;
         }
     }
 }

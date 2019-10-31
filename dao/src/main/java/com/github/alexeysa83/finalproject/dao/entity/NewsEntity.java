@@ -2,6 +2,7 @@ package com.github.alexeysa83.finalproject.dao.entity;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -17,7 +18,7 @@ public class NewsEntity {
 
     private AuthUserEntity authUser;
 
-    private Set<CommentEntity> comments;
+    private List<CommentEntity> comments;
 
     public NewsEntity() {
     }
@@ -80,11 +81,11 @@ public class NewsEntity {
     }
 
     @OneToMany (mappedBy = "news", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    public Set<CommentEntity> getComments() {
+    public List<CommentEntity> getComments() {
         return comments;
     }
 
-    public void setComments(Set<CommentEntity> comments) {
+    public void setComments(List<CommentEntity> comments) {
         this.comments = comments;
     }
 
