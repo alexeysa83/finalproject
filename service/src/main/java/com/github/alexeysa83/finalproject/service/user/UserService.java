@@ -9,4 +9,8 @@ public interface UserService {
     UserInfoDto getById (long id);
 
     boolean update (UserInfoDto user);
+
+    UserInfoDto addBadgeToUser (long authId, long badgeId);
+
+    UserInfoDto deleteBadgeFromUser (long authId, long badgeId);
 }

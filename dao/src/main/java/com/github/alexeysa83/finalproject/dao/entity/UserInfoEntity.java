@@ -5,6 +5,8 @@ import org.hibernate.annotations.Parameter;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "user_info")
@@ -16,15 +18,16 @@ public class UserInfoEntity {
     private Timestamp registrationTime;
     private String email;
     private String phone;
-//    private long authId;
 
     private AuthUserEntity authUser;
+
+    private Set<BadgeEntity> badges = new HashSet<>();
 
     public UserInfoEntity() {
     }
 
     @Id
-    @Column (name = "auth_id", updatable = false)
+    @Column(name = "auth_id", updatable = false)
     @GenericGenerator(name = "gen",
             strategy = "foreign",
             parameters = @Parameter(name = "property", value = "authUser"))
@@ -82,17 +85,8 @@ public class UserInfoEntity {
         this.phone = phone;
     }
 
-//    @Column (name = "auth_id")
-//    public long getAuthId() {
-//        return authId;
-//    }
-//
-//    public void setAuthId(long authId) {
-//        this.authId = authId;
-//    }
-
-    @OneToOne (fetch = FetchType.EAGER)
-    @PrimaryKeyJoinColumn (name = "auth_id",
+    @OneToOne(fetch = FetchType.EAGER)
+    @PrimaryKeyJoinColumn(name = "auth_id",
             referencedColumnName = "id",
             foreignKey = @ForeignKey(ConstraintMode.CONSTRAINT))
     public AuthUserEntity getAuthUser() {
@@ -103,17 +97,37 @@ public class UserInfoEntity {
         this.authUser = authUser;
     }
 
-//    @Override
-//    public String toString() {
-//        return "UserEntity{" +
-//                "id=" + authId +
-//                ", firstName=" + firstName +
-//                ", lastName=" + lastName +
-//                ", registrationTime=" + registrationTime + '\n' +
-//                ", email=" + email +
-//                ", phone=" + phone +
-////                ", authId=" + authId +
-//                ", authUser=" + authUser +
-//                '}';
-//    }
+    @ManyToMany (fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(name = "user_badge",
+            joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = {@JoinColumn(name = "badge_id")})
+    public Set<BadgeEntity> getBadges() {
+        return badges;
+    }
+
+    public void setBadges(Set<BadgeEntity> badges) {
+        this.badges = badges;
+    }
+
+    public void addBadge (BadgeEntity badgeEntity) {
+        badges.add(badgeEntity);
+        badgeEntity.getUsers().add(this);
+    }
+
+    public void deleteBadge (BadgeEntity badgeEntity) {
+        badges.remove(badgeEntity);
+        badgeEntity.getUsers().remove(this);
+    }
+
+    @Override
+    public String toString() {
+        return "UserEntity{" +
+                "authId=" + authId +
+                ", firstName=" + firstName +
+                ", lastName=" + lastName +
+                ", registrationTime=" + registrationTime + '\n' +
+                ", email=" + email +
+                ", phone=" + phone +
+                '}';
+    }
 }

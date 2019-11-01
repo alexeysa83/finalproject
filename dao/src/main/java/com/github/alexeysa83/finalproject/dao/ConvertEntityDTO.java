@@ -1,13 +1,10 @@
 package com.github.alexeysa83.finalproject.dao;
 
-import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
-import com.github.alexeysa83.finalproject.dao.entity.CommentEntity;
-import com.github.alexeysa83.finalproject.dao.entity.NewsEntity;
-import com.github.alexeysa83.finalproject.dao.entity.UserInfoEntity;
-import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
-import com.github.alexeysa83.finalproject.model.dto.CommentDto;
-import com.github.alexeysa83.finalproject.model.dto.NewsDto;
-import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
+import com.github.alexeysa83.finalproject.dao.entity.*;
+import com.github.alexeysa83.finalproject.model.dto.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class ConvertEntityDTO {
 
@@ -62,6 +59,14 @@ public abstract class ConvertEntityDTO {
         userInfoDto.setPhone(userInfoEntity.getPhone());
         userInfoDto.setUserLogin(userInfoEntity.getAuthUser().getLogin());
 
+        Set<BadgeEntity> badgeEntities = userInfoEntity.getBadges();
+        if (badgeEntities.size() > 0) {
+            userInfoDto.setBadges(new HashSet<>());
+            badgeEntities.forEach(badgeEntity -> {
+                BadgeDto badgeDto = BadgeToDto(badgeEntity);
+                userInfoDto.getBadges().add(badgeDto);
+            });
+        }
         return userInfoDto;
     }
 
@@ -107,8 +112,8 @@ public abstract class ConvertEntityDTO {
         return newsEntity;
     }
 
-    public static CommentDto CommentToDto (CommentEntity commentEntity) {
-        if (commentEntity==null) {
+    public static CommentDto CommentToDto(CommentEntity commentEntity) {
+        if (commentEntity == null) {
             return null;
         }
         final CommentDto commentDto = new CommentDto();
@@ -122,8 +127,8 @@ public abstract class ConvertEntityDTO {
         return commentDto;
     }
 
-    public static CommentEntity CommentToEntity (CommentDto commentDto) {
-        if (commentDto==null) {
+    public static CommentEntity CommentToEntity(CommentDto commentDto) {
+        if (commentDto == null) {
             return null;
         }
         final CommentEntity commentEntity = new CommentEntity();
@@ -131,5 +136,25 @@ public abstract class ConvertEntityDTO {
         commentEntity.setContent(commentDto.getContent());
         commentEntity.setCreationTime(commentDto.getCreationTime());
         return commentEntity;
+    }
+
+    public static BadgeDto BadgeToDto(BadgeEntity badgeEntity) {
+        if (badgeEntity == null) {
+            return null;
+        }
+        final BadgeDto badgeDto = new BadgeDto();
+        badgeDto.setId(badgeEntity.getId());
+        badgeDto.setBadgeName(badgeEntity.getBadgeName());
+        return badgeDto;
+    }
+
+    public static BadgeEntity BadgeToEntity(BadgeDto badgeDto) {
+        if (badgeDto == null) {
+            return null;
+        }
+        final BadgeEntity badgeEntity = new BadgeEntity();
+        badgeEntity.setId(badgeDto.getId());
+        badgeEntity.setBadgeName(badgeDto.getBadgeName());
+        return badgeEntity;
     }
 }

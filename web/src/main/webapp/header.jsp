@@ -21,7 +21,9 @@
             <fmt:message key="russian" bundle="${intr}"/></a>
     </div>
 </div>
-
+<c:if test="${authUser.role == 'ADMIN'}">
+    <a href="${pageContext.request.contextPath}/admin/main"><fmt:message key="admin.page" bundle="${intr}"/></a>
+</c:if>
 <a href="${pageContext.request.contextPath}/main"><fmt:message key="main" bundle="${intr}"/></a>
 <c:choose>
     <c:when test="${sessionScope.get('authUser') != null}">

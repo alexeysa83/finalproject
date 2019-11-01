@@ -71,7 +71,7 @@ public class AuthUserEntity {
         isDeleted = deleted;
     }
 
-    @OneToOne(mappedBy = "authUser", fetch = FetchType.EAGER, cascade = CascadeType.ALL , orphanRemoval = true)
+    @OneToOne (mappedBy = "authUser", fetch = FetchType.EAGER, cascade = CascadeType.ALL , orphanRemoval = true)
     public UserInfoEntity getUser() {
         return user;
     }

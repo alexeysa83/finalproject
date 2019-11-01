@@ -22,7 +22,7 @@ import static com.github.alexeysa83.finalproject.web.WebUtils.*;
 @WebServlet(name = "AddCommentServlet", urlPatterns = {"/auth/comment/add"})
 public class AddCommentServlet extends HttpServlet {
 
-    private static final Logger log = LoggerFactory.getLogger(AddNewsServlet.class);
+    private static final Logger log = LoggerFactory.getLogger(AddCommentServlet.class);
     private CommentService commentService = DefaultCommentService.getInstance();
 
     @Override

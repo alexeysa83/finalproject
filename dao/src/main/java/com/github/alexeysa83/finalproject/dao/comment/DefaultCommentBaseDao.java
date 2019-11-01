@@ -166,7 +166,7 @@ public class DefaultCommentBaseDao implements CommentBaseDao {
             log.info("Comment id: {} deleted from DB at: {}", id, LocalDateTime.now());
             return i > 0;
         } catch (PersistenceException e) {
-            log.error("Fail to delete comment id in DB: {}, at: {}", id, LocalDateTime.now(), e);
+            log.error("Fail to delete comment from in DB: {}, at: {}", id, LocalDateTime.now(), e);
             return false;
         }
     }

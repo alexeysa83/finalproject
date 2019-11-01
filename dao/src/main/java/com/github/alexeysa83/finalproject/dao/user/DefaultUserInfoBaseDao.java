@@ -2,8 +2,10 @@ package com.github.alexeysa83.finalproject.dao.user;
 
 import com.github.alexeysa83.finalproject.dao.ConvertEntityDTO;
 import com.github.alexeysa83.finalproject.dao.HibernateUtil;
+import com.github.alexeysa83.finalproject.dao.entity.BadgeEntity;
 import com.github.alexeysa83.finalproject.dao.entity.UserInfoEntity;
 import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
+import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,43 +32,82 @@ public class DefaultUserInfoBaseDao implements UserInfoBaseDao {
         return localInstance;
     }
 
-    // Create and delete user logic in AuthUserDAO methods in transactions
-    /*
-    Get by auth_id method
-     */
-
     @Override
     public UserInfoDto getById(long authId) {
         EntityManager entityManager = HibernateUtil.getEntityManager();
         entityManager.getTransaction().begin();
         final UserInfoEntity userInfoEntity = entityManager.find(UserInfoEntity.class, authId);
         entityManager.getTransaction().commit();
+        final UserInfoDto userInfoDto = ConvertEntityDTO.UserToDto(userInfoEntity);
         entityManager.close();
-        return ConvertEntityDTO.UserToDto(userInfoEntity);
+        return userInfoDto;
     }
 
     @Override
     public boolean update(UserInfoDto userInfoDto) {
         try {
-            UserInfoEntity userToUpdate = ConvertEntityDTO.UserToEntity(userInfoDto);
-            EntityManager entityManager = HibernateUtil.getEntityManager();
-            entityManager.getTransaction().begin();
+            Session session = HibernateUtil.getSession();
+            session.beginTransaction();
 
-            userToUpdate.setFirstName(userInfoDto.getFirstName());
-            userToUpdate.setLastName(userInfoDto.getLastName());
-            userToUpdate.setEmail(userInfoDto.getEmail());
-            userToUpdate.setPhone(userInfoDto.getPhone());
-//            userToUpdate.getAuthUser().setLogin("HAHA");
-
-            entityManager.merge(userToUpdate);
-            entityManager.getTransaction().commit();
-            entityManager.close();
+            final int i = session.createQuery
+                    ("update UserInfoEntity u set u.firstName=:firstName, u.lastName=:lastName, " +
+                            "u.email=:email, u.phone=:phone where u.authId=:authId")
+                    .setParameter("firstName", userInfoDto.getFirstName())
+                    .setParameter("lastName", userInfoDto.getLastName())
+                    .setParameter("email", userInfoDto.getEmail())
+                    .setParameter("phone", userInfoDto.getPhone())
+                    .setParameter("authId", userInfoDto.getAuthId())
+                    .executeUpdate();
+            session.getTransaction().commit();
+            session.close();
             log.info("User id: {} updated in DB at: {}", userInfoDto.getAuthId(), LocalDateTime.now());
-            return true;
-        } catch (PersistenceException | NullPointerException e) {
+            return i > 0;
+        } catch (PersistenceException e) {
             log.error("Fail to update in DB User: {} at: {}", userInfoDto, LocalDateTime.now(), e);
             return false;
         }
+    }
 
+    // Duplicate code
+    @Override
+    public UserInfoDto addBadgeToUser(long authId, long badgeId) {
+
+        try {
+            Session session = HibernateUtil.getSession();
+            session.beginTransaction();
+            final UserInfoEntity userInfoEntity = session.get(UserInfoEntity.class, authId);
+            final BadgeEntity badgeEntity = session.get(BadgeEntity.class, badgeId);
+            userInfoEntity.addBadge(badgeEntity);
+            session.update(userInfoEntity);
+            session.getTransaction().commit();
+            final UserInfoDto userInfoDto = ConvertEntityDTO.UserToDto(userInfoEntity);
+            session.close();
+            log.info("Badge id: {} added to user id {} in DB at: {}", badgeId, authId, LocalDateTime.now());
+            return userInfoDto;
+        } catch (PersistenceException e) {
+            log.info("Fail to add badge id: {} to user id {} in DB at: {}", badgeId, authId, LocalDateTime.now());
+            return null;
+        }
+    }
+
+    @Override
+    public UserInfoDto deleteBadgeFromUser(long authId, long badgeId) {
+
+        try {
+            Session session = HibernateUtil.getSession();
+            session.beginTransaction();
+            final UserInfoEntity userInfoEntity = session.get(UserInfoEntity.class, authId);
+            final BadgeEntity badgeEntity = session.get(BadgeEntity.class, badgeId);
+            userInfoEntity.deleteBadge(badgeEntity);
+            session.update(userInfoEntity);
+            session.getTransaction().commit();
+            final UserInfoDto userInfoDto = ConvertEntityDTO.UserToDto(userInfoEntity);
+            session.close();
+            log.info("Badge id: {} deleted from user id {} in DB at: {}", badgeId, authId, LocalDateTime.now());
+            return userInfoDto;
+        } catch (PersistenceException e) {
+            log.info("Fail to delete badge id: {} from user id {} in DB at: {}", badgeId, authId, LocalDateTime.now());
+            return null;
+        }
     }
 }

@@ -1,4 +1,4 @@
-package com.github.alexeysa83.finalproject.web.servlet.admin;
+package com.github.alexeysa83.finalproject.web.servlet.admin.update;
 
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.Role;

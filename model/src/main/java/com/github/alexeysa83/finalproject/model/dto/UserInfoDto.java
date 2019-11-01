@@ -2,6 +2,7 @@ package com.github.alexeysa83.finalproject.model.dto;
 
 import java.sql.Timestamp;
 import java.util.Objects;
+import java.util.Set;
 
 public class UserInfoDto {
 
@@ -12,6 +13,7 @@ public class UserInfoDto {
     private String email;
     private String phone;
     private String userLogin;
+    private Set <BadgeDto> badges;
 
     public UserInfoDto() {
     }
@@ -93,6 +95,14 @@ public class UserInfoDto {
 
     public void setUserLogin(String userLogin) {
         this.userLogin = userLogin;
+    }
+
+    public Set<BadgeDto> getBadges() {
+        return badges;
+    }
+
+    public void setBadges(Set<BadgeDto> badges) {
+        this.badges = badges;
     }
 
     @Override

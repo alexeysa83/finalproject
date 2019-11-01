@@ -89,10 +89,9 @@ class DefaultNewsBaseDaoTest {
 //        System.out.println(newsDao.getCountNews());
 //    }
 
-    private final int PAGE_SIZE = 10;
-
     @Test
     void getNewsOnPage() {
+        final int PAGE_SIZE = 10;
         LinkedList<NewsDto> testList = new LinkedList<>();
         for (int i = 0; i < PAGE_SIZE * 2; i++) {
             final NewsDto news = new NewsDto("GetNewsOnPageTest" + i, "TestContentPage" + i,

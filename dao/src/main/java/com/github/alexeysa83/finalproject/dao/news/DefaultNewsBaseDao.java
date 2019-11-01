@@ -103,31 +103,6 @@ public class DefaultNewsBaseDao implements NewsBaseDao {
         }
     }
 
-//    @Override
-//    public List<NewsDto> getNewsOnPage() {
-//        List<NewsDto> newsList = new ArrayList<>();
-//
-//        try {
-//            Session session = HibernateUtil.getSession();
-//            session.beginTransaction();
-//
-//            Query query = session.createQuery("from NewsEntity as n order by n.id desc ")
-//                    .setMaxResults(PAGE_SIZE)
-//                    .setReadOnly(true);
-//            List <NewsEntity>list = query.list();
-//            list.forEach(newsEntity -> {
-//                NewsDto newsDto = ConvertEntityDTO.NewsToDto(newsEntity);
-//                newsList.add(newsDto);
-//                            });
-//            session.getTransaction().commit();
-//            session.close();
-//            return newsList;
-//        } catch (PersistenceException e) {
-//            log.error("Fail to get list of news from DB at: {}", LocalDateTime.now(), e);
-//           return null;
-//        }
-//    }
-
     @Override
     public boolean update(NewsDto newsDto) {
         try {

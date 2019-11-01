@@ -3,8 +3,11 @@ package com.github.alexeysa83.finalproject.dao.user;
 import com.github.alexeysa83.finalproject.dao.HibernateUtil;
 import com.github.alexeysa83.finalproject.dao.authuser.AuthUserBaseDao;
 import com.github.alexeysa83.finalproject.dao.authuser.DefaultAuthUserBaseDao;
+import com.github.alexeysa83.finalproject.dao.badge.BadgeBaseDao;
+import com.github.alexeysa83.finalproject.dao.badge.DefaultBadgeBaseDao;
 import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
+import com.github.alexeysa83.finalproject.model.dto.BadgeDto;
 import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -13,13 +16,15 @@ import org.junit.jupiter.api.Test;
 import javax.persistence.EntityManager;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Iterator;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class DefaultUserInfoBaseDaoTest {
 
-    private final UserInfoBaseDao userDAO = DefaultUserInfoBaseDao.getInstance();
     private final AuthUserBaseDao authUserDao = DefaultAuthUserBaseDao.getInstance();
+    private final UserInfoBaseDao userDAO = DefaultUserInfoBaseDao.getInstance();
+    private final BadgeBaseDao badgeDao = DefaultBadgeBaseDao.getInstance();
 
     private static EntityManager entityManager;
 
@@ -30,9 +35,15 @@ class DefaultUserInfoBaseDaoTest {
         return Timestamp.valueOf(time);
     }
 
-    private AuthUserDto createTestAuthUser(String name) {
+    private AuthUserDto createAuthUserDto(String name) {
         UserInfoDto userInfoDto = new UserInfoDto(getTime());
         return new AuthUserDto(name, name + "Pass", userInfoDto);
+    }
+
+    private BadgeDto createBadgeDto(String name) {
+        BadgeDto badgeDto = new BadgeDto();
+        badgeDto.setBadgeName(name);
+        return badgeDto;
     }
 
     @BeforeAll
@@ -42,7 +53,7 @@ class DefaultUserInfoBaseDaoTest {
 
     @Test
     void getById() {
-        final AuthUserDto user = createTestAuthUser("GetByIdTestUser");
+        final AuthUserDto user = createAuthUserDto("GetByIdTestUser");
         final AuthUserDto authUser = authUserDao.createAndSave(user);
         final UserInfoDto testUser = authUser.getUserInfoDto();
         final long authId = testUser.getAuthId();
@@ -64,7 +75,7 @@ class DefaultUserInfoBaseDaoTest {
 
     @Test
     void update() {
-        final AuthUserDto user = createTestAuthUser("UpdateTestUser");
+        final AuthUserDto user = createAuthUserDto("UpdateTestUser");
         final AuthUserDto authUser = authUserDao.createAndSave(user);
         final UserInfoDto testUser = authUser.getUserInfoDto();
         final long authId = testUser.getAuthId();
@@ -85,6 +96,51 @@ class DefaultUserInfoBaseDaoTest {
         assertEquals(testUser.getRegistrationTime(), afterUpdate.getRegistrationTime());
         assertEquals(testUser.getUserLogin(), afterUpdate.getUserLogin());
 
+        completeDeleteUser(authId);
+    }
+
+    @Test
+    void addBadgeToUser() {
+        final AuthUserDto user = createAuthUserDto("AddBadgeToUserTest");
+        final AuthUserDto authUser = authUserDao.createAndSave(user);
+        final UserInfoDto testUser = authUser.getUserInfoDto();
+        final long authId = testUser.getAuthId();
+        final BadgeDto testBadge = badgeDao.addBadge(createBadgeDto("testBadge"));
+        final long badgeId = testBadge.getId();
+
+        final UserInfoDto userWithBadge = userDAO.addBadgeToUser(authId, badgeId);
+        assertNotNull(userWithBadge);
+        assertEquals(testUser, userWithBadge);
+
+        final Iterator<BadgeDto> iterator = userWithBadge.getBadges().iterator();
+        assertTrue(iterator.hasNext());
+
+        final BadgeDto addedBadge = iterator.next();
+        assertEquals(testBadge.getId(), addedBadge.getId());
+        assertEquals(testBadge.getBadgeName(), addedBadge.getBadgeName());
+
+        userDAO.deleteBadgeFromUser(authId, badgeId);
+        badgeDao.deleteBadge(badgeId);
+        completeDeleteUser(authId);
+    }
+
+    @Test
+    void deleteBadgeFromUser() {
+        final AuthUserDto user = createAuthUserDto("DeleteBadgeFromUserTest");
+        final AuthUserDto authUser = authUserDao.createAndSave(user);
+        final UserInfoDto testUser = authUser.getUserInfoDto();
+        final long authId = testUser.getAuthId();
+        final BadgeDto testBadge = badgeDao.addBadge(createBadgeDto("testBadge"));
+        final long badgeId = testBadge.getId();
+        final UserInfoDto userWithBadge = userDAO.addBadgeToUser(authId, badgeId);
+
+        assertNotNull(userWithBadge);
+        assertNotNull(userWithBadge.getBadges());
+
+        final UserInfoDto userDeletedBadge = userDAO.deleteBadgeFromUser(authId, badgeId);
+        assertNull(userDeletedBadge.getBadges());
+
+        badgeDao.deleteBadge(badgeId);
         completeDeleteUser(authId);
     }
 

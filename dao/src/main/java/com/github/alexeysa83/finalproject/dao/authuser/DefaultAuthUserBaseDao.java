@@ -3,7 +3,9 @@ package com.github.alexeysa83.finalproject.dao.authuser;
 import com.github.alexeysa83.finalproject.dao.ConvertEntityDTO;
 import com.github.alexeysa83.finalproject.dao.HibernateUtil;
 import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
+import com.github.alexeysa83.finalproject.dao.entity.UserInfoEntity;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
@@ -111,8 +113,9 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
             Query query = session.createQuery("from AuthUserEntity where login = :login");
             AuthUserEntity authUserEntity = (AuthUserEntity) query.setParameter("login", login).getSingleResult();
             session.getTransaction().commit();
+            final AuthUserDto authUserDto = ConvertEntityDTO.AuthUserToDto(authUserEntity);
             session.close();
-            return ConvertEntityDTO.AuthUserToDto(authUserEntity);
+            return authUserDto;
         } catch (PersistenceException e) {
             log.error("Fail to get user from DB by login: {}, at: {}", login, LocalDateTime.now(), e);
             return null;
@@ -149,8 +152,9 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
         session.beginTransaction();
         final AuthUserEntity authUser = session.get(AuthUserEntity.class, id);
         session.getTransaction().commit();
+        final AuthUserDto authUserDto = ConvertEntityDTO.AuthUserToDto(authUser);
         session.close();
-        return ConvertEntityDTO.AuthUserToDto(authUser);
+        return authUserDto;
     }
 
 //    @Override
@@ -178,28 +182,29 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
 //    }
 
     @Override
-    public boolean update(AuthUserDto user) {
+    public boolean update(AuthUserDto authUserDto) {
+
         try {
             Session session = HibernateUtil.getSession();
             session.beginTransaction();
 
-            AuthUserEntity authUserToUpdate = session.get(AuthUserEntity.class, user.getId());
-            authUserToUpdate.setLogin(user.getLogin());
-            authUserToUpdate.setPassword(user.getPassword());
-            authUserToUpdate.setRole(user.getRole());
-            authUserToUpdate.setDeleted(user.isDeleted());
-
-            session.update(authUserToUpdate);
+            final int i = session.createQuery("update AuthUserEntity a set a.login=:login," +
+                    " a.password=:password, a.role=:role, a.deleted=:isDeleted where a.id=:id")
+                    .setParameter("login", authUserDto.getLogin())
+                    .setParameter("password", authUserDto.getPassword())
+                    .setParameter("role", authUserDto.getRole())
+                    .setParameter("isDeleted", authUserDto.isDeleted())
+                    .setParameter("id", authUserDto.getId())
+                    .executeUpdate();
             session.getTransaction().commit();
             session.close();
-            log.info("AuthUser id: {} updated in DB at: {}", user.getId(), LocalDateTime.now());
-            return true;
-        } catch (PersistenceException | NullPointerException e) {
-            log.error("Fail to update in DB AuthUser: {} at: {}", user, LocalDateTime.now(), e);
+            log.info("AuthUser id: {} updated in DB at: {}", authUserDto.getId(), LocalDateTime.now());
+            return i > 0;
+        } catch (PersistenceException e) {
+            log.error("Fail to update in DB AuthUser: {} at: {}", authUserDto, LocalDateTime.now(), e);
             return false;
         }
     }
-
 
 //    @Override
 //    public boolean update(AuthUserDto user) {
@@ -241,11 +246,12 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
     public boolean delete(long id) {
         try {
             Session session = HibernateUtil.getSession();
-            session.getTransaction().begin();
+            session.beginTransaction();
             AuthUserEntity authUserToDelete = session.get(AuthUserEntity.class, id);
-            authUserToDelete.setDeleted(true);
+            authUserToDelete.getUser().setBadges(null);
+            session.flush();
             authUserToDelete.setUser(null);
-//            authUserToDelete.getUser().setAuthUser(null);
+            authUserToDelete.setDeleted(true);
             session.update(authUserToDelete);
             session.getTransaction().commit();
             session.close();

@@ -9,6 +9,7 @@
         <class>com.github.alexeysa83.finalproject.dao.entity.UserInfoEntity</class>
         <class>com.github.alexeysa83.finalproject.dao.entity.NewsEntity</class>
         <class>com.github.alexeysa83.finalproject.dao.entity.CommentEntity</class>
+        <class>com.github.alexeysa83.finalproject.dao.entity.BadgeEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>

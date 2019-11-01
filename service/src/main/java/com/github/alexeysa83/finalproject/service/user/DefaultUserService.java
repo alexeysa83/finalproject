@@ -35,4 +35,13 @@ public class DefaultUserService implements UserService {
         return userDAO.update(user);
     }
 
+    @Override
+    public UserInfoDto addBadgeToUser(long authId, long badgeId) {
+        return userDAO.addBadgeToUser(authId, badgeId);
+    }
+
+    @Override
+    public UserInfoDto deleteBadgeFromUser(long authId, long badgeId) {
+        return userDAO.deleteBadgeFromUser(authId, badgeId);
+    }
 }

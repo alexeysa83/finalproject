@@ -45,7 +45,6 @@
                 </a>
             </li>
         </c:if>
-
         <c:forEach begin="1" end="${totalPages}" var="page">
             <c:choose>
                 <c:when test="${currentPage == page}">
