@@ -27,7 +27,7 @@ public class NewsViewServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         final String newsId = req.getParameter("newsId");
         final long id = UtilService.stringToLong(newsId);
-        final NewsDto news = this.newsService.getNewsOnId(id);
+        final NewsDto news = newsService.getNewsOnId(id);
         req.setAttribute("news", news);
         final List<CommentDto> commentList = commentService.getCommentsOnNews(id);
         req.setAttribute("commentList", commentList);

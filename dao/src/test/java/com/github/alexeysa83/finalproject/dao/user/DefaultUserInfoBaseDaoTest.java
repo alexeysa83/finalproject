@@ -105,7 +105,7 @@ class DefaultUserInfoBaseDaoTest {
         final AuthUserDto authUser = authUserDao.createAndSave(user);
         final UserInfoDto testUser = authUser.getUserInfoDto();
         final long authId = testUser.getAuthId();
-        final BadgeDto testBadge = badgeDao.addBadge(createBadgeDto("testBadge"));
+        final BadgeDto testBadge = badgeDao.add(createBadgeDto("testBadge"));
         final long badgeId = testBadge.getId();
 
         final UserInfoDto userWithBadge = userDAO.addBadgeToUser(authId, badgeId);
@@ -120,7 +120,7 @@ class DefaultUserInfoBaseDaoTest {
         assertEquals(testBadge.getBadgeName(), addedBadge.getBadgeName());
 
         userDAO.deleteBadgeFromUser(authId, badgeId);
-        badgeDao.deleteBadge(badgeId);
+        badgeDao.delete(badgeId);
         completeDeleteUser(authId);
     }
 
@@ -130,7 +130,7 @@ class DefaultUserInfoBaseDaoTest {
         final AuthUserDto authUser = authUserDao.createAndSave(user);
         final UserInfoDto testUser = authUser.getUserInfoDto();
         final long authId = testUser.getAuthId();
-        final BadgeDto testBadge = badgeDao.addBadge(createBadgeDto("testBadge"));
+        final BadgeDto testBadge = badgeDao.add(createBadgeDto("testBadge"));
         final long badgeId = testBadge.getId();
         final UserInfoDto userWithBadge = userDAO.addBadgeToUser(authId, badgeId);
 
@@ -140,7 +140,7 @@ class DefaultUserInfoBaseDaoTest {
         final UserInfoDto userDeletedBadge = userDAO.deleteBadgeFromUser(authId, badgeId);
         assertNull(userDeletedBadge.getBadges());
 
-        badgeDao.deleteBadge(badgeId);
+        badgeDao.delete(badgeId);
         completeDeleteUser(authId);
     }
 

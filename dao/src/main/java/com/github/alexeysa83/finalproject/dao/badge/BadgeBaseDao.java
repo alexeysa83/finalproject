@@ -7,9 +7,9 @@ import java.util.Set;
 
 public interface BadgeBaseDao extends BaseDao <BadgeDto> {
 
-    BadgeDto addBadge(BadgeDto badge);
+    BadgeDto add(BadgeDto badge);
 
-    Set<BadgeDto> getAllBadges ();
+    Set<BadgeDto> getAll();
 
-    boolean deleteBadge(long id);
+    boolean delete(long id);
 }

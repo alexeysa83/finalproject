@@ -6,5 +6,13 @@ import java.util.Set;
 
 public interface BadgeService {
 
+    BadgeDto addNewBadge (BadgeDto badgeDto);
+
+    BadgeDto getById (long id);
+
     Set<BadgeDto> getAllBadges ();
+
+    boolean update (BadgeDto badgeDto);
+
+    boolean deleteBadge (long id);
 }

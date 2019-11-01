@@ -26,7 +26,27 @@ public class DefaultBadgeService implements BadgeService {
         }
 
     @Override
+    public BadgeDto addNewBadge(BadgeDto badgeDto) {
+        return badgeDao.add(badgeDto);
+    }
+
+    @Override
+    public BadgeDto getById(long id) {
+        return badgeDao.getById(id);
+    }
+
+    @Override
     public Set<BadgeDto> getAllBadges() {
-        return badgeDao.getAllBadges();
+        return badgeDao.getAll();
+    }
+
+    @Override
+    public boolean update(BadgeDto badgeDto) {
+        return badgeDao.update(badgeDto);
+    }
+
+    @Override
+    public boolean deleteBadge(long id) {
+        return badgeDao.delete(id);
     }
 }

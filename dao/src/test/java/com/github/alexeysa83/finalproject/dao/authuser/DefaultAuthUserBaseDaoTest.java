@@ -133,7 +133,7 @@ class DefaultAuthUserBaseDaoTest {
         final AuthUserDto testUser = authUserDao.createAndSave(user);
         BadgeDto badge = new BadgeDto();
         badge.setBadgeName("TestBadge");
-        BadgeDto testBadge = badgeDao.addBadge(badge);
+        BadgeDto testBadge = badgeDao.add(badge);
         userDAO.addBadgeToUser(testUser.getId(), testBadge.getId());
 
         final long id = testUser.getId();
@@ -148,6 +148,7 @@ class DefaultAuthUserBaseDaoTest {
         assertNull(afterDelete.getUserInfoDto());
 
         completeDeleteUser(id);
+        badgeDao.delete(testBadge.getId());
     }
 
     private void completeDeleteUser(long id) {

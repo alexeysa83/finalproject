@@ -36,7 +36,7 @@ public class DefaultBadgeBaseDao implements BadgeBaseDao {
     }
 
     @Override
-    public BadgeDto addBadge(BadgeDto badgeDto) {
+    public BadgeDto add(BadgeDto badgeDto) {
 
         final BadgeEntity badgeEntity = ConvertEntityDTO.BadgeToEntity(badgeDto);
 
@@ -65,7 +65,7 @@ public class DefaultBadgeBaseDao implements BadgeBaseDao {
     }
 
     @Override
-    public Set<BadgeDto> getAllBadges() {
+    public Set<BadgeDto> getAll() {
         Set <BadgeDto> badgeDtos = new HashSet<>();
         try {
             Session session = HibernateUtil.getSession();
@@ -107,7 +107,7 @@ public class DefaultBadgeBaseDao implements BadgeBaseDao {
     }
 
     @Override
-    public boolean deleteBadge(long id) {
+    public boolean delete(long id) {
         try {
             Session session = HibernateUtil.getSession();
             session.beginTransaction();

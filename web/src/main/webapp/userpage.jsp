@@ -50,20 +50,6 @@
     </c:forEach>
     <c:if test="${authUser.role == 'ADMIN'}">
         <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuDeleteBadge"
-                    data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false">
-                <fmt:message key="delete.badge" bundle="${intr}"/>
-            </button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuDeleteBadge">
-                <c:forEach items="${requestScope.userBadges}" var="badge">
-                    <a class="dropdown-item"
-                       href="${pageContext.request.contextPath}/admin/delete/user_badge?badgeId=${badge.id}&authId=${user.authId}">
-                            ${badge.badgeName}</a>
-                </c:forEach>
-            </div>
-        </div>
-        <div class="dropdown">
             <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuAddBadge"
                     data-toggle="dropdown"
                     aria-haspopup="true" aria-expanded="false">
@@ -73,6 +59,20 @@
                 <c:forEach items="${requestScope.badgesDB}" var="badge">
                     <a class="dropdown-item"
                        href="${pageContext.request.contextPath}/admin/add/user_badge?badgeId=${badge.id}&authId=${user.authId}">
+                            ${badge.badgeName}</a>
+                </c:forEach>
+            </div>
+        </div>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuDeleteBadge"
+                    data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
+                <fmt:message key="delete.badge" bundle="${intr}"/>
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuDeleteBadge">
+                <c:forEach items="${requestScope.userBadges}" var="badge">
+                    <a class="dropdown-item"
+                       href="${pageContext.request.contextPath}/admin/delete/user_badge?badgeId=${badge.id}&authId=${user.authId}">
                             ${badge.badgeName}</a>
                 </c:forEach>
             </div>
