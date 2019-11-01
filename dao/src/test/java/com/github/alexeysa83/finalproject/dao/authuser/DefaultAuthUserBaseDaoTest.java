@@ -67,14 +67,14 @@ class DefaultAuthUserBaseDaoTest {
 
     @Test
     void getByLogin() {
-        final AuthUserDto user = createAuthUserDto("GetByLoginTestAuth");
+        final String testLogin = "GetByLoginTestAuth";
+        final AuthUserDto user = createAuthUserDto(testLogin);
         final AuthUserDto testUser = authUserDao.createAndSave(user);
-        final String login = testUser.getLogin();
-        final AuthUserDto userFromDB = authUserDao.getByLogin(login);
+        final AuthUserDto userFromDB = authUserDao.getByLogin(testLogin);
 
         assertNotNull(userFromDB);
         assertEquals(testUser.getId(), userFromDB.getId());
-        assertEquals(login, userFromDB.getLogin());
+        assertEquals(testLogin, userFromDB.getLogin());
         assertEquals(testUser.getPassword(), userFromDB.getPassword());
         assertEquals(testUser.getRole(), userFromDB.getRole());
         assertEquals(testUser.isDeleted(), userFromDB.isDeleted());

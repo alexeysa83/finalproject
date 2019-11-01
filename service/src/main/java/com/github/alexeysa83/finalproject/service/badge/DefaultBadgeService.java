@@ -4,7 +4,7 @@ import com.github.alexeysa83.finalproject.dao.badge.BadgeBaseDao;
 import com.github.alexeysa83.finalproject.dao.badge.DefaultBadgeBaseDao;
 import com.github.alexeysa83.finalproject.model.dto.BadgeDto;
 
-import java.util.Set;
+import java.util.List;
 
 public class DefaultBadgeService implements BadgeService {
 
@@ -36,8 +36,13 @@ public class DefaultBadgeService implements BadgeService {
     }
 
     @Override
-    public Set<BadgeDto> getAllBadges() {
+    public List<BadgeDto> getAllBadges() {
         return badgeDao.getAll();
+    }
+
+    @Override
+    public boolean checkNameIsTaken(String name) {
+        return badgeDao.isNameTaken(name);
     }
 
     @Override

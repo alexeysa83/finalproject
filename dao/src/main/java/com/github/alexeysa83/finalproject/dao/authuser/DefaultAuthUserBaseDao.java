@@ -3,9 +3,7 @@ package com.github.alexeysa83.finalproject.dao.authuser;
 import com.github.alexeysa83.finalproject.dao.ConvertEntityDTO;
 import com.github.alexeysa83.finalproject.dao.HibernateUtil;
 import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
-import com.github.alexeysa83.finalproject.dao.entity.UserInfoEntity;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
@@ -106,15 +104,15 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
 
     @Override
     public AuthUserDto getByLogin(String login) {
-        try {
-            Session session = HibernateUtil.getSession();
+        try (Session session = HibernateUtil.getSession()){
+//            Session session = HibernateUtil.getSession();
             session.beginTransaction();
 
             Query query = session.createQuery("from AuthUserEntity where login = :login");
             AuthUserEntity authUserEntity = (AuthUserEntity) query.setParameter("login", login).getSingleResult();
             session.getTransaction().commit();
             final AuthUserDto authUserDto = ConvertEntityDTO.AuthUserToDto(authUserEntity);
-            session.close();
+//            session.close();
             return authUserDto;
         } catch (PersistenceException e) {
             log.error("Fail to get user from DB by login: {}, at: {}", login, LocalDateTime.now(), e);

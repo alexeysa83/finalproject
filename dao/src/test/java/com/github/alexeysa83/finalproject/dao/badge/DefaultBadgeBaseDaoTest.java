@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import javax.persistence.EntityManager;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -61,6 +60,22 @@ class DefaultBadgeBaseDaoTest {
     }
 
     @Test
+    void isNameTaken() {
+        final String testName = "IsNameTakenTestBadge";
+        final BadgeDto testBadge = createBadgeDto(testName);
+        final BadgeDto savedBadge = badgeDao.add(testBadge);
+        assertNotNull(savedBadge);
+
+        final boolean nameTaken = badgeDao.isNameTaken(testName);
+        assertTrue(nameTaken);
+
+        final boolean nameFree = badgeDao.isNameTaken(testName + testName);
+        assertFalse(nameFree);
+
+        badgeDao.delete(savedBadge.getId());
+    }
+
+    @Test
     void getById() {
         final BadgeDto badge = createBadgeDto("GetByIdTestBadge");
         final BadgeDto testBadge = badgeDao.add(badge);
@@ -75,13 +90,13 @@ class DefaultBadgeBaseDaoTest {
     }
 
     //????????
-    @Test
-    void getAllBadges() {
-        Set<BadgeDto> allBadges = badgeDao.getAll();
-        for (BadgeDto allBadge : allBadges) {
-            System.out.println(allBadge);
-        }
-    }
+//    @Test
+//    void getAllBadges() {
+//        List<BadgeDto> allBadges = badgeDao.getAll();
+//        for (BadgeDto allBadge : allBadges) {
+//            System.out.println(allBadge);
+//        }
+//    }
 
     @Test
     void update() {

@@ -14,8 +14,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import java.util.Set;
+import java.util.List;
 
 import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJsp;
 
@@ -35,7 +34,7 @@ public class DeleteBadgeFromUserServlet extends HttpServlet {
         final String id1 = req.getParameter("badgeId");
         final long badgeId = UtilService.stringToLong(id1);
         final UserInfoDto userInfoDto = userService.deleteBadgeFromUser(authId, badgeId);
-        final Set<BadgeDto> badgesDB = badgeService.getAllBadges();
+        final List<BadgeDto> badgesDB = badgeService.getAllBadges();
 // == null
         req.setAttribute("user", userInfoDto);
         req.setAttribute("userBadges", userInfoDto.getBadges());

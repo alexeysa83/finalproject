@@ -2,7 +2,7 @@ package com.github.alexeysa83.finalproject.service.badge;
 
 import com.github.alexeysa83.finalproject.model.dto.BadgeDto;
 
-import java.util.Set;
+import java.util.List;
 
 public interface BadgeService {
 
@@ -10,7 +10,9 @@ public interface BadgeService {
 
     BadgeDto getById (long id);
 
-    Set<BadgeDto> getAllBadges ();
+    List<BadgeDto> getAllBadges ();
+
+    boolean checkNameIsTaken (String name);
 
     boolean update (BadgeDto badgeDto);
 

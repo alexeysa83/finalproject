@@ -14,8 +14,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import java.util.Set;
+import java.util.List;
 
 import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJsp;
 import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJspMessage;
@@ -41,7 +40,7 @@ public class UserPageServlet extends HttpServlet {
 
         AuthUserDto authUserDto = (AuthUserDto) req.getSession().getAttribute("authUser");
         boolean isAdmin = validationService.isAdmin(authUserDto.getRole());
-        Set<BadgeDto> badgesDB = null;
+        List<BadgeDto> badgesDB = null;
         if (isAdmin) {
             badgesDB = badgeService.getAllBadges();
         }
