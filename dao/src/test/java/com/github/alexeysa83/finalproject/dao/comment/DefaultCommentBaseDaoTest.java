@@ -43,16 +43,21 @@ class DefaultCommentBaseDaoTest {
     static void init() {
         UserInfoDto userInfoDto = new UserInfoDto(getTime());
         AuthUserDto authUserDto = new AuthUserDto("CommentTestUser", "Pass", userInfoDto);
-        testUser = authUserDao.createAndSave(authUserDto);
+        testUser = authUserDao.add(authUserDto);
         NewsDto newsDto = new NewsDto("CommentTestNews", "CommentTest", getTime(), testUser.getId(), testUser.getLogin());
-        testNews = newsDao.createAndSave(newsDto);
+        testNews = newsDao.add(newsDto);
     }
 
     @Test
-    void createAndSave() {
+    void getInstance() {
+        assertNotNull(commentDao);
+    }
+
+    @Test
+    void add() {
         final CommentDto testComment = new CommentDto
                 ("CreateCommentTest", getTime(), testUser.getId(), testNews.getId(), testUser.getLogin());
-        final CommentDto savedComment = commentDao.createAndSave(testComment);
+        final CommentDto savedComment = commentDao.add(testComment);
         assertNotNull(savedComment);
 
         final Long id = savedComment.getId();
@@ -67,10 +72,10 @@ class DefaultCommentBaseDaoTest {
     }
 
     @Test
-    void getById() {
+    void getByIdExist() {
         final CommentDto comment = new CommentDto
                 ("GetByIdCommentTest", getTime(), testUser.getId(), testNews.getId(), testUser.getLogin());
-        final CommentDto testComment = commentDao.createAndSave(comment);
+        final CommentDto testComment = commentDao.add(comment);
         final long id = testComment.getId();
         final CommentDto commentFromDB = commentDao.getById(id);
 
@@ -86,12 +91,18 @@ class DefaultCommentBaseDaoTest {
     }
 
     @Test
-    void getCommentsOnNews() {
+    void getByIdNotExist() {
+        final CommentDto commentFromDB = commentDao.getById(0);
+        assertNull(commentFromDB);
+    }
+
+    @Test
+    void getCommentsOnNewsHaveComments() {
         List<CommentDto> testList = new LinkedList<>();
         for (int i = 0; i < 10; i++) {
             final CommentDto comment = new CommentDto
                     ("GetCommentOnNewsTest" + i, getTime(), testUser.getId(), testNews.getId(), testUser.getLogin());
-            final CommentDto m = commentDao.createAndSave(comment);
+            final CommentDto m = commentDao.add(comment);
             testList.add(m);
         }
 
@@ -113,10 +124,16 @@ class DefaultCommentBaseDaoTest {
     }
 
     @Test
-    void update() {
+    void getCommentsOnNewsWithoutComments() {
+        List<CommentDto> listFromDB = commentDao.getCommentsOnNews(testNews.getId());
+        assertNotNull(listFromDB);
+    }
+
+    @Test
+    void updateSuccess() {
         final CommentDto comment = new CommentDto
                 ("UpdateCommentTest", getTime(), testUser.getId(), testNews.getId(), testUser.getLogin());
-        final CommentDto testComment = commentDao.createAndSave(comment);
+        final CommentDto testComment = commentDao.add(comment);
         final long id = testComment.getId();
         final CommentDto commentToUpdate = new CommentDto
                 (id, "UpdateComplete", getTime(),
@@ -138,10 +155,19 @@ class DefaultCommentBaseDaoTest {
     }
 
     @Test
+    void updateFail() {
+        final CommentDto commentToUpdate = new CommentDto
+                (0, "UpdateComplete", getTime(),
+                        0, 0, "FakeAuthor");
+        final boolean isUpdated = commentDao.update(commentToUpdate);
+        assertFalse(isUpdated);
+    }
+
+    @Test
     void delete() {
         final CommentDto comment = new CommentDto
                 ("DeleteCommentTest", getTime(), testUser.getId(), testNews.getId(), testUser.getLogin());
-        final CommentDto testComment = commentDao.createAndSave(comment);
+        final CommentDto testComment = commentDao.add(comment);
         final long id = testComment.getId();
         CommentDto commentToDelete = commentDao.getById(id);
         assertNotNull(commentToDelete);

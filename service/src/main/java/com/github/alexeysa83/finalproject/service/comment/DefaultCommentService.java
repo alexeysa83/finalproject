@@ -27,7 +27,7 @@ public class DefaultCommentService implements CommentService {
 
     @Override
     public CommentDto createAndSave(CommentDto comment) {
-        return commentDao.createAndSave(comment);
+        return commentDao.add(comment);
     }
 
     @Override

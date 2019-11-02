@@ -12,27 +12,22 @@ public class DefaultBadgeService implements BadgeService {
 
     private static volatile BadgeService instance;
 
-        public static BadgeService getInstance() {
-            BadgeService localInstance = instance;
-            if (localInstance == null) {
-                synchronized (BadgeService.class) {
-                    localInstance = instance;
-                    if (localInstance == null) {
-                        instance = localInstance = new DefaultBadgeService();
-                    }
+    public static BadgeService getInstance() {
+        BadgeService localInstance = instance;
+        if (localInstance == null) {
+            synchronized (BadgeService.class) {
+                localInstance = instance;
+                if (localInstance == null) {
+                    instance = localInstance = new DefaultBadgeService();
                 }
             }
-            return localInstance;
         }
+        return localInstance;
+    }
 
     @Override
     public BadgeDto addNewBadge(BadgeDto badgeDto) {
         return badgeDao.add(badgeDto);
-    }
-
-    @Override
-    public BadgeDto getById(long id) {
-        return badgeDao.getById(id);
     }
 
     @Override

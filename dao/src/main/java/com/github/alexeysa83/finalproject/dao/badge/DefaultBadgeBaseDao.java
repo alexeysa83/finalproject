@@ -9,7 +9,6 @@ import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -39,7 +38,6 @@ public class DefaultBadgeBaseDao implements BadgeBaseDao {
 
     @Override
     public BadgeDto add(BadgeDto badgeDto) {
-
         final BadgeEntity badgeEntity = ConvertEntityDTO.BadgeToEntity(badgeDto);
         try (Session session = HibernateUtil.getSession()) {
             session.beginTransaction();
@@ -49,31 +47,27 @@ public class DefaultBadgeBaseDao implements BadgeBaseDao {
             return ConvertEntityDTO.BadgeToDto(badgeEntity);
         } catch (PersistenceException e) {
             log.error("Fail to save new badge to DB: {}, at: {}", badgeDto, LocalDateTime.now(), e);
-            return null;
+            throw new RuntimeException(e);
         }
     }
-
-    /**
-     * ??????
-     * Must catch NoResultException
-     */
 
     @Override
     public boolean isNameTaken(String name) {
         try (Session session = HibernateUtil.getSession()) {
             session.beginTransaction();
             Query query = session.createQuery("from BadgeEntity b where b.badgeName=:name");
-            BadgeEntity badgeEntity = (BadgeEntity) query.setParameter("name", name).getSingleResult();
+            BadgeEntity badgeEntity = (BadgeEntity) query.setParameter("name", name).uniqueResult();
             session.getTransaction().commit();
             return badgeEntity != null;
-        } catch (NoResultException e) {
-            return false;
         } catch (PersistenceException e) {
             log.error("Fail to get badge from DB by name: {}, at: {}", name, LocalDateTime.now(), e);
             throw new RuntimeException(e);
         }
     }
 
+    /**
+     * Used only in tests
+     */
     @Override
     public BadgeDto getById(long id) {
         Session session = HibernateUtil.getSession();
@@ -84,6 +78,9 @@ public class DefaultBadgeBaseDao implements BadgeBaseDao {
         return ConvertEntityDTO.BadgeToDto(badgeEntity);
     }
 
+    /**
+     * Testing?
+     */
     @Override
     public List<BadgeDto> getAll() {
         List<BadgeDto> badgeDtos;
@@ -139,10 +136,13 @@ public class DefaultBadgeBaseDao implements BadgeBaseDao {
             return i > 0;
         } catch (PersistenceException e) {
             log.error("Fail to update in DB badge: {} at: {}", badgeDto, LocalDateTime.now(), e);
-            return false;
+            throw new RuntimeException(e);
         }
     }
 
+    /**
+     * Delete even without mappedBy
+          */
     @Override
     public boolean delete(long id) {
         try (Session session = HibernateUtil.getSession()) {

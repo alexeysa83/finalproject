@@ -37,7 +37,11 @@ public class BadgeEntity {
         this.badgeName = badgeName;
     }
 
-    @ManyToMany (mappedBy = "badges", fetch = FetchType.LAZY)
+    @ManyToMany (fetch = FetchType.LAZY)
+    @JoinTable(name = "user_badge",
+            joinColumns = {@JoinColumn(name = "badge_id")},
+            inverseJoinColumns = {@JoinColumn(name = "user_id")})
+//    @ManyToMany (mappedBy = "badges", fetch = FetchType.LAZY)
     public Set<UserInfoEntity> getUsers() {
         return users;
     }

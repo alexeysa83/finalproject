@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface CommentBaseDao extends BaseDao <CommentDto> {
 
-    CommentDto createAndSave(CommentDto comment);
+    CommentDto add(CommentDto comment);
 
     List<CommentDto> getCommentsOnNews(long newsId);
 

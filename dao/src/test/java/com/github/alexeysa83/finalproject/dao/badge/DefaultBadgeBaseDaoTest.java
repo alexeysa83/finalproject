@@ -47,7 +47,7 @@ class DefaultBadgeBaseDaoTest {
     }
 
     @Test
-    void addBadge() {
+    void add() {
         final BadgeDto testBadge = createBadgeDto("CreateTestBadge");
         final BadgeDto savedBadge = badgeDao.add(testBadge);
         final Long id = savedBadge.getId();
@@ -60,23 +60,27 @@ class DefaultBadgeBaseDaoTest {
     }
 
     @Test
-    void isNameTaken() {
-        final String testName = "IsNameTakenTestBadge";
+    void isNameTakenTrue() {
+        final String testName = "NameTakenTestBadge";
         final BadgeDto testBadge = createBadgeDto(testName);
         final BadgeDto savedBadge = badgeDao.add(testBadge);
         assertNotNull(savedBadge);
 
-        final boolean nameTaken = badgeDao.isNameTaken(testName);
-        assertTrue(nameTaken);
-
-        final boolean nameFree = badgeDao.isNameTaken(testName + testName);
-        assertFalse(nameFree);
+        final boolean nameIsTaken = badgeDao.isNameTaken(testName);
+        assertTrue(nameIsTaken);
 
         badgeDao.delete(savedBadge.getId());
     }
 
     @Test
-    void getById() {
+    void isNameTakenFalse() {
+        final String testName = "NameFreeTestBadge";
+        final boolean nameIsTaken = badgeDao.isNameTaken(testName);
+        assertFalse(nameIsTaken);
+    }
+
+    @Test
+    void getByIdExist() {
         final BadgeDto badge = createBadgeDto("GetByIdTestBadge");
         final BadgeDto testBadge = badgeDao.add(badge);
         final long id = testBadge.getId();
@@ -89,10 +93,12 @@ class DefaultBadgeBaseDaoTest {
         badgeDao.delete(id);
     }
 
-    /**
-     * ??????
-     *
-     */
+    @Test
+    void getByIdNotExist() {
+        final BadgeDto badgeFromDB = badgeDao.getById(0);
+        assertNull(badgeFromDB);
+    }
+
 //    @Test
 //    void getAllBadges() {
 //        List<BadgeDto> allBadges = badgeDao.getAll();
@@ -102,7 +108,7 @@ class DefaultBadgeBaseDaoTest {
 //    }
 
     @Test
-    void update() {
+    void updateSuccess() {
         final BadgeDto badge = createBadgeDto("UpdateTestBadge");
         final BadgeDto testBadge = badgeDao.add(badge);
         final long id = testBadge.getId();
@@ -119,9 +125,18 @@ class DefaultBadgeBaseDaoTest {
     }
 
     @Test
-    void deleteBadge() {
+    void updateFail() {
+        final BadgeDto badgeToUpdate = createBadgeDto("Updated");
+        badgeToUpdate.setId(0);
+
+        final boolean isUpdated = badgeDao.update(badgeToUpdate);
+        assertFalse(isUpdated);
+    }
+
+    @Test
+    void delete() {
         final AuthUserDto user = createAuthUserDto("DeleteTestBadge");
-        final AuthUserDto testUser = authUserDao.createAndSave(user);
+        final AuthUserDto testUser = authUserDao.add(user);
         final BadgeDto badge = createBadgeDto("DeleteTestBadge");
         final BadgeDto testBadge = badgeDao.add(badge);
         final long badgeId = testBadge.getId();
@@ -135,7 +150,7 @@ class DefaultBadgeBaseDaoTest {
 
         final BadgeDto afterDelete = badgeDao.getById(badgeId);
         assertNull(afterDelete);
-        badgeDao.delete(badgeId);
+        
         completeDeleteUser(testUser.getId());
     }
 

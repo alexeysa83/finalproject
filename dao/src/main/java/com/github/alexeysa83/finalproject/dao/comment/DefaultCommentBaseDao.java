@@ -34,8 +34,11 @@ public class DefaultCommentBaseDao implements CommentBaseDao {
         return localInstance;
     }
 
-    @Override
-    public CommentDto createAndSave(CommentDto commentDto) {
+    /**
+     * Optimization?
+          */
+        @Override
+    public CommentDto add(CommentDto commentDto) {
         final CommentEntity commentEntity = ConvertEntityDTO.CommentToEntity(commentDto);
 
         try (Session session = HibernateUtil.getSession()) {
@@ -50,7 +53,7 @@ public class DefaultCommentBaseDao implements CommentBaseDao {
             return ConvertEntityDTO.CommentToDto(commentEntity);
         } catch (PersistenceException | NullPointerException e) {
             log.error("Fail to save new comment to DB: {}, at: {}", commentDto, LocalDateTime.now(), e);
-            return null;
+            throw new RuntimeException(e);
         }
     }
 
@@ -81,7 +84,7 @@ public class DefaultCommentBaseDao implements CommentBaseDao {
             return commentDtoList;
         } catch (PersistenceException e) {
             log.error("Fail to get list of comments on news id: {},  at: {}", newsId, LocalDateTime.now(), e);
-            return null;
+            throw new RuntimeException(e);
         }
     }
 
@@ -143,7 +146,7 @@ public class DefaultCommentBaseDao implements CommentBaseDao {
             return i > 0;
         } catch (PersistenceException e) {
             log.error("Fail to update comment in DB: {}, at: {}", commentDto, LocalDateTime.now(), e);
-            return false;
+            throw new RuntimeException(e);
         }
     }
 
@@ -159,7 +162,7 @@ public class DefaultCommentBaseDao implements CommentBaseDao {
             return i > 0;
         } catch (PersistenceException e) {
             log.error("Fail to delete comment from in DB: {}, at: {}", id, LocalDateTime.now(), e);
-            return false;
+            throw new RuntimeException(e);
         }
     }
 }

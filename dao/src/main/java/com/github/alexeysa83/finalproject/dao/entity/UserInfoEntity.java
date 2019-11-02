@@ -97,10 +97,11 @@ public class UserInfoEntity {
         this.authUser = authUser;
     }
 
-    @ManyToMany (fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinTable(name = "user_badge",
-            joinColumns = {@JoinColumn(name = "user_id")},
-            inverseJoinColumns = {@JoinColumn(name = "badge_id")})
+//    @ManyToMany (fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    @JoinTable(name = "user_badge",
+//            joinColumns = {@JoinColumn(name = "user_id")},
+//            inverseJoinColumns = {@JoinColumn(name = "badge_id")})
+    @ManyToMany (mappedBy = "users", fetch = FetchType.LAZY)
     public Set<BadgeEntity> getBadges() {
         return badges;
     }

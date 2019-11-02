@@ -9,7 +9,7 @@ public interface BadgeBaseDao extends BaseDao <BadgeDto> {
 
     BadgeDto add(BadgeDto badge);
 
-    boolean isNameTaken (String name);
+    boolean isNameTaken(String name);
 
     List<BadgeDto> getAll();
 

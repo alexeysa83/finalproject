@@ -41,15 +41,20 @@ class DefaultNewsBaseDaoTest {
     static void init() {
         UserInfoDto userInfoDto = new UserInfoDto(getTime());
         AuthUserDto authUserDto = new AuthUserDto("NewsTestUser", "Pass", userInfoDto);
-        testUser = authUserDao.createAndSave(authUserDto);
+        testUser = authUserDao.add(authUserDto);
     }
 
     @Test
-    void createAndSave() {
+    void getInstance() {
+        assertNotNull(newsDao);
+    }
+
+    @Test
+    void add() {
         final NewsDto testNews = new NewsDto
                 ("CreateNewsTest", "TestContent",
                         getTime(), testUser.getId(), testUser.getLogin());
-        final NewsDto savedNews = newsDao.createAndSave(testNews);
+        final NewsDto savedNews = newsDao.add(testNews);
         assertNotNull(savedNews);
 
         final Long id = savedNews.getId();
@@ -65,11 +70,11 @@ class DefaultNewsBaseDaoTest {
 
 
     @Test
-    void getById() {
+    void getByIdExist() {
         final NewsDto news = new NewsDto
                 ("GetByIdNewsTest", "TestContent",
                         getTime(), testUser.getId(), testUser.getLogin());
-        final NewsDto testNews = newsDao.createAndSave(news);
+        final NewsDto testNews = newsDao.add(news);
         final long id = testNews.getId();
         final NewsDto newsFromDB = newsDao.getById(id);
 
@@ -84,6 +89,12 @@ class DefaultNewsBaseDaoTest {
         newsDao.delete(id);
     }
 
+    @Test
+    void getByIdNotExist() {
+        final NewsDto newsFromDB = newsDao.getById(0);
+        assertNull(newsFromDB);
+    }
+
 //    @Test
 //    void getCountNews() {
 //        System.out.println(newsDao.getCountNews());
@@ -96,7 +107,7 @@ class DefaultNewsBaseDaoTest {
         for (int i = 0; i < PAGE_SIZE * 2; i++) {
             final NewsDto news = new NewsDto("GetNewsOnPageTest" + i, "TestContentPage" + i,
                     getTime(), testUser.getId(), testUser.getLogin());
-            final NewsDto n = newsDao.createAndSave(news);
+            final NewsDto n = newsDao.add(news);
             testList.addFirst(n);
         }
 
@@ -120,39 +131,12 @@ class DefaultNewsBaseDaoTest {
         }
     }
 
-//    @Test
-//    void getNewsOnPage() {
-//        LinkedList<NewsDto> testList = new LinkedList<>();
-//        for (int i = 0; i < 10; i++) {
-//            final NewsDto news = new NewsDto("GetNewsOnPageTest" + i, "TestContentPage" + i,
-//                    getTime(), testUser.getId(), testUser.getLogin());
-//            final NewsDto n = newsDao.createAndSave(news);
-//            testList.addFirst(n);
-//        }
-//
-//        List<NewsDto> listDB = newsDao.getNewsOnPage();
-//        assertEquals(testList.size(), listDB.size());
-//        for (int i = 0; i < 10; i++) {
-//            final NewsDto testNews = testList.get(i);
-//            final NewsDto newsFromDB = listDB.get(i);
-//            assertNotNull(newsFromDB);
-//            assertEquals(testNews.getId(), newsFromDB.getId());
-//            assertEquals(testNews.getTitle(), newsFromDB.getTitle());
-//            assertEquals(testNews.getContent(), newsFromDB.getContent());
-//            assertEquals(testNews.getCreationTime(), newsFromDB.getCreationTime());
-//            assertEquals(testNews.getAuthId(), newsFromDB.getAuthId());
-//            assertEquals(testNews.getAuthorNews(), newsFromDB.getAuthorNews());
-//
-//            newsDao.delete(newsFromDB.getId());
-//        }
-//    }
-
     @Test
-    void update() {
+    void updateSuccess() {
         final NewsDto news = new NewsDto
                 ("UpdateNewsTest", "TestContent",
                         getTime(), testUser.getId(), testUser.getLogin());
-        final NewsDto testNews = newsDao.createAndSave(news);
+        final NewsDto testNews = newsDao.add(news);
         final long id = testNews.getId();
         final NewsDto newsToUpdate = new NewsDto
                 (id, "UpdateNewsComplete", "UpdateContentComplete",
@@ -174,12 +158,21 @@ class DefaultNewsBaseDaoTest {
     }
 
     @Test
+    void updateFail() {
+        final NewsDto newsToUpdate = new NewsDto
+                (0, "UpdateNewsComplete", "UpdateContentComplete",
+                        getTime(), 0, "FakeUser");
+        final boolean isUpdated = newsDao.update(newsToUpdate);
+        assertFalse(isUpdated);
+    }
+
+    @Test
     void delete() {
         final NewsDto news = new NewsDto
                 ("DeleteNewsTest", "TestContent",
                         getTime(), testUser.getId(), testUser.getLogin());
-        final NewsDto testNews = newsDao.createAndSave(news);
-        commentDao.createAndSave
+        final NewsDto testNews = newsDao.add(news);
+        commentDao.add
                 (new CommentDto("Comment", getTime(), testUser.getId(), testNews.getId(), testUser.getLogin()));
         final long id = testNews.getId();
         NewsDto newsToDelete = newsDao.getById(id);

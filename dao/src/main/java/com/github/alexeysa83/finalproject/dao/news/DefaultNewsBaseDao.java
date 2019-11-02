@@ -37,7 +37,7 @@ public class DefaultNewsBaseDao implements NewsBaseDao {
 
 
     @Override
-    public NewsDto createAndSave(NewsDto newsDto) {
+    public NewsDto add(NewsDto newsDto) {
         final NewsEntity newsEntity = ConvertEntityDTO.NewsToEntity(newsDto);
         try (Session session = HibernateUtil.getSession()) {
             session.beginTransaction();
@@ -49,7 +49,7 @@ public class DefaultNewsBaseDao implements NewsBaseDao {
             return ConvertEntityDTO.NewsToDto(newsEntity);
         } catch (PersistenceException | NullPointerException e) {
             log.error("Fail to save new news to DB: {}, at: {}", newsDto, LocalDateTime.now(), e);
-            return null;
+            throw new RuntimeException(e);
         }
     }
 
@@ -63,9 +63,13 @@ public class DefaultNewsBaseDao implements NewsBaseDao {
         return ConvertEntityDTO.NewsToDto(newsEntity);
     }
 
-    // Cast to int
+    /**
+     * Cast to int ok?
+     * <p>
+     * Testing?
+     */
     @Override
-    public int getRowsNews() {
+    public int getRows() {
         Session session = HibernateUtil.getSession();
         Transaction tr = session.beginTransaction();
         long count = session.createQuery("select count (*) from NewsEntity", Long.class).getSingleResult();
@@ -74,7 +78,6 @@ public class DefaultNewsBaseDao implements NewsBaseDao {
         return (int) count;
     }
 
-    // add page and limit parameters to get news on page method
     @Override
     public List<NewsDto> getNewsOnPage(int page, int pageSize) {
         List<NewsDto> newsList = new ArrayList<>();
@@ -95,13 +98,13 @@ public class DefaultNewsBaseDao implements NewsBaseDao {
             return newsList;
         } catch (PersistenceException e) {
             log.error("Fail to get list of news from DB at: {}", LocalDateTime.now(), e);
-            return null;
+            throw new RuntimeException(e);
         }
     }
 
     @Override
     public boolean update(NewsDto newsDto) {
-        try (Session session = HibernateUtil.getSession()){
+        try (Session session = HibernateUtil.getSession()) {
             session.beginTransaction();
             final int i = session.createQuery
                     ("update NewsEntity n set n.title = :title, n.content = :content where n.id = :id")
@@ -114,11 +117,14 @@ public class DefaultNewsBaseDao implements NewsBaseDao {
             return i > 0;
         } catch (PersistenceException e) {
             log.error("Fail to update news in DB: {}, at: {}", newsDto, LocalDateTime.now(), e);
-            return false;
+            throw new RuntimeException(e);
         }
     }
 
-    @Override
+    /**
+     * return parameter?
+          */
+        @Override
     public boolean delete(long id) {
         try (Session session = HibernateUtil.getSession()) {
             session.beginTransaction();
@@ -129,7 +135,7 @@ public class DefaultNewsBaseDao implements NewsBaseDao {
             return true;
         } catch (PersistenceException e) {
             log.error("Fail to delete news id from DB: {}, at: {}", id, LocalDateTime.now(), e);
-            return false;
+            throw new RuntimeException(e);
         }
     }
 }

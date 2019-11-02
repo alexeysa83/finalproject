@@ -52,9 +52,14 @@ class DefaultUserInfoBaseDaoTest {
     }
 
     @Test
-    void getById() {
+    void getInstance() {
+        assertNotNull(userDAO);
+    }
+
+    @Test
+    void getByIdExist() {
         final AuthUserDto user = createAuthUserDto("GetByIdTestUser");
-        final AuthUserDto authUser = authUserDao.createAndSave(user);
+        final AuthUserDto authUser = authUserDao.add(user);
         final UserInfoDto testUser = authUser.getUserInfoDto();
         final long authId = testUser.getAuthId();
 
@@ -74,13 +79,20 @@ class DefaultUserInfoBaseDaoTest {
     }
 
     @Test
-    void update() {
+    void getByIdNotExist() {
+        final UserInfoDto userFromDB = userDAO.getById(0);
+        assertNull(userFromDB);
+    }
+
+    @Test
+    void updateSuccess() {
         final AuthUserDto user = createAuthUserDto("UpdateTestUser");
-        final AuthUserDto authUser = authUserDao.createAndSave(user);
+        final AuthUserDto authUser = authUserDao.add(user);
         final UserInfoDto testUser = authUser.getUserInfoDto();
         final long authId = testUser.getAuthId();
         final UserInfoDto userInfoDtoToUpdate = new UserInfoDto
-                (authId, "First", "Last", getTime(), "email", "phone", "FakeLogin");
+                (authId, "First", "Last", getTime(),
+                        "email", "phone", "FakeLogin");
 
         final boolean isUpdated = userDAO.update(userInfoDtoToUpdate);
         assertTrue(isUpdated);
@@ -100,12 +112,21 @@ class DefaultUserInfoBaseDaoTest {
     }
 
     @Test
+    void updateFail() {
+        final UserInfoDto userInfoDtoToUpdate = new UserInfoDto
+                (0, "First", "Last", getTime(),
+                        "email", "phone", "FakeLogin");
+        final boolean isUpdated = userDAO.update(userInfoDtoToUpdate);
+        assertFalse(isUpdated);
+    }
+
+    @Test
     void addBadgeToUser() {
         final AuthUserDto user = createAuthUserDto("AddBadgeToUserTest");
-        final AuthUserDto authUser = authUserDao.createAndSave(user);
+        final AuthUserDto authUser = authUserDao.add(user);
         final UserInfoDto testUser = authUser.getUserInfoDto();
         final long authId = testUser.getAuthId();
-        final BadgeDto testBadge = badgeDao.add(createBadgeDto("testBadge"));
+        final BadgeDto testBadge = badgeDao.add(createBadgeDto("UserTestBadge"));
         final long badgeId = testBadge.getId();
 
         final UserInfoDto userWithBadge = userDAO.addBadgeToUser(authId, badgeId);
@@ -127,7 +148,7 @@ class DefaultUserInfoBaseDaoTest {
     @Test
     void deleteBadgeFromUser() {
         final AuthUserDto user = createAuthUserDto("DeleteBadgeFromUserTest");
-        final AuthUserDto authUser = authUserDao.createAndSave(user);
+        final AuthUserDto authUser = authUserDao.add(user);
         final UserInfoDto testUser = authUser.getUserInfoDto();
         final long authId = testUser.getAuthId();
         final BadgeDto testBadge = badgeDao.add(createBadgeDto("testBadge"));

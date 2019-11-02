@@ -8,8 +8,6 @@ public interface BadgeService {
 
     BadgeDto addNewBadge (BadgeDto badgeDto);
 
-    BadgeDto getById (long id);
-
     List<BadgeDto> getAllBadges ();
 
     boolean checkNameIsTaken (String name);

@@ -34,7 +34,7 @@ public class DefaultSecurityService implements SecurityService {
         final Timestamp regTime = UtilService.getTime();
         final UserInfoDto userInfoDto = new UserInfoDto(regTime);
         AuthUserDto authUserDto = new AuthUserDto(login, password, userInfoDto);
-        return authUserDao.createAndSave(authUserDto);
+        return authUserDao.add(authUserDto);
     }
 
 //    @Override

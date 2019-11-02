@@ -13,6 +13,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
 import java.time.LocalDateTime;
 
+/**
+ * Entity manager is used to get practice!
+ */
 public class DefaultUserInfoBaseDao implements UserInfoBaseDao {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultUserInfoBaseDao.class);
@@ -62,18 +65,13 @@ public class DefaultUserInfoBaseDao implements UserInfoBaseDao {
             return i > 0;
         } catch (PersistenceException e) {
             log.error("Fail to update in DB User: {} at: {}", userInfoDto, LocalDateTime.now(), e);
-            return false;
+            throw new RuntimeException(e);
         }
     }
 
     /**
      * // Duplicate code
-     *
-     * @param authId
-     * @param badgeId
-     * @return
      */
-
     @Override
     public UserInfoDto addBadgeToUser(long authId, long badgeId) {
 
@@ -84,12 +82,11 @@ public class DefaultUserInfoBaseDao implements UserInfoBaseDao {
             userInfoEntity.addBadge(badgeEntity);
             session.update(userInfoEntity);
             session.getTransaction().commit();
-            final UserInfoDto userInfoDto = ConvertEntityDTO.UserToDto(userInfoEntity);
             log.info("Badge id: {} added to user id {} in DB at: {}", badgeId, authId, LocalDateTime.now());
-            return userInfoDto;
+            return ConvertEntityDTO.UserToDto(userInfoEntity);
         } catch (PersistenceException e) {
             log.info("Fail to add badge id: {} to user id {} in DB at: {}", badgeId, authId, LocalDateTime.now());
-            return null;
+            throw new RuntimeException(e);
         }
     }
 
@@ -103,12 +100,11 @@ public class DefaultUserInfoBaseDao implements UserInfoBaseDao {
             userInfoEntity.deleteBadge(badgeEntity);
             session.update(userInfoEntity);
             session.getTransaction().commit();
-            final UserInfoDto userInfoDto = ConvertEntityDTO.UserToDto(userInfoEntity);
             log.info("Badge id: {} deleted from user id {} in DB at: {}", badgeId, authId, LocalDateTime.now());
-            return userInfoDto;
+            return ConvertEntityDTO.UserToDto(userInfoEntity);
         } catch (PersistenceException e) {
             log.info("Fail to delete badge id: {} from user id {} in DB at: {}", badgeId, authId, LocalDateTime.now());
-            return null;
+            throw new RuntimeException(e);
         }
     }
 }

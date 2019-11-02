@@ -32,7 +32,7 @@ public class DefaultNewsService implements NewsService {
 
     @Override
     public NewsDto createAndSave(NewsDto news) {
-        return newsDao.createAndSave(news);
+        return newsDao.add(news);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class DefaultNewsService implements NewsService {
 
     @Override
     public int getNewsTotalPages() {
-        int rowsNews = newsDao.getRowsNews();
+        int rowsNews = newsDao.getRows();
         int totalPages = rowsNews/PAGE_SIZE;
         if (rowsNews%PAGE_SIZE > 0) {
             totalPages++;

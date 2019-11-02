@@ -5,7 +5,7 @@ import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 
 public interface AuthUserBaseDao extends BaseDao<AuthUserDto> {
 
-    AuthUserDto createAndSave(AuthUserDto user);
+    AuthUserDto add(AuthUserDto user);
 
     AuthUserDto getByLogin(String login);
 

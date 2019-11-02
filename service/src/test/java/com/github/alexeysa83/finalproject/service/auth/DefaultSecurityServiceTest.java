@@ -33,7 +33,7 @@ class DefaultSecurityServiceTest {
                 (1, testLogin, testPassword, Role.USER,
                         false, new UserInfoDto(null));
 
-        when(authUserDao.createAndSave(any())).thenReturn(testAuthUser);
+        when(authUserDao.add(any())).thenReturn(testAuthUser);
         final AuthUserDto userFromDB = service.createAndSaveAuthUser(testLogin, testPassword);
 
         assertNotNull(userFromDB);

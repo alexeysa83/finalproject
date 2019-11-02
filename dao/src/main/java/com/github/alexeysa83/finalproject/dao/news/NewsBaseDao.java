@@ -7,11 +7,10 @@ import java.util.List;
 
 public interface NewsBaseDao extends BaseDao<NewsDto> {
 
-    NewsDto createAndSave(NewsDto newsDto);
+    NewsDto add(NewsDto newsDto);
 
-    int getRowsNews ();
+    int getRows();
 
-    // add page parameter
     List<NewsDto> getNewsOnPage (int page, int pageSize);
 
     boolean delete (long id);
