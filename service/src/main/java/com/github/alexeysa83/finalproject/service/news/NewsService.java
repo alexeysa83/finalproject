@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface NewsService {
 
-    NewsDto createAndSave (NewsDto news);
+    NewsDto createNews(NewsDto news);
 
     NewsDto getNewsOnId (long id);
 

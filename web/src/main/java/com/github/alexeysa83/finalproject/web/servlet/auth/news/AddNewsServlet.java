@@ -5,7 +5,7 @@ import com.github.alexeysa83.finalproject.model.dto.NewsDto;
 import com.github.alexeysa83.finalproject.service.UtilService;
 import com.github.alexeysa83.finalproject.service.news.DefaultNewsService;
 import com.github.alexeysa83.finalproject.service.news.NewsService;
-import com.github.alexeysa83.finalproject.service.validation.NewsValidationservice;
+import com.github.alexeysa83.finalproject.service.validation.NewsValidationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +33,7 @@ public class AddNewsServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         final String title = req.getParameter("title");
         final String content = req.getParameter("content");
-        String message = NewsValidationservice.isValidTitleContent(title, content);
+        String message = NewsValidationService.isValidTitleContent(title, content);
         if (message != null) {
             forwardToJspMessage("addnews", message, req, resp);
             return;
@@ -41,7 +41,7 @@ public class AddNewsServlet extends HttpServlet {
 
         AuthUserDto user = (AuthUserDto) req.getSession().getAttribute("authUser");
         final Timestamp creationTime = UtilService.getTime();
-        final NewsDto news = newsService.createAndSave(new NewsDto(title, content, creationTime, user.getId(), user.getLogin()));
+        final NewsDto news = newsService.createNews(new NewsDto(title, content, creationTime, user.getId(), user.getLogin()));
         if (news == null) {
             req.setAttribute("message", "error.unknown");
             log.error("Failed to add news for user id: {}, at: {}", user.getId(), LocalDateTime.now());

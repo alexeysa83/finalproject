@@ -2,6 +2,8 @@ package com.github.alexeysa83.finalproject.model.dto;
 
 import com.github.alexeysa83.finalproject.model.Role;
 
+import java.util.Objects;
+
 public class AuthUserDto {
 
     private long id;
@@ -88,5 +90,22 @@ public class AuthUserDto {
                 ", login=" + login +
                 ", role=" + role +
                 ", isDeleted=" + isDeleted + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AuthUserDto user = (AuthUserDto) o;
+        return id == user.id &&
+                isDeleted == user.isDeleted &&
+                login.equals(user.login) &&
+                password.equals(user.password) &&
+                role == user.role;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, login, password, role, isDeleted);
     }
 }

@@ -9,7 +9,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -23,66 +22,71 @@ class AuthValidationServiceTest {
 
     @Test
     void validLogin() {
-        when(securityService.checkLoginIsTaken("validLogin")).thenReturn(false);
-        String message = validationService.isLoginValid("validLogin");
-        assertNull(message);
+        final String testMessage = "validLogin";
+        when(securityService.checkLoginIsTaken(testMessage)).thenReturn(false);
+        final String returnMessage = validationService.isLoginValid(testMessage);
+        assertNull(returnMessage);
     }
 
     @Test
     void loginIsTaken() {
-        when(securityService.checkLoginIsTaken("LoginIsTaken")).thenReturn(true);
-        String message = validationService.isLoginValid("LoginIsTaken");
-        assertEquals("login.istaken", message);
+        final String testMessage = "LoginIsTaken";
+        when(securityService.checkLoginIsTaken(testMessage)).thenReturn(true);
+        final String returmMessage = validationService.isLoginValid(testMessage);
+        assertEquals("login.istaken", returmMessage);
     }
 
     @Test
     void invalidLogin() {
-        String message = validationService.isLoginValid("");
-        assertEquals("invalid.login", message);
+        final String returnMessage = validationService.isLoginValid("");
+        assertEquals("invalid.login", returnMessage);
     }
 
-
-
     @Test
-    void isPasswordValid() {
-        // Check valid password
-        String message = validationService.isPasswordValid("Pass", "Pass");
-        assertNull(message);
-
-        // Check "empty" password
-        message = validationService.isPasswordValid("", "Pass");
-        assertEquals("invalid.pass", message);
-
-        //Check password do not match
-        message = validationService.isPasswordValid("Pass", "Sapp");
-        assertEquals("invalid.repeatpass", message);
+    void passwordValid() {
+        final String returnMessage = validationService.isPasswordValid("Pass", "Pass");
+        assertNull(returnMessage);
     }
 
-//    @Test
-//    void isPasswordEqual() {
-//
-//    }
-
-//    @Test
-//    void needLogout() {
-//        AuthUserDto testUser = new AuthUserDto(1, "Test", "Test", null, false);
-//        boolean result = validationService.needLogout(testUser, "1");
-//        assertTrue(result);
-//
-//        result = validationService.needLogout(testUser, "2");
-//        assertFalse(result);
-//    }
+    @Test
+    void passwordEmptyEntry() {
+        final String returnMessage = validationService.isPasswordValid("", "Pass");
+        assertEquals("invalid.pass", returnMessage);
+    }
 
     @Test
-    void isRoleValid() {
-        boolean result = validationService.isRoleValid("USER");
+    void passwordMismatch() {
+        final String returnMessage = validationService.isPasswordValid("Pass", "Sapp");
+        assertEquals("invalid.repeatpass", returnMessage);
+    }
+
+    @Test
+    void needLogoutTrue() {
+        final int testId = 1;
+        final AuthUserDto testUser = new AuthUserDto();
+        testUser.setId(testId);
+        boolean result = validationService.needLogout(testUser, Integer.toString(testId));
         assertTrue(result);
+    }
 
-        result = validationService.isRoleValid("RESU");
+    @Test
+    void needLogoutFalse() {
+        final int testId = 1;
+        final AuthUserDto testUser = new AuthUserDto();
+        testUser.setId(testId);
+        boolean result = validationService.needLogout(testUser, "2");
         assertFalse(result);
     }
 
-//    @Test
-//    void isAdmin() {
-//    }
+    @Test
+    void RoleValidTrue() {
+        boolean result = validationService.isRoleValid("USER");
+        assertTrue(result);
+    }
+
+    @Test
+    void RoleValidFalse() {
+        boolean result = validationService.isRoleValid("RESU");
+        assertFalse(result);
+    }
 }

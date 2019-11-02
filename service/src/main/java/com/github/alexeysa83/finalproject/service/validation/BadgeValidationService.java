@@ -3,7 +3,7 @@ package com.github.alexeysa83.finalproject.service.validation;
 import com.github.alexeysa83.finalproject.service.badge.BadgeService;
 import com.github.alexeysa83.finalproject.service.badge.DefaultBadgeService;
 
-public class BadgeValidationservice {
+public class BadgeValidationService {
 
     private BadgeService badgeService = DefaultBadgeService.getInstance();
 

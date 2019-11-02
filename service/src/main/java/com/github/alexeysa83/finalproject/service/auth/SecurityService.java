@@ -4,17 +4,15 @@ import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 
 public interface SecurityService {
 
-    AuthUserDto createAndSaveAuthUser (String login, String password);
-
-//    AuthUser getByLogin (String login);
+    AuthUserDto createAuthUser(String login, String password);
 
     AuthUserDto getById (long id);
 
-    AuthUserDto login (AuthUserDto user);
+    AuthUserDto loginAuthUser(AuthUserDto user);
 
     boolean checkLoginIsTaken (String login);
 
-    boolean update (AuthUserDto user);
+    boolean updateAuthUser(AuthUserDto user);
 
-    boolean delete (long id);
+    boolean deleteUser(long id);
 }

@@ -13,7 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.sql.Timestamp;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -25,73 +24,76 @@ class DefaultSecurityServiceTest {
     @InjectMocks
     DefaultSecurityService service;
 
-    @Test
-    void createAndSaveAuthUser() {
-        final String testLogin = "TestLogin";
-        final String testPassword = "TestPass";
-        final AuthUserDto testAuthUser = new AuthUserDto
-                (1, testLogin, testPassword, Role.USER,
-                        false, new UserInfoDto(null));
-
-        when(authUserDao.add(any())).thenReturn(testAuthUser);
-        final AuthUserDto userFromDB = service.createAndSaveAuthUser(testLogin, testPassword);
-
-        assertNotNull(userFromDB);
-        assertEquals(testAuthUser.getId(), userFromDB.getId());
-        assertEquals(testLogin, userFromDB.getLogin());
-        assertEquals(testPassword, userFromDB.getPassword());
-        assertEquals(testAuthUser.getRole(), userFromDB.getRole());
-        assertEquals(testAuthUser.isDeleted(), userFromDB.isDeleted());
-        assertEquals(testAuthUser.getUserInfoDto(), userFromDB.getUserInfoDto());
-    }
-
-    // if needed
     private AuthUserDto createTestAuthUser(String name) {
         UserInfoDto userInfoDto = new UserInfoDto(new Timestamp(System.currentTimeMillis()));
         return new AuthUserDto(name, name + "Pass", userInfoDto);
     }
 
-//    @Test
-//    void getById() {
-//    }
+    @Test
+    void getInstance() {
+        SecurityService securityService = DefaultSecurityService.getInstance();
+        assertNotNull(securityService);
+    }
 
-//    @Test
-//    void loginNotExist() {
-//        when(authUserDao.getByLogin("loginNotExist")).thenReturn(null);
-//        AuthUserDto testUser = new AuthUserDto("loginNotExist", "Pass");
-//        AuthUserDto userFromDB = service.login(testUser);
-//        assertNull(userFromDB);
-//    }
-//
-//    @Test
-//    void loginExistPassCorr() {
-//        when(authUserDao.getByLogin("loginExist"))
-//                .thenReturn(new AuthUserDto("loginExist", "passCorrect"));
-//        AuthUserDto testUser = new AuthUserDto("loginExist", "passCorrect");
-//        AuthUserDto userFromDB = service.login(testUser);
-//        assertNotNull(userFromDB);
-//        assertEquals(testUser.getLogin(), userFromDB.getLogin());
-//        assertEquals(testUser.getPassword(), userFromDB.getPassword());
-//    }
-//
-//    @Test
-//    void loginExistPassWrong() {
-//        when(authUserDao.getByLogin("loginExist"))
-//                .thenReturn(new AuthUserDto("loginExist", "passCorrect"));
-//        AuthUserDto testUser = new AuthUserDto("loginExist", "passWrong");
-//        AuthUserDto userFromDB = service.login(testUser);
-//        assertNull(userFromDB);
-//    }
+    @Test
+    void createAndSaveAuthUser() {
+        final String testLogin = "TestLogin";
+        final AuthUserDto userFromLogin = createTestAuthUser(testLogin);
 
-//    @Test
-//    void checkLoginIsTaken() {
-//    }
-//
-//    @Test
-//    void update() {
-//    }
-//
-//    @Test
-//    void delete() {
-//    }
+        final AuthUserDto testAuthUser = new AuthUserDto
+                (testLogin, userFromLogin.getPassword(), userFromLogin.getUserInfoDto());
+        testAuthUser.setId(1);
+        testAuthUser.setRole(Role.USER);
+        testAuthUser.setDeleted(false);
+        testAuthUser.getUserInfoDto().setAuthId(1);
+
+        when(authUserDao.add(userFromLogin)).thenReturn(testAuthUser);
+        final AuthUserDto userFromDB = service.createAuthUser(testLogin, userFromLogin.getPassword());
+
+        assertNotNull(userFromDB);
+        assertEquals(testAuthUser, userFromDB);
+        assertEquals(testAuthUser.getUserInfoDto(), userFromDB.getUserInfoDto());
+    }
+
+    @Test
+    void loginNotExist() {
+        final String testLogin = "loginNotExist";
+        when(authUserDao.getByLogin(testLogin)).thenReturn(null);
+        final AuthUserDto testUser = createTestAuthUser(testLogin);
+        final AuthUserDto userFromDB = service.loginAuthUser(testUser);
+        assertNull(userFromDB);
+    }
+
+    @Test
+    void loginExistPassCorr() {
+        final String testLogin = "loginExistPassCorr";
+        final AuthUserDto userFromLogin = createTestAuthUser(testLogin);
+
+        final AuthUserDto testAuthUser = new AuthUserDto
+                (testLogin, userFromLogin.getPassword(), userFromLogin.getUserInfoDto());
+        testAuthUser.setId(1);
+        testAuthUser.setRole(Role.USER);
+        testAuthUser.setDeleted(false);
+        testAuthUser.getUserInfoDto().setAuthId(1);
+
+        when(authUserDao.getByLogin(testLogin)).thenReturn(testAuthUser);
+        final AuthUserDto userFromDB = service.loginAuthUser(userFromLogin);
+        assertNotNull(userFromDB);
+        assertEquals(testAuthUser.getUserInfoDto(), userFromDB.getUserInfoDto());
+        assertEquals(testAuthUser.getUserInfoDto(), userFromDB.getUserInfoDto());
+    }
+
+    @Test
+    void loginExistPassWrong() {
+        final String testLogin = "loginExistPassWrong";
+        final AuthUserDto userFromLogin = createTestAuthUser(testLogin);
+
+        final AuthUserDto testAuthUser = new AuthUserDto
+                (testLogin, userFromLogin.getPassword(), userFromLogin.getUserInfoDto());
+        testAuthUser.setPassword("WrongPassword");
+
+        when(authUserDao.getByLogin(testLogin)).thenReturn(testAuthUser);
+        final AuthUserDto userFromDB = service.loginAuthUser(userFromLogin);
+        assertNull(userFromDB);
+    }
 }

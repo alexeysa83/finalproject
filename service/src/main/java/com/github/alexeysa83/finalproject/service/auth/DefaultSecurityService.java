@@ -30,17 +30,12 @@ public class DefaultSecurityService implements SecurityService {
     }
 
     @Override
-    public AuthUserDto createAndSaveAuthUser(String login, String password) {
+    public AuthUserDto createAuthUser(String login, String password) {
         final Timestamp regTime = UtilService.getTime();
         final UserInfoDto userInfoDto = new UserInfoDto(regTime);
         AuthUserDto authUserDto = new AuthUserDto(login, password, userInfoDto);
         return authUserDao.add(authUserDto);
     }
-
-//    @Override
-//    public AuthUser getByLogin(String login) {
-//        return authUserDao.getByLogin(login);
-//    }
 
     @Override
     public AuthUserDto getById(long id) {
@@ -48,7 +43,7 @@ public class DefaultSecurityService implements SecurityService {
     }
 
     @Override
-    public AuthUserDto login(AuthUserDto userFromLogin) {
+    public AuthUserDto loginAuthUser(AuthUserDto userFromLogin) {
         AuthUserDto userFromDB = authUserDao.getByLogin(userFromLogin.getLogin());
         boolean isValidPassword = false;
         if (userFromDB != null) {
@@ -64,12 +59,12 @@ public class DefaultSecurityService implements SecurityService {
     }
 
     @Override
-    public boolean update(AuthUserDto user) {
+    public boolean updateAuthUser(AuthUserDto user) {
         return authUserDao.update(user);
     }
 
     @Override
-    public boolean delete(long id) {
+    public boolean deleteUser(long id) {
         return authUserDao.delete(id);
     }
 }

@@ -26,7 +26,7 @@ public class DefaultBadgeService implements BadgeService {
     }
 
     @Override
-    public BadgeDto addNewBadge(BadgeDto badgeDto) {
+    public BadgeDto createBadge(BadgeDto badgeDto) {
         return badgeDao.add(badgeDto);
     }
 
@@ -41,7 +41,7 @@ public class DefaultBadgeService implements BadgeService {
     }
 
     @Override
-    public boolean update(BadgeDto badgeDto) {
+    public boolean updateBadge(BadgeDto badgeDto) {
         return badgeDao.update(badgeDto);
     }
 

@@ -48,7 +48,7 @@ public class UpdatePasswordServlet extends HttpServlet {
             return;
         }
 
-        final boolean isUpdated = securityService.update
+        final boolean isUpdated = securityService.updateAuthUser
                 (new AuthUserDto(user.getId(), user.getLogin(), passwordNew,
                         user.getRole(), user.isDeleted(), user.getUserInfoDto()));
         message = "update.success";

@@ -14,6 +14,9 @@ public abstract class UtilService {
 
     private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+    /**
+     * Testing?
+     */
     public static Timestamp getTime() {
         String time = sdf.format(System.currentTimeMillis());
         return Timestamp.valueOf(time);

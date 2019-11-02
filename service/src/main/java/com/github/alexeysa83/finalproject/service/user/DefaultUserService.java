@@ -31,7 +31,7 @@ public class DefaultUserService implements UserService {
     }
 
     @Override
-    public boolean update(UserInfoDto user) {
+    public boolean updateUserInfo(UserInfoDto user) {
         return userDAO.update(user);
     }
 

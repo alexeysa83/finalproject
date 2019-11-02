@@ -36,7 +36,7 @@ public class UpdateLoginServlet extends HttpServlet {
         final long id = UtilService.stringToLong(authId);
         final AuthUserDto userOld = securityService.getById(id);
 
-        final boolean isUpdated = securityService.update
+        final boolean isUpdated = securityService.updateAuthUser
                 (new AuthUserDto(userOld.getId(), loginNew, userOld.getPassword(),
                         userOld.getRole(), userOld.isDeleted(), userOld.getUserInfoDto()));
         message = "update.success";

@@ -6,7 +6,6 @@ import com.github.alexeysa83.finalproject.service.UtilService;
 import com.github.alexeysa83.finalproject.service.comment.DefaultCommentService;
 import com.github.alexeysa83.finalproject.service.comment.CommentService;
 import com.github.alexeysa83.finalproject.service.validation.CommentValidationService;
-import com.github.alexeysa83.finalproject.web.servlet.auth.news.AddNewsServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +37,7 @@ public class AddCommentServlet extends HttpServlet {
         final Timestamp creationTime = UtilService.getTime();
         final String newsId = req.getParameter("newsId");
         final long id = UtilService.stringToLong(newsId);
-        final CommentDto comment = commentService.createAndSave
+        final CommentDto comment = commentService.createComment
                 (new CommentDto(content, creationTime, authUser.getId(), id, authUser.getLogin()));
 
         String logMessage = "Created comment to news id: {} , at: {}";

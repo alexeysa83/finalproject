@@ -1,9 +1,8 @@
 package com.github.alexeysa83.finalproject.service.validation;
 
-public abstract class NewsValidationservice {
+public abstract class NewsValidationService {
 
-    private NewsValidationservice() {
-
+    private NewsValidationService() {
     }
 
        // ++ Regex pattern

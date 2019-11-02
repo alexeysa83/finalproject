@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface CommentService {
 
-    CommentDto createAndSave (CommentDto comment);
+    CommentDto createComment(CommentDto comment);
 
     List<CommentDto> getCommentsOnNews(long newsId);
 

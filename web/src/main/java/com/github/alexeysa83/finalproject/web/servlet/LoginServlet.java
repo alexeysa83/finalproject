@@ -40,7 +40,7 @@ public class LoginServlet extends HttpServlet {
         final String login = req.getParameter("login");
         final String password = req.getParameter("password");
 
-        AuthUserDto userFromDB = securityService.login(new AuthUserDto(login, password, null));
+        AuthUserDto userFromDB = securityService.loginAuthUser(new AuthUserDto(login, password, null));
         if (userFromDB == null) {
             req.setAttribute("message", "wrong.logpass");
             log.info("Invalid login or password enter for user: {} at: {}", login, LocalDateTime.now());

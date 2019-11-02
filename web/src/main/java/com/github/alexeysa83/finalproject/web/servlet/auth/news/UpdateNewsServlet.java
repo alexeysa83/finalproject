@@ -4,7 +4,7 @@ import com.github.alexeysa83.finalproject.model.dto.NewsDto;
 import com.github.alexeysa83.finalproject.service.UtilService;
 import com.github.alexeysa83.finalproject.service.news.DefaultNewsService;
 import com.github.alexeysa83.finalproject.service.news.NewsService;
-import com.github.alexeysa83.finalproject.service.validation.NewsValidationservice;
+import com.github.alexeysa83.finalproject.service.validation.NewsValidationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +37,7 @@ public class UpdateNewsServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         final String title = req.getParameter("title");
         final String content = req.getParameter("content");
-        String message = NewsValidationservice.isValidTitleContent(title, content);
+        String message = NewsValidationService.isValidTitleContent(title, content);
         if (message != null) {
             req.setAttribute("message", message);
             doGet(req, resp);

@@ -6,13 +6,13 @@ import java.util.List;
 
 public interface BadgeService {
 
-    BadgeDto addNewBadge (BadgeDto badgeDto);
+    BadgeDto createBadge(BadgeDto badgeDto);
 
     List<BadgeDto> getAllBadges ();
 
     boolean checkNameIsTaken (String name);
 
-    boolean update (BadgeDto badgeDto);
+    boolean updateBadge(BadgeDto badgeDto);
 
     boolean deleteBadge (long id);
 }

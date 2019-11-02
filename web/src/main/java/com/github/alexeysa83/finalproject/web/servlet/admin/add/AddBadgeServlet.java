@@ -3,7 +3,7 @@ package com.github.alexeysa83.finalproject.web.servlet.admin.add;
 import com.github.alexeysa83.finalproject.model.dto.BadgeDto;
 import com.github.alexeysa83.finalproject.service.badge.BadgeService;
 import com.github.alexeysa83.finalproject.service.badge.DefaultBadgeService;
-import com.github.alexeysa83.finalproject.service.validation.BadgeValidationservice;
+import com.github.alexeysa83.finalproject.service.validation.BadgeValidationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +19,7 @@ import static com.github.alexeysa83.finalproject.web.WebUtils.*;
 public class AddBadgeServlet extends HttpServlet {
 
     private BadgeService badgeService = DefaultBadgeService.getInstance();
-    private BadgeValidationservice validationService = new BadgeValidationservice();
+    private BadgeValidationService validationService = new BadgeValidationService();
     private static final Logger log = LoggerFactory.getLogger(AddBadgeServlet.class);
 
     @Override
@@ -33,7 +33,7 @@ public class AddBadgeServlet extends HttpServlet {
 
         final BadgeDto badge = new BadgeDto();
         badge.setBadgeName(badgeName);
-        final BadgeDto savedBadge = badgeService.addNewBadge(badge);
+        final BadgeDto savedBadge = badgeService.createBadge(badge);
         if (savedBadge == null) {
             message = "error.unknown";
 //            forwardToJspMessage("adminpage", message, req, resp);

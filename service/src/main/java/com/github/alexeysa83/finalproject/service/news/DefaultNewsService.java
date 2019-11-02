@@ -8,8 +8,6 @@ import java.util.List;
 
 public class DefaultNewsService implements NewsService {
 
-    //select count * from NewsEntity/page size + 1
-
     // In service page size select
     private final int PAGE_SIZE = 10;
 
@@ -31,7 +29,7 @@ public class DefaultNewsService implements NewsService {
     }
 
     @Override
-    public NewsDto createAndSave(NewsDto news) {
+    public NewsDto createNews(NewsDto news) {
         return newsDao.add(news);
     }
 
@@ -43,8 +41,8 @@ public class DefaultNewsService implements NewsService {
     @Override
     public int getNewsTotalPages() {
         int rowsNews = newsDao.getRows();
-        int totalPages = rowsNews/PAGE_SIZE;
-        if (rowsNews%PAGE_SIZE > 0) {
+        int totalPages = rowsNews / PAGE_SIZE;
+        if (rowsNews % PAGE_SIZE > 0) {
             totalPages++;
         }
         return totalPages;

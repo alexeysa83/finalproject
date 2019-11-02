@@ -28,7 +28,7 @@ public class DeleteUserServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         final String authId = req.getParameter("authId");
         final long id = UtilService.stringToLong(authId);
-        final boolean isDeleted = securityService.delete(id);
+        final boolean isDeleted = securityService.deleteUser(id);
         String logMessage = "User id: {} deleted at: {}";
         String message = "delete.success";
         if (!isDeleted) {
