@@ -9,10 +9,14 @@ import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DefaultBadgeBaseDao implements BadgeBaseDao {
 
@@ -37,21 +41,22 @@ public class DefaultBadgeBaseDao implements BadgeBaseDao {
     public BadgeDto add(BadgeDto badgeDto) {
 
         final BadgeEntity badgeEntity = ConvertEntityDTO.BadgeToEntity(badgeDto);
-//        try (Session session = HibernateUtil.getSession()) {
-//
-//        }
-        Session session = HibernateUtil.getSession();
+        try (Session session = HibernateUtil.getSession()) {
             session.beginTransaction();
             session.save(badgeEntity);
             session.getTransaction().commit();
-//        }
-//        catch (PersistenceException e) {
-//            log.error("Fail to save new badge to DB: {}, at: {}", badgeDto, LocalDateTime.now(), e);
-//            return null;
-//        }
-                log.info("Badge id: {} saved to DB at: {}", badgeEntity.getId(), LocalDateTime.now());
-        return ConvertEntityDTO.BadgeToDto(badgeEntity);
+            log.info("Badge id: {} saved to DB at: {}", badgeEntity.getId(), LocalDateTime.now());
+            return ConvertEntityDTO.BadgeToDto(badgeEntity);
+        } catch (PersistenceException e) {
+            log.error("Fail to save new badge to DB: {}, at: {}", badgeDto, LocalDateTime.now(), e);
+            return null;
+        }
     }
+
+    /**
+     * ??????
+     * Must catch NoResultException
+     */
 
     @Override
     public boolean isNameTaken(String name) {
@@ -61,9 +66,11 @@ public class DefaultBadgeBaseDao implements BadgeBaseDao {
             BadgeEntity badgeEntity = (BadgeEntity) query.setParameter("name", name).getSingleResult();
             session.getTransaction().commit();
             return badgeEntity != null;
+        } catch (NoResultException e) {
+            return false;
         } catch (PersistenceException e) {
             log.error("Fail to get badge from DB by name: {}, at: {}", name, LocalDateTime.now(), e);
-            return false;
+            throw new RuntimeException(e);
         }
     }
 
@@ -79,23 +86,44 @@ public class DefaultBadgeBaseDao implements BadgeBaseDao {
 
     @Override
     public List<BadgeDto> getAll() {
-        List<BadgeDto> badgeDtos = new ArrayList<>();
+        List<BadgeDto> badgeDtos;
         try (Session session = HibernateUtil.getSession()) {
             session.beginTransaction();
 
-            Query query = session.createQuery("from BadgeEntity b order by b.id")
-                    .setReadOnly(true);
-            List<BadgeEntity> list = query.list();
+            final CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+            final CriteriaQuery<BadgeEntity> criteria = criteriaBuilder.createQuery(BadgeEntity.class);
+            final Root<BadgeEntity> badge = criteria.from(BadgeEntity.class);
+            criteria.select(badge).orderBy(criteriaBuilder.asc(badge.get("badgeName")));
+            final List<BadgeEntity> listEntities = session.createQuery(criteria).getResultList();
+
             session.getTransaction().commit();
-            list.forEach(badgeEntity -> {
-                badgeDtos.add(ConvertEntityDTO.BadgeToDto(badgeEntity));
-            });
+            badgeDtos = listEntities.stream().map(ConvertEntityDTO::BadgeToDto).collect(Collectors.toList());
             return badgeDtos;
         } catch (PersistenceException e) {
             log.error("Fail to get list of badges from DB at: {}", LocalDateTime.now(), e);
-            return null;
+            throw new RuntimeException(e);
         }
     }
+
+    //    @Override
+//    public List<BadgeDto> getAll() {
+//        List<BadgeDto> badgeDtos = new ArrayList<>();
+//        try (Session session = HibernateUtil.getSession()) {
+//            session.beginTransaction();
+//
+//            Query query = session.createQuery("from BadgeEntity b order by b.id")
+//                    .setReadOnly(true);
+//            List<BadgeEntity> list = query.list();
+//            session.getTransaction().commit();
+//            list.forEach(badgeEntity -> {
+//                badgeDtos.add(ConvertEntityDTO.BadgeToDto(badgeEntity));
+//            });
+//            return badgeDtos;
+//        } catch (PersistenceException e) {
+//            log.error("Fail to get list of badges from DB at: {}", LocalDateTime.now(), e);
+//            return null;
+//        }
+//    }
 
     @Override
     public boolean update(BadgeDto badgeDto) {

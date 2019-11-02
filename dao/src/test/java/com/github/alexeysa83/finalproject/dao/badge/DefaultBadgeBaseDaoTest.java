@@ -89,7 +89,10 @@ class DefaultBadgeBaseDaoTest {
         badgeDao.delete(id);
     }
 
-    //????????
+    /**
+     * ??????
+     *
+     */
 //    @Test
 //    void getAllBadges() {
 //        List<BadgeDto> allBadges = badgeDao.getAll();
@@ -132,6 +135,7 @@ class DefaultBadgeBaseDaoTest {
 
         final BadgeDto afterDelete = badgeDao.getById(badgeId);
         assertNull(afterDelete);
+        badgeDao.delete(badgeId);
         completeDeleteUser(testUser.getId());
     }
 

@@ -38,8 +38,7 @@ public class DefaultCommentBaseDao implements CommentBaseDao {
     public CommentDto createAndSave(CommentDto commentDto) {
         final CommentEntity commentEntity = ConvertEntityDTO.CommentToEntity(commentDto);
 
-        try {
-            Session session = HibernateUtil.getSession();
+        try (Session session = HibernateUtil.getSession()) {
             session.beginTransaction();
             final AuthUserEntity authUserEntity = session.get(AuthUserEntity.class, commentDto.getAuthId());
             final NewsEntity newsEntity = session.get(NewsEntity.class, commentDto.getNewsId());
@@ -47,13 +46,12 @@ public class DefaultCommentBaseDao implements CommentBaseDao {
             commentEntity.setNews(newsEntity);
             session.save(commentEntity);
             session.getTransaction().commit();
-            session.close();
+            log.info("Comment id: {} saved to DB at: {}", commentEntity.getId(), LocalDateTime.now());
+            return ConvertEntityDTO.CommentToDto(commentEntity);
         } catch (PersistenceException | NullPointerException e) {
             log.error("Fail to save new comment to DB: {}, at: {}", commentDto, LocalDateTime.now(), e);
             return null;
         }
-        log.info("Comment id: {} saved to DB at: {}", commentEntity.getId(), LocalDateTime.now());
-        return ConvertEntityDTO.CommentToDto(commentEntity);
     }
 
     @Override
@@ -68,10 +66,9 @@ public class DefaultCommentBaseDao implements CommentBaseDao {
 
     @Override
     public List<CommentDto> getCommentsOnNews(long newsId) {
-        List <CommentDto> commentDtoList = new ArrayList<>();
+        List<CommentDto> commentDtoList = new ArrayList<>();
 
-        try {
-            Session session = HibernateUtil.getSession();
+        try (Session session = HibernateUtil.getSession()) {
             session.beginTransaction();
 
             final NewsEntity newsEntity = session.get(NewsEntity.class, newsId);
@@ -81,7 +78,6 @@ public class DefaultCommentBaseDao implements CommentBaseDao {
                 commentDtoList.add(commentDto);
             });
             session.getTransaction().commit();
-            session.close();
             return commentDtoList;
         } catch (PersistenceException e) {
             log.error("Fail to get list of comments on news id: {},  at: {}", newsId, LocalDateTime.now(), e);
@@ -136,15 +132,13 @@ public class DefaultCommentBaseDao implements CommentBaseDao {
 
     @Override
     public boolean update(CommentDto commentDto) {
-        try {
-            Session session = HibernateUtil.getSession();
+        try (Session session = HibernateUtil.getSession()) {
             session.beginTransaction();
             final int i = session.createQuery("update CommentEntity c set c.content=:content where c.id=:id")
                     .setParameter("content", commentDto.getContent())
                     .setParameter("id", commentDto.getId())
                     .executeUpdate();
             session.getTransaction().commit();
-            session.close();
             log.info("Comment id: {} updated in DB at: {}", commentDto.getId(), LocalDateTime.now());
             return i > 0;
         } catch (PersistenceException e) {
@@ -155,14 +149,12 @@ public class DefaultCommentBaseDao implements CommentBaseDao {
 
     @Override
     public boolean delete(long id) {
-        try {
-            Session session = HibernateUtil.getSession();
+        try (Session session = HibernateUtil.getSession()) {
             session.beginTransaction();
             final int i = session.createQuery("delete CommentEntity c where c.id=:id")
                     .setParameter("id", id)
                     .executeUpdate();
             session.getTransaction().commit();
-            session.close();
             log.info("Comment id: {} deleted from DB at: {}", id, LocalDateTime.now());
             return i > 0;
         } catch (PersistenceException e) {

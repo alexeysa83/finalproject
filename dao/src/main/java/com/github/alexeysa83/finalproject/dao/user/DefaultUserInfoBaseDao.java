@@ -45,8 +45,7 @@ public class DefaultUserInfoBaseDao implements UserInfoBaseDao {
 
     @Override
     public boolean update(UserInfoDto userInfoDto) {
-        try {
-            Session session = HibernateUtil.getSession();
+        try (Session session = HibernateUtil.getSession()) {
             session.beginTransaction();
 
             final int i = session.createQuery
@@ -59,7 +58,6 @@ public class DefaultUserInfoBaseDao implements UserInfoBaseDao {
                     .setParameter("authId", userInfoDto.getAuthId())
                     .executeUpdate();
             session.getTransaction().commit();
-            session.close();
             log.info("User id: {} updated in DB at: {}", userInfoDto.getAuthId(), LocalDateTime.now());
             return i > 0;
         } catch (PersistenceException e) {
@@ -68,12 +66,18 @@ public class DefaultUserInfoBaseDao implements UserInfoBaseDao {
         }
     }
 
-    // Duplicate code
+    /**
+     * // Duplicate code
+     *
+     * @param authId
+     * @param badgeId
+     * @return
+     */
+
     @Override
     public UserInfoDto addBadgeToUser(long authId, long badgeId) {
 
-        try {
-            Session session = HibernateUtil.getSession();
+        try (Session session = HibernateUtil.getSession()) {
             session.beginTransaction();
             final UserInfoEntity userInfoEntity = session.get(UserInfoEntity.class, authId);
             final BadgeEntity badgeEntity = session.get(BadgeEntity.class, badgeId);
@@ -81,7 +85,6 @@ public class DefaultUserInfoBaseDao implements UserInfoBaseDao {
             session.update(userInfoEntity);
             session.getTransaction().commit();
             final UserInfoDto userInfoDto = ConvertEntityDTO.UserToDto(userInfoEntity);
-            session.close();
             log.info("Badge id: {} added to user id {} in DB at: {}", badgeId, authId, LocalDateTime.now());
             return userInfoDto;
         } catch (PersistenceException e) {
@@ -93,8 +96,7 @@ public class DefaultUserInfoBaseDao implements UserInfoBaseDao {
     @Override
     public UserInfoDto deleteBadgeFromUser(long authId, long badgeId) {
 
-        try {
-            Session session = HibernateUtil.getSession();
+        try (Session session = HibernateUtil.getSession()) {
             session.beginTransaction();
             final UserInfoEntity userInfoEntity = session.get(UserInfoEntity.class, authId);
             final BadgeEntity badgeEntity = session.get(BadgeEntity.class, badgeId);
@@ -102,7 +104,6 @@ public class DefaultUserInfoBaseDao implements UserInfoBaseDao {
             session.update(userInfoEntity);
             session.getTransaction().commit();
             final UserInfoDto userInfoDto = ConvertEntityDTO.UserToDto(userInfoEntity);
-            session.close();
             log.info("Badge id: {} deleted from user id {} in DB at: {}", badgeId, authId, LocalDateTime.now());
             return userInfoDto;
         } catch (PersistenceException e) {
