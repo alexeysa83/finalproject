@@ -1,5 +1,8 @@
 package com.github.alexeysa83.finalproject.dao.entity;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.List;
@@ -7,6 +10,8 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "news")
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class NewsEntity {
 
     private long id;

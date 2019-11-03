@@ -4,12 +4,14 @@ import com.github.alexeysa83.finalproject.dao.HibernateUtil;
 import com.github.alexeysa83.finalproject.dao.badge.BadgeBaseDao;
 import com.github.alexeysa83.finalproject.dao.badge.DefaultBadgeBaseDao;
 import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
+import com.github.alexeysa83.finalproject.dao.entity.BadgeEntity;
 import com.github.alexeysa83.finalproject.dao.user.DefaultUserInfoBaseDao;
 import com.github.alexeysa83.finalproject.dao.user.UserInfoBaseDao;
 import com.github.alexeysa83.finalproject.model.Role;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.dto.BadgeDto;
 import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
+import org.hibernate.Session;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -57,6 +59,41 @@ class DefaultAuthUserBaseDaoTest {
     @Test
     void getInstance() {
         assertNotNull(authUserDao);
+    }
+
+    private void getAuthUser (long id) {
+        final Session session = HibernateUtil.getSession();
+        session.beginTransaction();
+        final AuthUserEntity authUserEntity = session.get(AuthUserEntity.class, id);
+        session.getTransaction().commit();
+        session.close();
+    }
+
+    private void getBadge (long id) {
+        final Session session = HibernateUtil.getSession();
+        session.beginTransaction();
+        final BadgeEntity badgeEntity = session.get(BadgeEntity.class, id);
+        session.getTransaction().commit();
+        session.close();
+    }
+
+    /**
+     * @Cacheable not needed?
+     */
+
+    @Test
+    void cacheTest() {
+//        getAuthUser(1L);
+//        getAuthUser(1L);
+//        getAuthUser(1L);
+
+//        getBadge(267L);
+//        getBadge(267L);
+//        getBadge(267L);
+
+        authUserDao.getByLogin("admin");
+        authUserDao.getByLogin("admin");
+        authUserDao.getByLogin("admin");
     }
 
     /**

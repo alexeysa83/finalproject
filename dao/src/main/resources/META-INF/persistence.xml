@@ -20,45 +20,50 @@
             <property name="javax.persistence.jdbc.password" value="root1admin"/>
             <property name="hibernate.dialect.storage_engine" value="innodb"/>
             <property name="hibernate.hbm2ddl.auto" value="validate"/>
-<!--            <property name="hibernate.hbm2ddl.auto" value="create"/>-->
+            <!--            <property name="hibernate.hbm2ddl.auto" value="create"/>-->
             <property name="hibernate.use_sql_comments" value="true"/>
             <property name="hibernate.show_sql" value="true"/>
+
             <property name="hibernate.connection.pool_size" value="10"/>
-            </properties>
+            <property name="hibernate.connection.isolation" value="2"/>
+
+            <property name="hibernate.cache.region.factory_class"
+                      value="org.hibernate.cache.ehcache.internal.EhcacheRegionFactory"/>
+            <property name="hibernate.cache.use_second_level_cache" value="true"/>
+            <property name="hibernate.cache.use_query_cache" value="true"/>
+            <property name="hibernate.cache.auto_evict_collection_cache" value="true"/>
+            <property name="net.sf.ehcache.configurationResourceName" value="ehcache.xml"/>
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="com.github.alexeysa83.finalproject.dao.test" transaction-type="RESOURCE_LOCAL">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <class>com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity</class>
+        <class>com.github.alexeysa83.finalproject.dao.entity.UserInfoEntity</class>
+        <class>com.github.alexeysa83.finalproject.dao.entity.NewsEntity</class>
+        <class>com.github.alexeysa83.finalproject.dao.entity.CommentEntity</class>
+        <class>com.github.alexeysa83.finalproject.dao.entity.BadgeEntity</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:jpadb"/>
+            <property name="javax.persistence.jdbc.user" value="root"/>
+            <property name="javax.persistence.jdbc.password" value=""/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+            <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+            <property name="hibernate.use_sql_comments" value="false"/>
+            <property name="hibernate.show_sql" value="true"/>
+
+            <property name="hibernate.connection.pool_size" value="10"/>
+            <property name="hibernate.connection.isolation" value="2"/>
+
+            <property name="hibernate.cache.region.factory_class"
+                      value="org.hibernate.cache.ehcache.EhCacheRegionFactory"/>
+            <property name="hibernate.cache.use_second_level_cache" value="true"/>
+            <property name="hibernate.cache.use_query_cache" value="true"/>
+            <property name="hibernate.cache.auto_evict_collection_cache" value="true"/>
+            <property name="net.sf.ehcache.configurationResourceName" value="ehcache.xml"/>
+        </properties>
     </persistence-unit>
 </persistence>
 
-<!--<persistence-unit name="by.it" transaction-type="RESOURCE_LOCAL">-->
-<!--<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>-->
-<!--<class>by.it.entity.Person</class>-->
-<!--<class>by.it.entity.Department</class>-->
-<!--<exclude-unlisted-classes>true</exclude-unlisted-classes>-->
-<!--<properties>-->
-<!--    <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>-->
-<!--    <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/ita?createDatabaseIfNotExist=true"/>-->
-<!--    <property name="javax.persistence.jdbc.user" value="root"/>-->
-<!--    <property name="javax.persistence.jdbc.password" value="rootroot"/>-->
-<!--    <property name="hibernate.dialect.storage_engine" value="innodb"/>-->
-<!--    <property name="hibernate.hbm2ddl.auto" value="create"/>-->
-<!--    <property name="hibernate.use_sql_comments" value="false"/>-->
-<!--    <property name="hibernate.show_sql" value="true"/>-->
-<!--    <property name="hibernate.connection.pool_size" value="10"/>-->
-<!--</properties>-->
-<!--</persistence-unit>-->
-<!--<persistence-unit name="by.it.test" transaction-type="RESOURCE_LOCAL">-->
-<!--<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>-->
-<!--<class>by.it.entity.Person</class>-->
-<!--<class>by.it.entity.Department</class>-->
-<!--<exclude-unlisted-classes>true</exclude-unlisted-classes>-->
-<!--<properties>-->
-<!--    <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>-->
-<!--    <property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:jpadb"/>-->
-<!--    <property name="javax.persistence.jdbc.user" value="root"/>-->
-<!--    <property name="javax.persistence.jdbc.password" value=""/>-->
-<!--    <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>-->
-<!--    <property name="hibernate.hbm2ddl.auto" value="create-drop"/>-->
-<!--    <property name="hibernate.use_sql_comments" value="false"/>-->
-<!--    <property name="hibernate.show_sql" value="true"/>-->
-<!--    <property name="hibernate.connection.pool_size" value="10"/>-->
-<!--</properties>-->
-<!--</persistence-unit>-->

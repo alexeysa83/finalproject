@@ -104,7 +104,7 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
     public AuthUserDto getByLogin(String login) {
         try (Session session = HibernateUtil.getSession()) {
             session.beginTransaction();
-            Query query = session.createQuery("from AuthUserEntity where login = :login");
+            Query query = session.createQuery("from AuthUserEntity where login = :login").setCacheable(true);
             AuthUserEntity authUserEntity = (AuthUserEntity) query.setParameter("login", login).uniqueResult();
             session.getTransaction().commit();
             final AuthUserDto authUserDto = ConvertEntityDTO.AuthUserToDto(authUserEntity);

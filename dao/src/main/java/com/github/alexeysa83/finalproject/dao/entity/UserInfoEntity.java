@@ -1,7 +1,9 @@
 package com.github.alexeysa83.finalproject.dao.entity;
 
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.Cache;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -10,6 +12,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "user_info")
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class UserInfoEntity {
 
     private long authId;

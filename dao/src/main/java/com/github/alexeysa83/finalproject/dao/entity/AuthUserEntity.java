@@ -1,12 +1,16 @@
 package com.github.alexeysa83.finalproject.dao.entity;
 
 import com.github.alexeysa83.finalproject.model.Role;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Cache;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
 @Table(name = "auth_user")
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class AuthUserEntity {
 
     private long id;
