@@ -27,7 +27,7 @@ public class UpdateBadgeServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         final String badgeId = req.getParameter("badgeId");
-        req.setAttribute("badgeToUpdate", badgeId);
+        req.setAttribute("badgeToUpdateId", badgeId);
         forwardToServlet("/admin/main", req, resp);
     }
 

@@ -37,6 +37,7 @@ public class AddCommentServlet extends HttpServlet {
         final Timestamp creationTime = UtilService.getTime();
         final String newsId = req.getParameter("newsId");
         final long id = UtilService.stringToLong(newsId);
+
         final CommentDto comment = commentService.createComment
                 (new CommentDto(content, creationTime, authUser.getId(), id, authUser.getLogin()));
 

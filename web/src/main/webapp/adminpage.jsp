@@ -18,9 +18,9 @@
 <p><span style='color: blue;'><fmt:message key="badges" bundle="${intr}"/></span></p>
 
 <c:forEach items="${requestScope.badgesDB}" var="badge" varStatus="loop">
-    <h4>${loop.index+1} ${badge.badgeName}</h4>
+    <h4>${loop.index+1}) ${badge.badgeName}</h4>
     <c:choose>
-        <c:when test="${badge.id == badgeToUpdate}">
+        <c:when test="${badge.id == badgeToUpdateId}">
             <form action="${pageContext.request.contextPath}/admin/update/badge" method="POST">
                 <input class="form-control" type="text" name="badgeName"
                        value="${badge.badgeName}">
