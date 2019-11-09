@@ -19,12 +19,26 @@
 
 <c:forEach items="${requestScope.badgesDB}" var="badge" varStatus="loop">
     <h4>${loop.index+1} ${badge.badgeName}</h4>
-    <form action="${pageContext.request.contextPath}/admin/update/badge" method="GET">
-        <input type="submit" value="<fmt:message key="update.badge" bundle="${intr}"/>"/>
-        <label>
-            <input hidden="hidden" type="text" name="authId" value="${user.authId}">
-        </label>
-    </form>
+    <c:choose>
+        <c:when test="${badge.id == badgeToUpdate}">
+            <form action="${pageContext.request.contextPath}/admin/update/badge" method="POST">
+                <input class="form-control" type="text" name="badgeName"
+                       value="${badge.badgeName}">
+                <label>
+                    <input hidden="hidden" type="text" name="badgeId" value="${badge.id}">
+                </label>
+                <input type="submit" value="<fmt:message key="update.badge" bundle="${intr}"/>"/>
+            </form>
+        </c:when>
+        <c:otherwise>
+            <form action="${pageContext.request.contextPath}/admin/update/badge" method="GET">
+                <input type="submit" value="<fmt:message key="update.badge" bundle="${intr}"/>"/>
+                <label>
+                    <input hidden="hidden" type="text" name="badgeId" value="${badge.id}">
+                </label>
+            </form>
+        </c:otherwise>
+    </c:choose>
     <form action="${pageContext.request.contextPath}/admin/delete/badge" method="GET">
         <input type="submit" value="<fmt:message key="delete.badge" bundle="${intr}"/>"/>
         <label>
