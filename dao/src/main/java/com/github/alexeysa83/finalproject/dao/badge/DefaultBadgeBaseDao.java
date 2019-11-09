@@ -1,7 +1,7 @@
 package com.github.alexeysa83.finalproject.dao.badge;
 
-import com.github.alexeysa83.finalproject.dao.ConvertEntityDTO;
 import com.github.alexeysa83.finalproject.dao.HibernateUtil;
+import com.github.alexeysa83.finalproject.dao.convert.BadgeConvert;
 import com.github.alexeysa83.finalproject.dao.entity.BadgeEntity;
 import com.github.alexeysa83.finalproject.model.dto.BadgeDto;
 import org.hibernate.Session;
@@ -38,13 +38,13 @@ public class DefaultBadgeBaseDao implements BadgeBaseDao {
 
     @Override
     public BadgeDto add(BadgeDto badgeDto) {
-        final BadgeEntity badgeEntity = ConvertEntityDTO.BadgeToEntity(badgeDto);
+        final BadgeEntity badgeEntity = BadgeConvert.toEntity(badgeDto);
         try (Session session = HibernateUtil.getSession()) {
             session.beginTransaction();
             session.save(badgeEntity);
             session.getTransaction().commit();
             log.info("Badge id: {} saved to DB at: {}", badgeEntity.getId(), LocalDateTime.now());
-            return ConvertEntityDTO.BadgeToDto(badgeEntity);
+            return BadgeConvert.toDto(badgeEntity);
         } catch (PersistenceException e) {
             log.error("Fail to save new badge to DB: {}, at: {}", badgeDto, LocalDateTime.now(), e);
             throw new RuntimeException(e);
@@ -75,7 +75,7 @@ public class DefaultBadgeBaseDao implements BadgeBaseDao {
         final BadgeEntity badgeEntity = session.get(BadgeEntity.class, id);
         session.getTransaction().commit();
         session.close();
-        return ConvertEntityDTO.BadgeToDto(badgeEntity);
+        return BadgeConvert.toDto(badgeEntity);
     }
 
     /**
@@ -94,7 +94,7 @@ public class DefaultBadgeBaseDao implements BadgeBaseDao {
             final List<BadgeEntity> listEntities = session.createQuery(criteria).getResultList();
 
             session.getTransaction().commit();
-            badgeDtos = listEntities.stream().map(ConvertEntityDTO::BadgeToDto).collect(Collectors.toList());
+            badgeDtos = listEntities.stream().map(BadgeConvert::toDto).collect(Collectors.toList());
             return badgeDtos;
         } catch (PersistenceException e) {
             log.error("Fail to get list of badges from DB at: {}", LocalDateTime.now(), e);
@@ -140,9 +140,6 @@ public class DefaultBadgeBaseDao implements BadgeBaseDao {
         }
     }
 
-    /**
-     * Delete even without mappedBy
-          */
     @Override
     public boolean delete(long id) {
         try (Session session = HibernateUtil.getSession()) {

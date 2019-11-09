@@ -84,7 +84,7 @@ public class NewsEntity {
         this.authUser = authUser;
     }
 
-    @OneToMany (mappedBy = "news", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany (mappedBy = "news", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     public List<CommentEntity> getComments() {
         return comments;
     }

@@ -1,7 +1,7 @@
 package com.github.alexeysa83.finalproject.dao.comment;
 
-import com.github.alexeysa83.finalproject.dao.ConvertEntityDTO;
 import com.github.alexeysa83.finalproject.dao.HibernateUtil;
+import com.github.alexeysa83.finalproject.dao.convert.CommentConvert;
 import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
 import com.github.alexeysa83.finalproject.dao.entity.CommentEntity;
 import com.github.alexeysa83.finalproject.dao.entity.NewsEntity;
@@ -36,10 +36,10 @@ public class DefaultCommentBaseDao implements CommentBaseDao {
 
     /**
      * Optimization?
-          */
-        @Override
+     */
+    @Override
     public CommentDto add(CommentDto commentDto) {
-        final CommentEntity commentEntity = ConvertEntityDTO.CommentToEntity(commentDto);
+        final CommentEntity commentEntity = CommentConvert.toEntity(commentDto);
 
         try (Session session = HibernateUtil.getSession()) {
             session.beginTransaction();
@@ -50,7 +50,7 @@ public class DefaultCommentBaseDao implements CommentBaseDao {
             session.save(commentEntity);
             session.getTransaction().commit();
             log.info("Comment id: {} saved to DB at: {}", commentEntity.getId(), LocalDateTime.now());
-            return ConvertEntityDTO.CommentToDto(commentEntity);
+            return CommentConvert.toDto(commentEntity);
         } catch (PersistenceException | NullPointerException e) {
             log.error("Fail to save new comment to DB: {}, at: {}", commentDto, LocalDateTime.now(), e);
             throw new RuntimeException(e);
@@ -64,7 +64,7 @@ public class DefaultCommentBaseDao implements CommentBaseDao {
         final CommentEntity commentEntity = session.get(CommentEntity.class, id);
         session.getTransaction().commit();
         session.close();
-        return ConvertEntityDTO.CommentToDto(commentEntity);
+        return CommentConvert.toDto(commentEntity);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class DefaultCommentBaseDao implements CommentBaseDao {
             final NewsEntity newsEntity = session.get(NewsEntity.class, newsId);
             List<CommentEntity> entityComments = newsEntity.getComments();
             entityComments.forEach(commentEntity -> {
-                CommentDto commentDto = ConvertEntityDTO.CommentToDto(commentEntity);
+                CommentDto commentDto = CommentConvert.toDto(commentEntity);
                 commentDtoList.add(commentDto);
             });
             session.getTransaction().commit();

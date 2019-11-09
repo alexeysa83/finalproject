@@ -1,6 +1,6 @@
 package com.github.alexeysa83.finalproject.dao.authuser;
 
-import com.github.alexeysa83.finalproject.dao.ConvertEntityDTO;
+import com.github.alexeysa83.finalproject.dao.convert.AuthUserConvert;
 import com.github.alexeysa83.finalproject.dao.HibernateUtil;
 import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
@@ -35,13 +35,13 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
 
     @Override
     public AuthUserDto add(AuthUserDto user) {
-        final AuthUserEntity authUserEntity = ConvertEntityDTO.AuthUserToEntity(user);
+        final AuthUserEntity authUserEntity = AuthUserConvert.toEntity(user);
         try (Session session = HibernateUtil.getSession()) {
             session.beginTransaction();
             session.save(authUserEntity);
             session.getTransaction().commit();
             log.info("AuthUser id: {} saved to DB at: {}", authUserEntity.getId(), LocalDateTime.now());
-            return ConvertEntityDTO.AuthUserToDto(authUserEntity);
+            return AuthUserConvert.toDto(authUserEntity);
         } catch (PersistenceException e) {
             log.error("Fail to save new user to DB: {}, at: {}", user, LocalDateTime.now(), e);
             throw new RuntimeException(e);
@@ -107,8 +107,7 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
             Query query = session.createQuery("from AuthUserEntity where login = :login").setCacheable(true);
             AuthUserEntity authUserEntity = (AuthUserEntity) query.setParameter("login", login).uniqueResult();
             session.getTransaction().commit();
-            final AuthUserDto authUserDto = ConvertEntityDTO.AuthUserToDto(authUserEntity);
-            return authUserDto;
+            return AuthUserConvert.toDto(authUserEntity);
         } catch (PersistenceException e) {
             log.error("Fail to get user from DB by login: {}, at: {}", login, LocalDateTime.now(), e);
             throw new RuntimeException(e);
@@ -145,7 +144,7 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
         session.beginTransaction();
         final AuthUserEntity authUser = session.get(AuthUserEntity.class, id);
         session.getTransaction().commit();
-        final AuthUserDto authUserDto = ConvertEntityDTO.AuthUserToDto(authUser);
+        final AuthUserDto authUserDto = AuthUserConvert.toDto(authUser);
         session.close();
         return authUserDto;
     }
@@ -213,7 +212,11 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
 //        }
 //    }
 
-        // AuthUser flag isDeleted set to true, UserInfo deleted
+
+    /**
+     * AuthUser flag isDeleted set to true, UserInfo deleted
+     */
+
     @Override
     public boolean delete(long id) {
         try (Session session = HibernateUtil.getSession()) {
@@ -230,12 +233,6 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
                         .setParameter("id", id)
                         .executeUpdate();
             }
-//            AuthUserEntity authUserToDelete = session.get(AuthUserEntity.class, id);
-//            authUserToDelete.getUser().setBadges(null);
-//            session.flush();
-//            authUserToDelete.setUser(null);
-//            authUserToDelete.setDeleted(true);
-//            session.update(authUserToDelete);
             session.getTransaction().commit();
             log.info("AuthUser id : {} deleted from DB at: {}", id, LocalDateTime.now());
             return authUserDeleted > 0;

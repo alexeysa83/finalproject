@@ -194,17 +194,4 @@ class DefaultNewsBaseDaoTest {
         entityManager.getTransaction().commit();
         entityManager.close();
     }
-
-    // getNewsOnPage is not Deleted
-//    @AfterAll
-//    static void close() {
-//        EntityManager entityManager = HibernateUtil.getEntityManager();
-//        entityManager.getTransaction().begin();
-//        AuthUserEntity authUserEntity = entityManager.find(AuthUserEntity.class, testUser.getId());
-//        authUserEntity.setNews(null);
-//        entityManager.remove(authUserEntity);
-//        entityManager.getTransaction().commit();
-//        entityManager.close();
-//        HibernateUtil.close();
-//    }
 }
