@@ -2,32 +2,20 @@ package com.github.alexeysa83.finalproject.service.auth;
 
 
 import com.github.alexeysa83.finalproject.dao.authuser.AuthUserBaseDao;
-import com.github.alexeysa83.finalproject.dao.authuser.DefaultAuthUserBaseDao;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
 import com.github.alexeysa83.finalproject.service.UtilService;
 import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 
+@Service
 public class DefaultSecurityService implements SecurityService {
 
-    private AuthUserBaseDao authUserDao = DefaultAuthUserBaseDao.getInstance();
-
-    private static volatile SecurityService instance;
-
-    public static SecurityService getInstance() {
-        SecurityService localInstance = instance;
-        if (localInstance == null) {
-            synchronized (SecurityService.class) {
-                localInstance = instance;
-                if (localInstance == null) {
-                    instance = localInstance = new DefaultSecurityService();
-                }
-            }
-        }
-        return localInstance;
-    }
+    @Autowired
+    private AuthUserBaseDao authUserDao;
 
     @Override
     public AuthUserDto createAuthUser(String login, String password) {

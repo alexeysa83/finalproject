@@ -9,30 +9,17 @@ import com.github.alexeysa83.finalproject.model.dto.CommentDto;
 import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.PersistenceException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class DefaultCommentBaseDao implements CommentBaseDao {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultCommentBaseDao.class);
-
-    private static volatile CommentBaseDao instance;
-
-    public static CommentBaseDao getInstance() {
-        CommentBaseDao localInstance = instance;
-        if (localInstance == null) {
-            synchronized (CommentBaseDao.class) {
-                localInstance = instance;
-                if (localInstance == null) {
-                    instance = localInstance = new DefaultCommentBaseDao();
-                }
-            }
-        }
-        return localInstance;
-    }
 
     /**
      * Optimization?

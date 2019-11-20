@@ -1,29 +1,17 @@
 package com.github.alexeysa83.finalproject.service.comment;
 
-import com.github.alexeysa83.finalproject.dao.comment.DefaultCommentBaseDao;
 import com.github.alexeysa83.finalproject.dao.comment.CommentBaseDao;
 import com.github.alexeysa83.finalproject.model.dto.CommentDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class DefaultCommentService implements CommentService {
 
-    private CommentBaseDao commentDao = DefaultCommentBaseDao.getInstance();
-
-    private static volatile CommentService instance;
-
-    public static CommentService getInstance() {
-        CommentService localInstance = instance;
-        if (localInstance == null) {
-            synchronized (CommentService.class) {
-                localInstance = instance;
-                if (localInstance == null) {
-                    instance = localInstance = new DefaultCommentService();
-                }
-            }
-        }
-        return localInstance;
-    }
+    @Autowired
+    private CommentBaseDao commentDao;
 
     @Override
     public CommentDto createComment(CommentDto comment) {

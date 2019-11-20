@@ -8,31 +8,17 @@ import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.PersistenceException;
 import java.time.LocalDateTime;
 
+@Repository
 public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultAuthUserBaseDao.class);
 
-    private static volatile AuthUserBaseDao instance;
-
-    public static AuthUserBaseDao getInstance() {
-        AuthUserBaseDao localInstance = instance;
-        if (localInstance == null) {
-            synchronized (AuthUserBaseDao.class) {
-                localInstance = instance;
-                if (localInstance == null) {
-                    instance = localInstance = new DefaultAuthUserBaseDao();
-                }
-            }
-        }
-        return localInstance;
-    }
-
     // default role and block status in DB or constructor???
-
     @Override
     public AuthUserDto add(AuthUserDto user) {
         final AuthUserEntity authUserEntity = AuthUserConvert.toEntity(user);

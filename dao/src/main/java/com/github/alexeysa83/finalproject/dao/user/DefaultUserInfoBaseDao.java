@@ -8,6 +8,7 @@ import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
 import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
@@ -16,24 +17,10 @@ import java.time.LocalDateTime;
 /**
  * Entity manager is used to get practice!
  */
+@Repository
 public class DefaultUserInfoBaseDao implements UserInfoBaseDao {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultUserInfoBaseDao.class);
-
-    private static volatile UserInfoBaseDao instance;
-
-    public static UserInfoBaseDao getInstance() {
-        UserInfoBaseDao localInstance = instance;
-        if (localInstance == null) {
-            synchronized (UserInfoBaseDao.class) {
-                localInstance = instance;
-                if (localInstance == null) {
-                    instance = localInstance = new DefaultUserInfoBaseDao();
-                }
-            }
-        }
-        return localInstance;
-    }
 
     @Override
     public UserInfoDto getById(long authId) {

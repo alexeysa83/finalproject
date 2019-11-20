@@ -24,13 +24,13 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <!-- dependencies -->
+        <spring-webmvc.version>5.2.1.RELEASE</spring-webmvc.version>
         <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
         <jstl.version>1.2</jstl.version>
         <hibernate-core.version>5.4.6.Final</hibernate-core.version>
-        <h2.version>1.4.199</h2.version>
-        <ehcache-core.version>2.6.11</ehcache-core.version>
         <mysql-connector-java.version>8.0.17</mysql-connector-java.version>
         <c3p0.version>0.9.5.4</c3p0.version>
+        <ehcache-core.version>2.6.11</ehcache-core.version>
         <!--testing-->
         <!--        <h2.version>1.4.199</h2.version>-->
         <junit-jupiter-engine.version>5.5.2</junit-jupiter-engine.version>
@@ -48,6 +48,11 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-webmvc</artifactId>
+                <version>${spring-webmvc.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>javax.servlet-api</artifactId>
                 <version>${javax.servlet-api.version}</version>
@@ -64,15 +69,15 @@
                 <version>${hibernate-core.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.h2database</groupId>
-                <artifactId>h2</artifactId>
-                <version>${h2.version}</version>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql-connector-java.version}</version>
             </dependency>
-<!--            <dependency>-->
-<!--                <groupId>org.hibernate</groupId>-->
-<!--                <artifactId>hibernate-jcache</artifactId>-->
-<!--                <version>${hibernate-core.version}</version>-->
-<!--            </dependency>-->
+            <dependency>
+                <groupId>com.mchange</groupId>
+                <artifactId>c3p0</artifactId>
+                <version>${c3p0.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-ehcache</artifactId>
@@ -83,18 +88,8 @@
                 <artifactId>ehcache-core</artifactId>
                 <version>${ehcache-core.version}</version>
             </dependency>
-            <dependency>
-                <groupId>mysql</groupId>
-                <artifactId>mysql-connector-java</artifactId>
-                <version>${mysql-connector-java.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.mchange</groupId>
-                <artifactId>c3p0</artifactId>
-                <version>${c3p0.version}</version>
-            </dependency>
             <!--testing-->
-            <!--            hiber2-->
+
             <!--            <dependency>-->
             <!--                <groupId>com.h2database</groupId>-->
             <!--                <artifactId>h2</artifactId>-->

@@ -8,6 +8,7 @@ import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.PersistenceException;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -17,24 +18,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Repository
 public class DefaultBadgeBaseDao implements BadgeBaseDao {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultBadgeBaseDao.class);
-
-    private static volatile BadgeBaseDao instance;
-
-    public static BadgeBaseDao getInstance() {
-        BadgeBaseDao localInstance = instance;
-        if (localInstance == null) {
-            synchronized (BadgeBaseDao.class) {
-                localInstance = instance;
-                if (localInstance == null) {
-                    instance = localInstance = new DefaultBadgeBaseDao();
-                }
-            }
-        }
-        return localInstance;
-    }
 
     @Override
     public BadgeDto add(BadgeDto badgeDto) {

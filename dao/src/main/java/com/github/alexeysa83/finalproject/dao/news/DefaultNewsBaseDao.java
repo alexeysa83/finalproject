@@ -10,31 +10,17 @@ import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.PersistenceException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class DefaultNewsBaseDao implements NewsBaseDao {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultNewsBaseDao.class);
-
-    private static volatile NewsBaseDao instance;
-
-    public static NewsBaseDao getInstance() {
-        NewsBaseDao localInstance = instance;
-        if (localInstance == null) {
-            synchronized (NewsBaseDao.class) {
-                localInstance = instance;
-                if (localInstance == null) {
-                    instance = localInstance = new DefaultNewsBaseDao();
-                }
-            }
-        }
-        return localInstance;
-    }
-
 
     @Override
     public NewsDto add(NewsDto newsDto) {
