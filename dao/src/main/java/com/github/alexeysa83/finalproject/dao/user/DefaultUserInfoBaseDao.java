@@ -10,13 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
 import java.time.LocalDateTime;
 
-/**
- * Entity manager is used to get practice!
- */
 @Repository
 public class DefaultUserInfoBaseDao implements UserInfoBaseDao {
 
@@ -24,12 +20,12 @@ public class DefaultUserInfoBaseDao implements UserInfoBaseDao {
 
     @Override
     public UserInfoDto getById(long authId) {
-        EntityManager entityManager = HibernateUtil.getEntityManager();
-        entityManager.getTransaction().begin();
-        final UserInfoEntity userInfoEntity = entityManager.find(UserInfoEntity.class, authId);
-        entityManager.getTransaction().commit();
+        Session session = HibernateUtil.getSession();
+        session.beginTransaction();
+        final UserInfoEntity userInfoEntity = session.get(UserInfoEntity.class, authId);
+        session.getTransaction().commit();
         final UserInfoDto userInfoDto = UserInfoConvert.toDto(userInfoEntity);
-        entityManager.close();
+        session.close();
         return userInfoDto;
     }
 

@@ -88,7 +88,7 @@ public class AuthUserEntity {
 
     @OneToMany(targetEntity =com.github.alexeysa83.finalproject.dao.entity.NewsEntity.class,
             mappedBy = "authUser",
-            fetch = FetchType.LAZY)
+            fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     public List<NewsEntity> getNews() {
         return news;
     }

@@ -1,59 +1,40 @@
 package com.github.alexeysa83.finalproject.dao.news;
 
-import com.github.alexeysa83.finalproject.dao.HibernateUtil;
-import com.github.alexeysa83.finalproject.dao.authuser.AuthUserBaseDao;
-import com.github.alexeysa83.finalproject.dao.authuser.DefaultAuthUserBaseDao;
+import com.github.alexeysa83.finalproject.dao.AddDeleteTestEntity;
 import com.github.alexeysa83.finalproject.dao.comment.CommentBaseDao;
-import com.github.alexeysa83.finalproject.dao.comment.DefaultCommentBaseDao;
-import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
+import com.github.alexeysa83.finalproject.dao.config.DaoConfig;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.dto.CommentDto;
 import com.github.alexeysa83.finalproject.model.dto.NewsDto;
-import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import javax.persistence.EntityManager;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {DaoConfig.class, AddDeleteTestEntity.class})
 class DefaultNewsBaseDaoTest {
 
-    private final static AuthUserBaseDao authUserDao = DefaultAuthUserBaseDao.getInstance();
-    private final NewsBaseDao newsDao = DefaultNewsBaseDao.getInstance();
-    private final CommentBaseDao commentDao = DefaultCommentBaseDao.getInstance();
-
-    private static AuthUserDto testUser;
-
-    private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-    private static Timestamp getTime() {
-        String time = sdf.format(System.currentTimeMillis());
-        return Timestamp.valueOf(time);
-    }
-
-    @BeforeAll
-    static void init() {
-        UserInfoDto userInfoDto = new UserInfoDto(getTime());
-        AuthUserDto authUserDto = new AuthUserDto("NewsTestUser", "Pass", userInfoDto);
-        testUser = authUserDao.add(authUserDto);
-    }
-
-    @Test
-    void getInstance() {
-        assertNotNull(newsDao);
-    }
+    @Autowired
+    private NewsBaseDao newsDao;
+    @Autowired
+    private CommentBaseDao commentDao;
+    @Autowired
+    private AddDeleteTestEntity util;
 
     @Test
     void add() {
-        final NewsDto testNews = new NewsDto
-                ("CreateNewsTest", "TestContent",
-                        getTime(), testUser.getId(), testUser.getLogin());
+        final String testName = "CreateNewsTest";
+        final AuthUserDto user = util.addTestUserToDB(testName);
+
+        final NewsDto testNews = util.createNewsDto(testName, user);
+
         final NewsDto savedNews = newsDao.add(testNews);
         assertNotNull(savedNews);
 
@@ -65,16 +46,16 @@ class DefaultNewsBaseDaoTest {
         assertEquals(testNews.getAuthId(), savedNews.getAuthId());
         assertEquals(testNews.getAuthorNews(), savedNews.getAuthorNews());
 
-        newsDao.delete(id);
+        util.completeDeleteUser(user.getId());
     }
 
 
     @Test
     void getByIdExist() {
-        final NewsDto news = new NewsDto
-                ("GetByIdNewsTest", "TestContent",
-                        getTime(), testUser.getId(), testUser.getLogin());
-        final NewsDto testNews = newsDao.add(news);
+        final String testName = "GetByIdNewsTest";
+        final AuthUserDto user = util.addTestUserToDB(testName);
+
+        final NewsDto testNews = util.addTestNewsToDB(testName, user);
         final long id = testNews.getId();
         final NewsDto newsFromDB = newsDao.getById(id);
 
@@ -86,7 +67,7 @@ class DefaultNewsBaseDaoTest {
         assertEquals(testNews.getAuthId(), newsFromDB.getAuthId());
         assertEquals(testNews.getAuthorNews(), newsFromDB.getAuthorNews());
 
-        newsDao.delete(id);
+        util.completeDeleteUser(user.getId());
     }
 
     @Test
@@ -95,20 +76,22 @@ class DefaultNewsBaseDaoTest {
         assertNull(newsFromDB);
     }
 
+    /**
+     * Get count?
+     */
 //    @Test
 //    void getCountNews() {
 //        System.out.println(newsDao.getCountNews());
 //    }
-
     @Test
     void getNewsOnPage() {
+        final String testName = "GetNewsOnPageTest";
+        final AuthUserDto user = util.addTestUserToDB(testName);
         final int PAGE_SIZE = 10;
         LinkedList<NewsDto> testList = new LinkedList<>();
         for (int i = 0; i < PAGE_SIZE * 2; i++) {
-            final NewsDto news = new NewsDto("GetNewsOnPageTest" + i, "TestContentPage" + i,
-                    getTime(), testUser.getId(), testUser.getLogin());
-            final NewsDto n = newsDao.add(news);
-            testList.addFirst(n);
+            final NewsDto testNews = util.addTestNewsToDB(testName + i, user);
+            testList.addFirst(testNews);
         }
 
         for (int page = 2; page > 0; page--) {
@@ -129,18 +112,23 @@ class DefaultNewsBaseDaoTest {
                 newsDao.delete(newsFromDB.getId());
             }
         }
+        util.completeDeleteUser(user.getId());
     }
 
     @Test
     void updateSuccess() {
-        final NewsDto news = new NewsDto
-                ("UpdateNewsTest", "TestContent",
-                        getTime(), testUser.getId(), testUser.getLogin());
-        final NewsDto testNews = newsDao.add(news);
+        final String testName = "UpdateNewsTest";
+        final AuthUserDto user = util.addTestUserToDB(testName);
+
+        final NewsDto testNews = util.addTestNewsToDB(testName, user);
         final long id = testNews.getId();
-        final NewsDto newsToUpdate = new NewsDto
-                (id, "UpdateNewsComplete", "UpdateContentComplete",
-                        getTime(), 0, "FakeUser");
+
+         /*FakeUser is needed to create different from test news authid and author login fields
+         which should not be updated
+          */
+         user.setLogin("FakeUser");
+        final NewsDto newsToUpdate = util.createNewsDto("UpdateNewsComplete", user);
+        newsToUpdate.setId(id);
 
         final boolean isUpdated = newsDao.update(newsToUpdate);
         assertTrue(isUpdated);
@@ -154,26 +142,24 @@ class DefaultNewsBaseDaoTest {
         assertEquals(testNews.getAuthId(), afterUpdate.getAuthId());
         assertEquals(testNews.getAuthorNews(), afterUpdate.getAuthorNews());
 
-        newsDao.delete(id);
+        util.completeDeleteUser(user.getId());
     }
 
     @Test
     void updateFail() {
-        final NewsDto newsToUpdate = new NewsDto
-                (0, "UpdateNewsComplete", "UpdateContentComplete",
-                        getTime(), 0, "FakeUser");
+        final AuthUserDto fakeUser = util.createAuthUserDto("FakeUser");
+        final NewsDto newsToUpdate = util.createNewsDto("UpdateNewsComplete", fakeUser);
         final boolean isUpdated = newsDao.update(newsToUpdate);
         assertFalse(isUpdated);
     }
 
     @Test
     void delete() {
-        final NewsDto news = new NewsDto
-                ("DeleteNewsTest", "TestContent",
-                        getTime(), testUser.getId(), testUser.getLogin());
-        final NewsDto testNews = newsDao.add(news);
-        commentDao.add
-                (new CommentDto("Comment", getTime(), testUser.getId(), testNews.getId(), testUser.getLogin()));
+        final String testName = "DeleteNewsTest";
+        final AuthUserDto user = util.addTestUserToDB(testName);
+
+        final NewsDto testNews = util.addTestNewsToDB(testName, user);
+        final CommentDto testComment = util.addTestCommentToDB(testName, testNews);
         final long id = testNews.getId();
         NewsDto newsToDelete = newsDao.getById(id);
         assertNotNull(newsToDelete);
@@ -183,15 +169,10 @@ class DefaultNewsBaseDaoTest {
 
         final NewsDto afterDelete = newsDao.getById(id);
         assertNull(afterDelete);
-    }
 
-    @AfterAll
-    static void close() {
-        EntityManager entityManager = HibernateUtil.getEntityManager();
-        entityManager.getTransaction().begin();
-        AuthUserEntity authUserEntity = entityManager.find(AuthUserEntity.class, testUser.getId());
-        entityManager.remove(authUserEntity);
-        entityManager.getTransaction().commit();
-        entityManager.close();
+        final CommentDto commentAfterDelete = commentDao.getById(testComment.getId());
+        assertNull(commentAfterDelete);
+
+        util.completeDeleteUser(user.getId());
     }
 }

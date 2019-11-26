@@ -2,29 +2,30 @@ package com.github.alexeysa83.finalproject.web.servlet;
 
 import com.github.alexeysa83.finalproject.model.dto.NewsDto;
 import com.github.alexeysa83.finalproject.service.news.NewsService;
-import com.github.alexeysa83.finalproject.service.news.DefaultNewsService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
-import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJsp;
+@Controller
+@RequestMapping
+public class MainPageServlet {
 
-@WebServlet(name = "MainPageServlet", urlPatterns = "/main")
-public class MainPageServlet extends HttpServlet {
-
-    private NewsService newsService = DefaultNewsService.getInstance();
+    @Autowired
+    private NewsService newsService;
 
     // Check null
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+    @GetMapping("/main")
+    public String doGet(HttpServletRequest req) {
 
         String currentPage = req.getParameter("currentPage");
         if (currentPage == null) {
             currentPage = "1";
         }
+        // Parse Integer not needed?
         final int page = Integer.parseInt(currentPage);
         req.setAttribute("currentPage", page);
 
@@ -33,6 +34,6 @@ public class MainPageServlet extends HttpServlet {
 
         int totalPages = newsService.getNewsTotalPages();
         req.setAttribute("totalPages", totalPages);
-        forwardToJsp("mainpage", req, resp);
+        return "mainpage";
     }
 }

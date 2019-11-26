@@ -2,30 +2,29 @@ package com.github.alexeysa83.finalproject.web.servlet.admin;
 
 import com.github.alexeysa83.finalproject.model.dto.BadgeDto;
 import com.github.alexeysa83.finalproject.service.badge.BadgeService;
-import com.github.alexeysa83.finalproject.service.badge.DefaultBadgeService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
-import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJsp;
+@Controller
+@RequestMapping
+public class AdminPageServlet {
+    @Autowired
+    private BadgeService badgeService;
 
-@WebServlet(name = "AdminPageServlet", urlPatterns = {"/admin/main"})
-public class AdminPageServlet extends HttpServlet {
-
-    private BadgeService badgeService = DefaultBadgeService.getInstance();
-
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+    @GetMapping("/admin/main")
+    public String  doGet(HttpServletRequest req) {
         final List<BadgeDto> badgesDB = badgeService.getAllBadges();
         req.setAttribute("badgesDB", badgesDB);
-        forwardToJsp("adminpage", req, resp);
-    }
+        return "adminpage";
+         }
 
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
-        doGet(req, resp);
-    }
+//    @Override
+//    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
+//        doGet(req, resp);
+//    }
 }

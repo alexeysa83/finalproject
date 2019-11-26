@@ -1,42 +1,41 @@
 package com.github.alexeysa83.finalproject.web.servlet;
 
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
-import com.github.alexeysa83.finalproject.service.auth.DefaultSecurityService;
 import com.github.alexeysa83.finalproject.service.auth.SecurityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
-
-import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJsp;
-import static com.github.alexeysa83.finalproject.web.WebUtils.redirect;
 
 /*
 Divide login/password-->
 Jsp for succesfull login+create-->
  */
-@WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
-public class LoginServlet extends HttpServlet {
+@Controller
+@RequestMapping
+public class LoginServlet {
 
     private static final Logger log = LoggerFactory.getLogger(LoginServlet.class);
-    private SecurityService securityService = DefaultSecurityService.getInstance();
+    @Autowired
+    private SecurityService securityService;
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+    @GetMapping("/login")
+    public String doGet(HttpServletRequest req) {
         Object authUser = req.getSession().getAttribute("authUser");
         if (authUser == null) {
-            forwardToJsp("login", req, resp);
-            return;
+            return "login";
         }
-        forwardToJsp("index", req, resp);
+        return "index";
     }
 
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
+   @PostMapping("login")
+    public String doPost(HttpServletRequest req) {
         final String login = req.getParameter("login");
         final String password = req.getParameter("password");
 
@@ -44,23 +43,16 @@ public class LoginServlet extends HttpServlet {
         if (userFromDB == null) {
             req.setAttribute("message", "wrong.logpass");
             log.info("Invalid login or password enter for user: {} at: {}", login, LocalDateTime.now());
-            forwardToJsp("login", req, resp);
-            return;
+           return "login";
         }
         // Translation
         if (userFromDB.isDeleted()) {
             req.setAttribute("message", "deleted");
             log.info("Deleted user: {} tried to login at: {}", login, LocalDateTime.now());
-            forwardToJsp("login", req, resp);
-            return;
+               return "login";
         }
         req.getSession().setAttribute("authUser", userFromDB);
         log.info("User: {} logged in at: {}", login, LocalDateTime.now());
-        redirect("/index.jsp", req, resp);
-//        try {
-//            resp.sendRedirect(req.getContextPath() + "/index.jsp");
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        return "redirect:/index.jsp";
     }
 }

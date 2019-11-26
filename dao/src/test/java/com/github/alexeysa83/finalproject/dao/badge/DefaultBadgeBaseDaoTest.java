@@ -1,54 +1,33 @@
 package com.github.alexeysa83.finalproject.dao.badge;
 
-import com.github.alexeysa83.finalproject.dao.HibernateUtil;
-import com.github.alexeysa83.finalproject.dao.authuser.AuthUserBaseDao;
-import com.github.alexeysa83.finalproject.dao.authuser.DefaultAuthUserBaseDao;
-import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
-import com.github.alexeysa83.finalproject.dao.user.DefaultUserInfoBaseDao;
+import com.github.alexeysa83.finalproject.dao.AddDeleteTestEntity;
+import com.github.alexeysa83.finalproject.dao.config.DaoConfig;
 import com.github.alexeysa83.finalproject.dao.user.UserInfoBaseDao;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.dto.BadgeDto;
-import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
 import org.junit.jupiter.api.Test;
-
-import javax.persistence.EntityManager;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {DaoConfig.class, AddDeleteTestEntity.class})
 class DefaultBadgeBaseDaoTest {
 
-    private final AuthUserBaseDao authUserDao = DefaultAuthUserBaseDao.getInstance();
-    private final UserInfoBaseDao userDAO = DefaultUserInfoBaseDao.getInstance();
-    private final BadgeBaseDao badgeDao = DefaultBadgeBaseDao.getInstance();
-
-    private BadgeDto createBadgeDto(String name) {
-        BadgeDto badgeDto = new BadgeDto();
-        badgeDto.setBadgeName(name);
-        return badgeDto;
-    }
-
-    private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-    private static Timestamp getTime() {
-        String time = sdf.format(System.currentTimeMillis());
-        return Timestamp.valueOf(time);
-    }
-
-    private AuthUserDto createAuthUserDto(String name) {
-        UserInfoDto userInfoDto = new UserInfoDto(getTime());
-        return new AuthUserDto(name, name + "Pass", userInfoDto);
-    }
-
-    @Test
-    void getInstance() {
-        assertNotNull(badgeDao);
-    }
+    @Autowired
+    private UserInfoBaseDao userDAO;
+    @Autowired
+    private BadgeBaseDao badgeDao;
+    @Autowired
+    private AddDeleteTestEntity util;
 
     @Test
     void add() {
-        final BadgeDto testBadge = createBadgeDto("CreateTestBadge");
+        final String testName = "CreateTestBadge";
+        final BadgeDto testBadge = util.createBadgeDto(testName);
         final BadgeDto savedBadge = badgeDao.add(testBadge);
         final Long id = savedBadge.getId();
 
@@ -62,14 +41,13 @@ class DefaultBadgeBaseDaoTest {
     @Test
     void isNameTakenTrue() {
         final String testName = "NameTakenTestBadge";
-        final BadgeDto testBadge = createBadgeDto(testName);
-        final BadgeDto savedBadge = badgeDao.add(testBadge);
-        assertNotNull(savedBadge);
+        final BadgeDto testBadge = util.addTestBadgeToDB(testName);
+        assertNotNull(testBadge);
 
         final boolean nameIsTaken = badgeDao.isNameTaken(testName);
         assertTrue(nameIsTaken);
 
-        badgeDao.delete(savedBadge.getId());
+        badgeDao.delete(testBadge.getId());
     }
 
     @Test
@@ -81,8 +59,8 @@ class DefaultBadgeBaseDaoTest {
 
     @Test
     void getByIdExist() {
-        final BadgeDto badge = createBadgeDto("GetByIdTestBadge");
-        final BadgeDto testBadge = badgeDao.add(badge);
+        final String testName = "GetByIdTestBadge";
+        final BadgeDto testBadge = util.addTestBadgeToDB(testName);
         final long id = testBadge.getId();
         final BadgeDto badgeFromDB = badgeDao.getById(id);
 
@@ -109,10 +87,10 @@ class DefaultBadgeBaseDaoTest {
 
     @Test
     void updateSuccess() {
-        final BadgeDto badge = createBadgeDto("UpdateTestBadge");
-        final BadgeDto testBadge = badgeDao.add(badge);
+        final String testName = "UpdateTestBadge";
+        final BadgeDto testBadge = util.addTestBadgeToDB(testName);
         final long id = testBadge.getId();
-        final BadgeDto badgeToUpdate = createBadgeDto("Updated");
+        final BadgeDto badgeToUpdate = util.createBadgeDto("Updated");
         badgeToUpdate.setId(id);
 
         final boolean isUpdated = badgeDao.update(badgeToUpdate);
@@ -126,7 +104,7 @@ class DefaultBadgeBaseDaoTest {
 
     @Test
     void updateFail() {
-        final BadgeDto badgeToUpdate = createBadgeDto("Updated");
+        final BadgeDto badgeToUpdate = util.createBadgeDto("Updated");
         badgeToUpdate.setId(0);
 
         final boolean isUpdated = badgeDao.update(badgeToUpdate);
@@ -135,10 +113,10 @@ class DefaultBadgeBaseDaoTest {
 
     @Test
     void delete() {
-        final AuthUserDto user = createAuthUserDto("DeleteTestBadge");
-        final AuthUserDto testUser = authUserDao.add(user);
-        final BadgeDto badge = createBadgeDto("DeleteTestBadge");
-        final BadgeDto testBadge = badgeDao.add(badge);
+        final String testName = "DeleteTestBadge";
+        final AuthUserDto testUser = util.addTestUserToDB(testName);
+
+        final BadgeDto testBadge = util.addTestBadgeToDB(testName);
         final long badgeId = testBadge.getId();
         userDAO.addBadgeToUser(testUser.getId(), badgeId);
 
@@ -150,16 +128,7 @@ class DefaultBadgeBaseDaoTest {
 
         final BadgeDto afterDelete = badgeDao.getById(badgeId);
         assertNull(afterDelete);
-        
-        completeDeleteUser(testUser.getId());
-    }
 
-    private void completeDeleteUser(long id) {
-        EntityManager entityManager = HibernateUtil.getEntityManager();
-        entityManager.getTransaction().begin();
-        AuthUserEntity toDelete = entityManager.find(AuthUserEntity.class, id);
-        entityManager.remove(toDelete);
-        entityManager.getTransaction().commit();
-        entityManager.clear();
+        util.completeDeleteUser(testUser.getId());
     }
 }

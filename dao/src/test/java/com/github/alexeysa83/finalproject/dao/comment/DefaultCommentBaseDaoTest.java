@@ -1,62 +1,38 @@
 package com.github.alexeysa83.finalproject.dao.comment;
 
-import com.github.alexeysa83.finalproject.dao.HibernateUtil;
-import com.github.alexeysa83.finalproject.dao.authuser.AuthUserBaseDao;
-import com.github.alexeysa83.finalproject.dao.authuser.DefaultAuthUserBaseDao;
-import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
-import com.github.alexeysa83.finalproject.dao.entity.NewsEntity;
-import com.github.alexeysa83.finalproject.dao.news.DefaultNewsBaseDao;
-import com.github.alexeysa83.finalproject.dao.news.NewsBaseDao;
+import com.github.alexeysa83.finalproject.dao.AddDeleteTestEntity;
+import com.github.alexeysa83.finalproject.dao.config.DaoConfig;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.dto.CommentDto;
 import com.github.alexeysa83.finalproject.model.dto.NewsDto;
-import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import javax.persistence.EntityManager;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {DaoConfig.class, AddDeleteTestEntity.class})
 class DefaultCommentBaseDaoTest {
 
-    private final static AuthUserBaseDao authUserDao = DefaultAuthUserBaseDao.getInstance();
-    private final static NewsBaseDao newsDao = DefaultNewsBaseDao.getInstance();
-    private final CommentBaseDao commentDao = DefaultCommentBaseDao.getInstance();
-
-    private static AuthUserDto testUser;
-    private static NewsDto testNews;
-
-    private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-    private static Timestamp getTime() {
-        String time = sdf.format(System.currentTimeMillis());
-        return Timestamp.valueOf(time);
-    }
-
-    @BeforeAll
-    static void init() {
-        UserInfoDto userInfoDto = new UserInfoDto(getTime());
-        AuthUserDto authUserDto = new AuthUserDto("CommentTestUser", "Pass", userInfoDto);
-        testUser = authUserDao.add(authUserDto);
-        NewsDto newsDto = new NewsDto("CommentTestNews", "CommentTest", getTime(), testUser.getId(), testUser.getLogin());
-        testNews = newsDao.add(newsDto);
-    }
-
-    @Test
-    void getInstance() {
-        assertNotNull(commentDao);
-    }
+    @Autowired
+    private CommentBaseDao commentDao;
+    @Autowired
+    private AddDeleteTestEntity util;
 
     @Test
     void add() {
-        final CommentDto testComment = new CommentDto
-                ("CreateCommentTest", getTime(), testUser.getId(), testNews.getId(), testUser.getLogin());
+        final String testName = "CreateCommentTest";
+        final AuthUserDto user = util.addTestUserToDB(testName);
+        final NewsDto testNews = util.addTestNewsToDB(testName, user);
+
+        final CommentDto testComment = util.createCommentDto(testName, testNews);
+
         final CommentDto savedComment = commentDao.add(testComment);
         assertNotNull(savedComment);
 
@@ -68,14 +44,17 @@ class DefaultCommentBaseDaoTest {
         assertEquals(testComment.getNewsId(), savedComment.getNewsId());
         assertEquals(testComment.getAuthorComment(), savedComment.getAuthorComment());
 
-        commentDao.delete(id);
+        util.completeDeleteUser(user.getId());
     }
 
     @Test
     void getByIdExist() {
-        final CommentDto comment = new CommentDto
-                ("GetByIdCommentTest", getTime(), testUser.getId(), testNews.getId(), testUser.getLogin());
-        final CommentDto testComment = commentDao.add(comment);
+        final String testName = "GetByIdCommentTest";
+        final AuthUserDto user = util.addTestUserToDB(testName);
+        final NewsDto testNews = util.addTestNewsToDB(testName, user);
+
+        final CommentDto testComment = util.addTestCommentToDB(testName, testNews);
+
         final long id = testComment.getId();
         final CommentDto commentFromDB = commentDao.getById(id);
 
@@ -87,7 +66,7 @@ class DefaultCommentBaseDaoTest {
         assertEquals(testComment.getNewsId(), commentFromDB.getNewsId());
         assertEquals(testComment.getAuthorComment(), commentFromDB.getAuthorComment());
 
-        commentDao.delete(id);
+        util.completeDeleteUser(user.getId());
     }
 
     @Test
@@ -98,12 +77,13 @@ class DefaultCommentBaseDaoTest {
 
     @Test
     void getCommentsOnNewsHaveComments() {
+        final String testName = "GetCommentOnNewsTest";
+        final AuthUserDto user = util.addTestUserToDB(testName);
+        final NewsDto testNews = util.addTestNewsToDB(testName, user);
         List<CommentDto> testList = new LinkedList<>();
         for (int i = 0; i < 10; i++) {
-            final CommentDto comment = new CommentDto
-                    ("GetCommentOnNewsTest" + i, getTime(), testUser.getId(), testNews.getId(), testUser.getLogin());
-            final CommentDto m = commentDao.add(comment);
-            testList.add(m);
+            final CommentDto testComment = util.addTestCommentToDB(testName + i, testNews);
+            testList.add(testComment);
         }
 
         List<CommentDto> listFromDB = commentDao.getCommentsOnNews(testNews.getId());
@@ -118,26 +98,38 @@ class DefaultCommentBaseDaoTest {
             assertEquals(testComment.getAuthId(), commentFromDB.getAuthId());
             assertEquals(testComment.getNewsId(), commentFromDB.getNewsId());
             assertEquals(testComment.getAuthorComment(), commentFromDB.getAuthorComment());
-
-            commentDao.delete(commentFromDB.getId());
         }
+        util.completeDeleteUser(user.getId());
     }
 
     @Test
     void getCommentsOnNewsWithoutComments() {
+        final String testName = "NoCommentsOnNewsTest";
+        final AuthUserDto user = util.addTestUserToDB(testName);
+        final NewsDto testNews = util.addTestNewsToDB(testName, user);
+
         List<CommentDto> listFromDB = commentDao.getCommentsOnNews(testNews.getId());
         assertNotNull(listFromDB);
+        util.completeDeleteUser(user.getId());
     }
 
     @Test
     void updateSuccess() {
-        final CommentDto comment = new CommentDto
-                ("UpdateCommentTest", getTime(), testUser.getId(), testNews.getId(), testUser.getLogin());
-        final CommentDto testComment = commentDao.add(comment);
+        final String testName = "UpdateCommentTest";
+        final AuthUserDto user = util.addTestUserToDB(testName);
+        final NewsDto testNews = util.addTestNewsToDB(testName, user);
+
+        final CommentDto testComment = util.addTestCommentToDB(testName, testNews);
         final long id = testComment.getId();
-        final CommentDto commentToUpdate = new CommentDto
-                (id, "UpdateComplete", getTime(),
-                        0, 0, "FakeAuthor");
+
+        /*Changing the fields which should not be updated
+         */
+        testNews.setId(0);
+        testNews.setAuthId(0);
+        testNews.setAuthorNews("FakeAuthor");
+
+        final CommentDto commentToUpdate = util.createCommentDto("UpdateComplete", testNews);
+        commentToUpdate.setId(id);
 
         final boolean isUpdated = commentDao.update(commentToUpdate);
         assertTrue(isUpdated);
@@ -151,23 +143,33 @@ class DefaultCommentBaseDaoTest {
         assertEquals(testComment.getNewsId(), afterUpdate.getNewsId());
         assertEquals(testComment.getAuthorComment(), afterUpdate.getAuthorComment());
 
-        commentDao.delete(id);
+        util.completeDeleteUser(user.getId());
     }
 
     @Test
     void updateFail() {
-        final CommentDto commentToUpdate = new CommentDto
-                (0, "UpdateComplete", getTime(),
-                        0, 0, "FakeAuthor");
+        final String testName = "UpdateCommentFailTest";
+        final AuthUserDto user = util.addTestUserToDB(testName);
+        final NewsDto testNews = util.addTestNewsToDB(testName, user);
+
+        final CommentDto testComment = util.addTestCommentToDB(testName, testNews);
+
+        final CommentDto commentToUpdate = util.createCommentDto("UpdateComplete", testNews);
         final boolean isUpdated = commentDao.update(commentToUpdate);
         assertFalse(isUpdated);
+
+        final CommentDto afterUpdate = commentDao.getById(testComment.getId());
+        assertEquals(testComment.getContent(), afterUpdate.getContent());
+        util.completeDeleteUser(user.getId());
     }
 
     @Test
     void delete() {
-        final CommentDto comment = new CommentDto
-                ("DeleteCommentTest", getTime(), testUser.getId(), testNews.getId(), testUser.getLogin());
-        final CommentDto testComment = commentDao.add(comment);
+        final String testName = "DeleteCommentTest";
+        final AuthUserDto user = util.addTestUserToDB(testName);
+        final NewsDto testNews = util.addTestNewsToDB(testName, user);
+
+        final CommentDto testComment = util.addTestCommentToDB(testName, testNews);
         final long id = testComment.getId();
         CommentDto commentToDelete = commentDao.getById(id);
         assertNotNull(commentToDelete);
@@ -177,17 +179,6 @@ class DefaultCommentBaseDaoTest {
 
         final CommentDto afterDelete = commentDao.getById(id);
         assertNull(afterDelete);
-    }
-
-    @AfterAll
-    static void close() {
-        EntityManager entityManager = HibernateUtil.getEntityManager();
-        entityManager.getTransaction().begin();
-        NewsEntity newsEntity = entityManager.find(NewsEntity.class, testNews.getId());
-        entityManager.remove(newsEntity);
-        AuthUserEntity authUserEntity = entityManager.find(AuthUserEntity.class, testUser.getId());
-        entityManager.remove(authUserEntity);
-        entityManager.getTransaction().commit();
-        entityManager.close();
+        util.completeDeleteUser(user.getId());
     }
 }

@@ -4,31 +4,31 @@ import com.github.alexeysa83.finalproject.model.dto.BadgeDto;
 import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
 import com.github.alexeysa83.finalproject.service.UtilService;
 import com.github.alexeysa83.finalproject.service.badge.BadgeService;
-import com.github.alexeysa83.finalproject.service.badge.DefaultBadgeService;
-import com.github.alexeysa83.finalproject.service.user.DefaultUserService;
 import com.github.alexeysa83.finalproject.service.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
-import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJsp;
+@Controller
+@RequestMapping
+public class DeleteBadgeFromUserServlet {
 
-@WebServlet(name = "DeleteBadgeFromUserServlet", urlPatterns = {"/admin/delete/user_badge"})
-public class DeleteBadgeFromUserServlet extends HttpServlet {
-
-    private UserService userService = DefaultUserService.getInstance();
-    private BadgeService badgeService = DefaultBadgeService.getInstance();
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private BadgeService badgeService;
 
     private static final Logger log = LoggerFactory.getLogger(DeleteBadgeFromUserServlet.class);
 
     // Duplicate code
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+    @GetMapping("/admin/delete/user_badge")
+    public String doGet(HttpServletRequest req) {
         final String id = req.getParameter("authId");
         final long authId = UtilService.stringToLong(id);
         final String id1 = req.getParameter("badgeId");
@@ -39,6 +39,6 @@ public class DeleteBadgeFromUserServlet extends HttpServlet {
         req.setAttribute("user", userInfoDto);
         req.setAttribute("userBadges", userInfoDto.getBadges());
         req.setAttribute("badgesDB", badgesDB);
-        forwardToJsp("userpage", req, resp);
+        return "userpage";
     }
 }
