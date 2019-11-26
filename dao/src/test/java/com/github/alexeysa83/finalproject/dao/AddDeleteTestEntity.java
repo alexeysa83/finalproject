@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
@@ -27,16 +28,12 @@ public class AddDeleteTestEntity {
     private CommentBaseDao commentDao;
     @Autowired
     private BadgeBaseDao badgeDao;
+    @Autowired
+    private EntityManagerFactory factory;
 
-    private static EntityManager entityManager;
+    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    static {
-        entityManager = HibernateUtil.getEntityManager();
-    }
-
-    private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-    private static Timestamp getTime() {
+    private Timestamp getTime() {
         String time = sdf.format(System.currentTimeMillis());
         return Timestamp.valueOf(time);
     }
@@ -53,6 +50,7 @@ public class AddDeleteTestEntity {
     }
 
     public void completeDeleteUser(long id) {
+        final EntityManager entityManager = factory.createEntityManager();
         entityManager.getTransaction().begin();
         AuthUserEntity toDelete = entityManager.find(AuthUserEntity.class, id);
         entityManager.remove(toDelete);

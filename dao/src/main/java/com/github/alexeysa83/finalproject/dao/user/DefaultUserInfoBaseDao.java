@@ -1,7 +1,7 @@
 package com.github.alexeysa83.finalproject.dao.user;
 
 import com.github.alexeysa83.finalproject.dao.HibernateUtil;
-import com.github.alexeysa83.finalproject.dao.convert.UserInfoConvert;
+import com.github.alexeysa83.finalproject.dao.convert_entity.UserInfoConvert;
 import com.github.alexeysa83.finalproject.dao.entity.BadgeEntity;
 import com.github.alexeysa83.finalproject.dao.entity.UserInfoEntity;
 import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;

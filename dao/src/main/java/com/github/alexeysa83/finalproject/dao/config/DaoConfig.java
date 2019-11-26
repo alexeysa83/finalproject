@@ -13,12 +13,14 @@ import com.github.alexeysa83.finalproject.dao.user.UserInfoBaseDao;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.persistence.EntityManagerFactory;
+
 @Configuration
 public class DaoConfig {
 
     @Bean
-    public AuthUserBaseDao authUserBaseDao () {
-        return new DefaultAuthUserBaseDao();
+    public AuthUserBaseDao authUserBaseDao (EntityManagerFactory factory) {
+        return new DefaultAuthUserBaseDao(factory);
     }
 
     @Bean

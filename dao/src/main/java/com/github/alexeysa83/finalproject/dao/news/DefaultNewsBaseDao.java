@@ -1,7 +1,7 @@
 package com.github.alexeysa83.finalproject.dao.news;
 
 import com.github.alexeysa83.finalproject.dao.HibernateUtil;
-import com.github.alexeysa83.finalproject.dao.convert.NewsConvert;
+import com.github.alexeysa83.finalproject.dao.convert_entity.NewsConvert;
 import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
 import com.github.alexeysa83.finalproject.dao.entity.NewsEntity;
 import com.github.alexeysa83.finalproject.model.dto.NewsDto;

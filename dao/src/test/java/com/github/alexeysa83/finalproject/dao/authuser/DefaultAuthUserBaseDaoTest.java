@@ -2,6 +2,7 @@ package com.github.alexeysa83.finalproject.dao.authuser;
 
 import com.github.alexeysa83.finalproject.dao.AddDeleteTestEntity;
 import com.github.alexeysa83.finalproject.dao.config.DaoConfig;
+import com.github.alexeysa83.finalproject.dao.config.HibernateConfig;
 import com.github.alexeysa83.finalproject.dao.news.NewsBaseDao;
 import com.github.alexeysa83.finalproject.model.Role;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
@@ -16,7 +17,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {DaoConfig.class, AddDeleteTestEntity.class})
+@ContextConfiguration(classes = {HibernateConfig.class, DaoConfig.class, AddDeleteTestEntity.class})
 class DefaultAuthUserBaseDaoTest {
 
     @Autowired
@@ -36,11 +37,7 @@ class DefaultAuthUserBaseDaoTest {
 //        getAuthUser(1L);
 //        getAuthUser(1L);
 
-//        getBadge(267L);
-//        getBadge(267L);
-//        getBadge(267L);
-
-        authUserDao.getByLogin("admin");
+                authUserDao.getByLogin("admin");
         authUserDao.getByLogin("admin");
         authUserDao.getByLogin("admin");
     }

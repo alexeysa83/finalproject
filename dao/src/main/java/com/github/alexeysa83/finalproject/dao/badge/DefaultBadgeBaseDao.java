@@ -1,7 +1,7 @@
 package com.github.alexeysa83.finalproject.dao.badge;
 
 import com.github.alexeysa83.finalproject.dao.HibernateUtil;
-import com.github.alexeysa83.finalproject.dao.convert.BadgeConvert;
+import com.github.alexeysa83.finalproject.dao.convert_entity.BadgeConvert;
 import com.github.alexeysa83.finalproject.dao.entity.BadgeEntity;
 import com.github.alexeysa83.finalproject.model.dto.BadgeDto;
 import org.hibernate.Session;

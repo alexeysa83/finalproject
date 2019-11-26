@@ -1,28 +1,31 @@
 package com.github.alexeysa83.finalproject.dao.authuser;
 
-import com.github.alexeysa83.finalproject.dao.convert.AuthUserConvert;
-import com.github.alexeysa83.finalproject.dao.HibernateUtil;
+import com.github.alexeysa83.finalproject.dao.SessionManager;
+import com.github.alexeysa83.finalproject.dao.convert_entity.AuthUserConvert;
 import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Repository;
 
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceException;
 import java.time.LocalDateTime;
 
-@Repository
-public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
+public class DefaultAuthUserBaseDao extends SessionManager<AuthUserDto> implements AuthUserBaseDao {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultAuthUserBaseDao.class);
+
+    public DefaultAuthUserBaseDao(EntityManagerFactory factory) {
+        super(factory);
+    }
 
     // default role and block status in DB or constructor???
     @Override
     public AuthUserDto add(AuthUserDto user) {
         final AuthUserEntity authUserEntity = AuthUserConvert.toEntity(user);
-        try (Session session = HibernateUtil.getSession()) {
+        try (Session session = getSession()) {
             session.beginTransaction();
             session.save(authUserEntity);
             session.getTransaction().commit();
@@ -36,7 +39,7 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
 
     @Override
     public AuthUserDto getByLogin(String login) {
-        try (Session session = HibernateUtil.getSession()) {
+        try (Session session = getSession()) {
             session.beginTransaction();
             Query query = session.createQuery("from AuthUserEntity where login = :login").setCacheable(true);
             AuthUserEntity authUserEntity = (AuthUserEntity) query.setParameter("login", login).uniqueResult();
@@ -50,7 +53,7 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
 
     @Override
     public AuthUserDto getById(long id) {
-        Session session = HibernateUtil.getSession();
+        Session session = getSession();
         session.beginTransaction();
         final AuthUserEntity authUser = session.get(AuthUserEntity.class, id);
         session.getTransaction().commit();
@@ -62,7 +65,7 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
     @Override
     public boolean update(AuthUserDto authUserDto) {
 
-        try (Session session = HibernateUtil.getSession()) {
+        try (Session session = getSession()) {
             session.beginTransaction();
 
             final int i = session.createQuery("update AuthUserEntity a set a.login=:login," +
@@ -86,7 +89,7 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
      */
     @Override
     public boolean delete(long id) {
-        try (Session session = HibernateUtil.getSession()) {
+        try (Session session = getSession()) {
             session.beginTransaction();
             final int userInfoDeleted = session.createQuery("delete UserInfoEntity u where u.id=:id")
                     .setParameter("id", id)

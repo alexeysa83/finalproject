@@ -19,7 +19,7 @@
     <url>http://www.example.com</url>
 
     <dependencies>
-        <dependency>
+          <dependency>
             <groupId>com.github.alexeysa83.finalproject</groupId>
             <artifactId>model</artifactId>
             <version>1.0-SNAPSHOT</version>

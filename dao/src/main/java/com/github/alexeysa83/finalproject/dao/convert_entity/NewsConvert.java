@@ -1,4 +1,4 @@
-package com.github.alexeysa83.finalproject.dao.convert;
+package com.github.alexeysa83.finalproject.dao.convert_entity;
 
 import com.github.alexeysa83.finalproject.dao.entity.NewsEntity;
 import com.github.alexeysa83.finalproject.model.dto.NewsDto;

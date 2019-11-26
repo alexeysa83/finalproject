@@ -1,7 +1,7 @@
 package com.github.alexeysa83.finalproject.dao.comment;
 
 import com.github.alexeysa83.finalproject.dao.HibernateUtil;
-import com.github.alexeysa83.finalproject.dao.convert.CommentConvert;
+import com.github.alexeysa83.finalproject.dao.convert_entity.CommentConvert;
 import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
 import com.github.alexeysa83.finalproject.dao.entity.CommentEntity;
 import com.github.alexeysa83.finalproject.dao.entity.NewsEntity;
