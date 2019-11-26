@@ -1,5 +1,6 @@
 package com.github.alexeysa83.finalproject.dao.news;
 
+import com.github.alexeysa83.finalproject.dao.BaseDao;
 import com.github.alexeysa83.finalproject.model.dto.NewsDto;
 
 import java.util.List;

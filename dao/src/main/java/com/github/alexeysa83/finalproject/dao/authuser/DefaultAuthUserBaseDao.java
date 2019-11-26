@@ -5,19 +5,19 @@ import com.github.alexeysa83.finalproject.dao.convert_entity.AuthUserConvert;
 import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceException;
 import java.time.LocalDateTime;
 
-public class DefaultAuthUserBaseDao extends SessionManager<AuthUserDto> implements AuthUserBaseDao {
+public class DefaultAuthUserBaseDao extends SessionManager implements AuthUserBaseDao {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultAuthUserBaseDao.class);
 
-    public DefaultAuthUserBaseDao(EntityManagerFactory factory) {
+    public DefaultAuthUserBaseDao(SessionFactory factory) {
         super(factory);
     }
 

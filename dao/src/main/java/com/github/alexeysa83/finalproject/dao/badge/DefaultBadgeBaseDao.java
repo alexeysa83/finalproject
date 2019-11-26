@@ -1,10 +1,11 @@
 package com.github.alexeysa83.finalproject.dao.badge;
 
-import com.github.alexeysa83.finalproject.dao.HibernateUtil;
+import com.github.alexeysa83.finalproject.dao.SessionManager;
 import com.github.alexeysa83.finalproject.dao.convert_entity.BadgeConvert;
 import com.github.alexeysa83.finalproject.dao.entity.BadgeEntity;
 import com.github.alexeysa83.finalproject.model.dto.BadgeDto;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,14 +20,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
-public class DefaultBadgeBaseDao implements BadgeBaseDao {
+public class DefaultBadgeBaseDao extends SessionManager implements BadgeBaseDao {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultBadgeBaseDao.class);
+
+    public DefaultBadgeBaseDao(SessionFactory factory) {
+        super(factory);
+    }
 
     @Override
     public BadgeDto add(BadgeDto badgeDto) {
         final BadgeEntity badgeEntity = BadgeConvert.toEntity(badgeDto);
-        try (Session session = HibernateUtil.getSession()) {
+        try (Session session = getSession()) {
             session.beginTransaction();
             session.save(badgeEntity);
             session.getTransaction().commit();
@@ -40,7 +45,7 @@ public class DefaultBadgeBaseDao implements BadgeBaseDao {
 
     @Override
     public boolean isNameTaken(String name) {
-        try (Session session = HibernateUtil.getSession()) {
+        try (Session session = getSession()) {
             session.beginTransaction();
             Query query = session.createQuery("from BadgeEntity b where b.badgeName=:name");
             BadgeEntity badgeEntity = (BadgeEntity) query.setParameter("name", name).uniqueResult();
@@ -57,7 +62,7 @@ public class DefaultBadgeBaseDao implements BadgeBaseDao {
      */
     @Override
     public BadgeDto getById(long id) {
-        Session session = HibernateUtil.getSession();
+        Session session = getSession();
         session.beginTransaction();
         final BadgeEntity badgeEntity = session.get(BadgeEntity.class, id);
         session.getTransaction().commit();
@@ -71,7 +76,7 @@ public class DefaultBadgeBaseDao implements BadgeBaseDao {
     @Override
     public List<BadgeDto> getAll() {
         List<BadgeDto> badgeDtos;
-        try (Session session = HibernateUtil.getSession()) {
+        try (Session session = getSession()) {
             session.beginTransaction();
 
             final CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
@@ -111,7 +116,7 @@ public class DefaultBadgeBaseDao implements BadgeBaseDao {
 
     @Override
     public boolean update(BadgeDto badgeDto) {
-        try (Session session = HibernateUtil.getSession()) {
+        try (Session session = getSession()) {
             session.beginTransaction();
 
             final int i = session.createQuery("update BadgeEntity b set b.badgeName=:badgeName where b.id=:id")
@@ -129,7 +134,7 @@ public class DefaultBadgeBaseDao implements BadgeBaseDao {
 
     @Override
     public boolean delete(long id) {
-        try (Session session = HibernateUtil.getSession()) {
+        try (Session session = getSession()) {
             session.beginTransaction();
             final int i = session.createQuery("delete BadgeEntity b where b.id=:id")
                     .setParameter("id", id)

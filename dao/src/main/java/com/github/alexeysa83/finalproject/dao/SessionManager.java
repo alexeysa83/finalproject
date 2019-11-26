@@ -1,18 +1,17 @@
 package com.github.alexeysa83.finalproject.dao;
 
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 
-import javax.persistence.EntityManagerFactory;
+public abstract class SessionManager {
 
-public abstract class SessionManager<T> implements BaseDao<T> {
+    private final SessionFactory factory;
 
-    private final EntityManagerFactory factory;
-
-    public SessionManager(EntityManagerFactory factory) {
+    public SessionManager(SessionFactory factory) {
         this.factory = factory;
     }
 
     public Session getSession() {
-        return factory.createEntityManager().unwrap(Session.class);
+        return factory.openSession();
     }
 }

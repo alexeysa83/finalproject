@@ -1,31 +1,38 @@
 package com.github.alexeysa83.finalproject.dao.news;
 
 import com.github.alexeysa83.finalproject.dao.HibernateUtil;
+import com.github.alexeysa83.finalproject.dao.SessionManager;
 import com.github.alexeysa83.finalproject.dao.convert_entity.NewsConvert;
 import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
 import com.github.alexeysa83.finalproject.dao.entity.NewsEntity;
 import com.github.alexeysa83.finalproject.model.dto.NewsDto;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class DefaultNewsBaseDao implements NewsBaseDao {
+public class DefaultNewsBaseDao extends SessionManager implements NewsBaseDao {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultNewsBaseDao.class);
+
+    public DefaultNewsBaseDao(SessionFactory factory) {
+        super(factory);
+    }
 
     @Override
     public NewsDto add(NewsDto newsDto) {
         final NewsEntity newsEntity = NewsConvert.toEntity(newsDto);
-        try (Session session = HibernateUtil.getSession()) {
+        try (Session session = getSession()) {
             session.beginTransaction();
             final AuthUserEntity authUserEntity = session.get(AuthUserEntity.class, newsDto.getAuthId());
             newsEntity.setAuthUser(authUserEntity);
@@ -41,7 +48,7 @@ public class DefaultNewsBaseDao implements NewsBaseDao {
 
     @Override
     public NewsDto getById(long id) {
-        Session session = HibernateUtil.getSession();
+        Session session = getSession();
         session.beginTransaction();
         final NewsEntity newsEntity = session.get(NewsEntity.class, id);
         session.getTransaction().commit();
@@ -56,7 +63,7 @@ public class DefaultNewsBaseDao implements NewsBaseDao {
      */
     @Override
     public int getRows() {
-        Session session = HibernateUtil.getSession();
+        Session session = getSession();
         Transaction tr = session.beginTransaction();
         long count = session.createQuery("select count (*) from NewsEntity", Long.class).getSingleResult();
         tr.commit();
@@ -68,7 +75,7 @@ public class DefaultNewsBaseDao implements NewsBaseDao {
     public List<NewsDto> getNewsOnPage(int page, int pageSize) {
         List<NewsDto> newsList = new ArrayList<>();
 
-        try (Session session = HibernateUtil.getSession()) {
+        try (Session session = getSession()) {
             session.beginTransaction();
 
             Query query = session.createQuery("from NewsEntity as n order by n.id desc ")
@@ -90,7 +97,7 @@ public class DefaultNewsBaseDao implements NewsBaseDao {
 
     @Override
     public boolean update(NewsDto newsDto) {
-        try (Session session = HibernateUtil.getSession()) {
+        try (Session session = getSession()) {
             session.beginTransaction();
             final int i = session.createQuery
                     ("update NewsEntity n set n.title = :title, n.content = :content where n.id = :id")
@@ -109,7 +116,7 @@ public class DefaultNewsBaseDao implements NewsBaseDao {
 
      @Override
     public boolean delete(long id) {
-        try (Session session = HibernateUtil.getSession()) {
+        try (Session session = getSession()) {
             session.beginTransaction();
             session.createQuery("delete CommentEntity c where c.news.id=:id")
                     .setParameter("id", id)

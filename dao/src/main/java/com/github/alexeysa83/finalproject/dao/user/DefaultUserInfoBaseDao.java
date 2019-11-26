@@ -1,11 +1,12 @@
 package com.github.alexeysa83.finalproject.dao.user;
 
-import com.github.alexeysa83.finalproject.dao.HibernateUtil;
+import com.github.alexeysa83.finalproject.dao.SessionManager;
 import com.github.alexeysa83.finalproject.dao.convert_entity.UserInfoConvert;
 import com.github.alexeysa83.finalproject.dao.entity.BadgeEntity;
 import com.github.alexeysa83.finalproject.dao.entity.UserInfoEntity;
 import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -14,13 +15,17 @@ import javax.persistence.PersistenceException;
 import java.time.LocalDateTime;
 
 @Repository
-public class DefaultUserInfoBaseDao implements UserInfoBaseDao {
+public class DefaultUserInfoBaseDao extends SessionManager implements UserInfoBaseDao {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultUserInfoBaseDao.class);
 
+    public DefaultUserInfoBaseDao(SessionFactory factory) {
+        super(factory);
+    }
+
     @Override
     public UserInfoDto getById(long authId) {
-        Session session = HibernateUtil.getSession();
+        Session session = getSession();
         session.beginTransaction();
         final UserInfoEntity userInfoEntity = session.get(UserInfoEntity.class, authId);
         session.getTransaction().commit();
@@ -31,7 +36,7 @@ public class DefaultUserInfoBaseDao implements UserInfoBaseDao {
 
     @Override
     public boolean update(UserInfoDto userInfoDto) {
-        try (Session session = HibernateUtil.getSession()) {
+        try (Session session = getSession()) {
             session.beginTransaction();
 
             final int i = session.createQuery
@@ -55,7 +60,7 @@ public class DefaultUserInfoBaseDao implements UserInfoBaseDao {
     @Override
     public UserInfoDto addBadgeToUser(long authId, long badgeId) {
 
-        try (Session session = HibernateUtil.getSession()) {
+        try (Session session = getSession()) {
             session.beginTransaction();
             final UserInfoEntity userInfoEntity = session.get(UserInfoEntity.class, authId);
             final BadgeEntity badgeEntity = session.get(BadgeEntity.class, badgeId);
@@ -73,7 +78,7 @@ public class DefaultUserInfoBaseDao implements UserInfoBaseDao {
     @Override
     public UserInfoDto deleteBadgeFromUser(long authId, long badgeId) {
 
-        try (Session session = HibernateUtil.getSession()) {
+        try (Session session = getSession()) {
             session.beginTransaction();
             final UserInfoEntity userInfoEntity = session.get(UserInfoEntity.class, authId);
             final BadgeEntity badgeEntity = session.get(BadgeEntity.class, badgeId);

@@ -32,6 +32,7 @@ public class HibernateConfig {
         hikariDataSource.setDriverClassName(datasourceSettings.getDriver());
         hikariDataSource.setMaximumPoolSize(20);
         return hikariDataSource;
+
 //        final ComboPooledDataSource dataSource = new ComboPooledDataSource();
 //        dataSource.setJdbcUrl(datasourceSettings.getUrl());
 //        dataSource.setUser(datasourceSettings.getUsername());

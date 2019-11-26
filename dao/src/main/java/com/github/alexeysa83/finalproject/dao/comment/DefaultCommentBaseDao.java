@@ -1,12 +1,13 @@
 package com.github.alexeysa83.finalproject.dao.comment;
 
-import com.github.alexeysa83.finalproject.dao.HibernateUtil;
+import com.github.alexeysa83.finalproject.dao.SessionManager;
 import com.github.alexeysa83.finalproject.dao.convert_entity.CommentConvert;
 import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
 import com.github.alexeysa83.finalproject.dao.entity.CommentEntity;
 import com.github.alexeysa83.finalproject.dao.entity.NewsEntity;
 import com.github.alexeysa83.finalproject.model.dto.CommentDto;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -17,9 +18,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class DefaultCommentBaseDao implements CommentBaseDao {
+public class DefaultCommentBaseDao extends SessionManager implements CommentBaseDao {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultCommentBaseDao.class);
+
+    public DefaultCommentBaseDao(SessionFactory factory) {
+        super(factory);
+    }
 
     /**
      * Optimization?
@@ -28,7 +33,7 @@ public class DefaultCommentBaseDao implements CommentBaseDao {
     public CommentDto add(CommentDto commentDto) {
         final CommentEntity commentEntity = CommentConvert.toEntity(commentDto);
 
-        try (Session session = HibernateUtil.getSession()) {
+        try (Session session = getSession()) {
             session.beginTransaction();
             final AuthUserEntity authUserEntity = session.get(AuthUserEntity.class, commentDto.getAuthId());
             final NewsEntity newsEntity = session.get(NewsEntity.class, commentDto.getNewsId());
@@ -46,7 +51,7 @@ public class DefaultCommentBaseDao implements CommentBaseDao {
 
     @Override
     public CommentDto getById(long id) {
-        Session session = HibernateUtil.getSession();
+        Session session = getSession();
         session.beginTransaction();
         final CommentEntity commentEntity = session.get(CommentEntity.class, id);
         session.getTransaction().commit();
@@ -58,7 +63,7 @@ public class DefaultCommentBaseDao implements CommentBaseDao {
     public List<CommentDto> getCommentsOnNews(long newsId) {
         List<CommentDto> commentDtoList = new ArrayList<>();
 
-        try (Session session = HibernateUtil.getSession()) {
+        try (Session session = getSession()) {
             session.beginTransaction();
 
             final NewsEntity newsEntity = session.get(NewsEntity.class, newsId);
@@ -77,7 +82,7 @@ public class DefaultCommentBaseDao implements CommentBaseDao {
 
     @Override
     public boolean update(CommentDto commentDto) {
-        try (Session session = HibernateUtil.getSession()) {
+        try (Session session = getSession()) {
             session.beginTransaction();
             final int i = session.createQuery("update CommentEntity c set c.content=:content where c.id=:id")
                     .setParameter("content", commentDto.getContent())
@@ -94,7 +99,7 @@ public class DefaultCommentBaseDao implements CommentBaseDao {
 
     @Override
     public boolean delete(long id) {
-        try (Session session = HibernateUtil.getSession()) {
+        try (Session session = getSession()) {
             session.beginTransaction();
             final int i = session.createQuery("delete CommentEntity c where c.id=:id")
                     .setParameter("id", id)

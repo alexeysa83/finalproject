@@ -10,36 +10,35 @@ import com.github.alexeysa83.finalproject.dao.news.DefaultNewsBaseDao;
 import com.github.alexeysa83.finalproject.dao.news.NewsBaseDao;
 import com.github.alexeysa83.finalproject.dao.user.DefaultUserInfoBaseDao;
 import com.github.alexeysa83.finalproject.dao.user.UserInfoBaseDao;
+import org.hibernate.SessionFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import javax.persistence.EntityManagerFactory;
 
 @Configuration
 public class DaoConfig {
 
     @Bean
-    public AuthUserBaseDao authUserBaseDao (EntityManagerFactory factory) {
+    public AuthUserBaseDao authUserBaseDao (SessionFactory factory) {
         return new DefaultAuthUserBaseDao(factory);
     }
 
     @Bean
-    public UserInfoBaseDao userInfoBaseDao () {
-        return new DefaultUserInfoBaseDao();
+    public UserInfoBaseDao userInfoBaseDao (SessionFactory factory) {
+        return new DefaultUserInfoBaseDao(factory);
     }
 
     @Bean
-    public NewsBaseDao newsBaseDao () {
-        return new DefaultNewsBaseDao();
+    public NewsBaseDao newsBaseDao (SessionFactory factory) {
+        return new DefaultNewsBaseDao(factory);
     }
 
     @Bean
-    public CommentBaseDao commentBaseDao () {
-        return new DefaultCommentBaseDao();
+    public CommentBaseDao commentBaseDao (SessionFactory factory) {
+        return new DefaultCommentBaseDao(factory);
     }
 
     @Bean
-    public BadgeBaseDao badgeBaseDao () {
-        return new DefaultBadgeBaseDao();
+    public BadgeBaseDao badgeBaseDao (SessionFactory factory) {
+        return new DefaultBadgeBaseDao(factory);
     }
 }
