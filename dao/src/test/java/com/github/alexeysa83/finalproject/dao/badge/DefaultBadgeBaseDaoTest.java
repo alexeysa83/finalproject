@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -25,6 +26,8 @@ class DefaultBadgeBaseDaoTest {
     @Autowired
     private AddDeleteTestEntity util;
 
+@Transactional
+//@Rollback (false)
     @Test
     void add() {
         final String testName = "CreateTestBadge";
@@ -36,7 +39,7 @@ class DefaultBadgeBaseDaoTest {
         assertNotNull(id);
         assertEquals(testBadge.getBadgeName(), savedBadge.getBadgeName());
 
-        badgeDao.delete(id);
+//        badgeDao.delete(id);
     }
 
     @Test

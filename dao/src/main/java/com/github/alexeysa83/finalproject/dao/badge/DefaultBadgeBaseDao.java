@@ -9,8 +9,11 @@ import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -19,7 +22,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Repository
+
 public class DefaultBadgeBaseDao extends SessionManager implements BadgeBaseDao {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultBadgeBaseDao.class);
@@ -28,19 +31,27 @@ public class DefaultBadgeBaseDao extends SessionManager implements BadgeBaseDao 
         super(factory);
     }
 
+    @PersistenceContext
+    private EntityManager manager;
+
     @Override
+    @Transactional(propagation = Propagation.MANDATORY)
     public BadgeDto add(BadgeDto badgeDto) {
         final BadgeEntity badgeEntity = BadgeConvert.toEntity(badgeDto);
-        try (Session session = getSession()) {
-            session.beginTransaction();
-            session.save(badgeEntity);
-            session.getTransaction().commit();
-            log.info("Badge id: {} saved to DB at: {}", badgeEntity.getId(), LocalDateTime.now());
-            return BadgeConvert.toDto(badgeEntity);
-        } catch (PersistenceException e) {
-            log.error("Fail to save new badge to DB: {}, at: {}", badgeDto, LocalDateTime.now(), e);
-            throw new RuntimeException(e);
-        }
+        manager.persist(badgeEntity);
+        return BadgeConvert.toDto(badgeEntity);
+
+
+//        try (Session session = getSession()) {
+//            session.beginTransaction();
+//            session.save(badgeEntity);
+//            session.getTransaction().commit();
+//            log.info("Badge id: {} saved to DB at: {}", badgeEntity.getId(), LocalDateTime.now());
+//            return BadgeConvert.toDto(badgeEntity);
+//        } catch (PersistenceException e) {
+//            log.error("Fail to save new badge to DB: {}, at: {}", badgeDto, LocalDateTime.now(), e);
+//            throw new RuntimeException(e);
+//        }
     }
 
     @Override

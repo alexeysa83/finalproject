@@ -4,15 +4,17 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.sql.DataSource;
 
 @Configuration
 @Import(SettingsConfig.class)
+@EnableTransactionManagement
 public class HibernateConfig {
 
     private final SettingsConfig settingsConfig;
@@ -60,8 +62,14 @@ public class HibernateConfig {
 
     @Bean
     public PlatformTransactionManager hibernateTransactionManager () {
-        final HibernateTransactionManager transactionManager = new HibernateTransactionManager();
-        transactionManager.setSessionFactory(sessionFactoryBean().getObject());
+        final JpaTransactionManager transactionManager = new JpaTransactionManager();
+        transactionManager.setEntityManagerFactory(sessionFactoryBean().getObject());
+
+
+
+//        final HibernateTransactionManager transactionManager = new HibernateTransactionManager();
+//        transactionManager.setSessionFactory(sessionFactoryBean().getObject());
+//        transactionManager.setDataSource(dataSource());
         return transactionManager;
     }
 
