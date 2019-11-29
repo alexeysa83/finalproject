@@ -34,24 +34,37 @@ public class DefaultBadgeBaseDao extends SessionManager implements BadgeBaseDao 
     @PersistenceContext
     private EntityManager manager;
 
+    private Session getSessionPersistence () {
+       return manager.unwrap(Session.class);
+    }
+
     @Override
     @Transactional(propagation = Propagation.MANDATORY)
     public BadgeDto add(BadgeDto badgeDto) {
         final BadgeEntity badgeEntity = BadgeConvert.toEntity(badgeDto);
-        manager.persist(badgeEntity);
-        return BadgeConvert.toDto(badgeEntity);
-
-
-//        try (Session session = getSession()) {
+                try (Session session = getSession()) {
 //            session.beginTransaction();
-//            session.save(badgeEntity);
+            session.save(badgeEntity);
 //            session.getTransaction().commit();
-//            log.info("Badge id: {} saved to DB at: {}", badgeEntity.getId(), LocalDateTime.now());
-//            return BadgeConvert.toDto(badgeEntity);
-//        } catch (PersistenceException e) {
-//            log.error("Fail to save new badge to DB: {}, at: {}", badgeDto, LocalDateTime.now(), e);
-//            throw new RuntimeException(e);
-//        }
+            log.info("Badge id: {} saved to DB at: {}", badgeEntity.getId(), LocalDateTime.now());
+            return BadgeConvert.toDto(badgeEntity);
+        } catch (PersistenceException e) {
+            log.error("Fail to save new badge to DB: {}, at: {}", badgeDto, LocalDateTime.now(), e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.MANDATORY)
+    public BadgeDto addPersistence(BadgeDto badgeDto) {
+        final BadgeEntity badgeEntity = BadgeConvert.toEntity(badgeDto);
+        final Session session = getSessionPersistence();
+//            session.beginTransaction();
+            session.save(badgeEntity);
+//            session.getTransaction().commit();
+            log.info("Badge id: {} saved to DB at: {}", badgeEntity.getId(), LocalDateTime.now());
+//            session.close();
+            return BadgeConvert.toDto(badgeEntity);
     }
 
     @Override

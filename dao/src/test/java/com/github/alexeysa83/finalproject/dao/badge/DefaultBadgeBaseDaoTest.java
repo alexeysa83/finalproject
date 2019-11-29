@@ -27,12 +27,28 @@ class DefaultBadgeBaseDaoTest {
     private AddDeleteTestEntity util;
 
 @Transactional
-//@Rollback (false)
+//@Rollback()
     @Test
     void add() {
         final String testName = "CreateTestBadge";
         final BadgeDto testBadge = util.createBadgeDto(testName);
         final BadgeDto savedBadge = badgeDao.add(testBadge);
+        final Long id = savedBadge.getId();
+
+        assertNotNull(savedBadge);
+        assertNotNull(id);
+        assertEquals(testBadge.getBadgeName(), savedBadge.getBadgeName());
+
+//        badgeDao.delete(id);
+    }
+
+    @Transactional
+//@Rollback()
+    @Test
+    void addPersistence() {
+        final String testName = "CreateTestBadgePersistence";
+        final BadgeDto testBadge = util.createBadgeDto(testName);
+        final BadgeDto savedBadge = badgeDao.addPersistence(testBadge);
         final Long id = savedBadge.getId();
 
         assertNotNull(savedBadge);
