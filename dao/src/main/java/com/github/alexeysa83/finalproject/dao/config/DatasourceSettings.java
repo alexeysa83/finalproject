@@ -6,8 +6,8 @@ public class DatasourceSettings {
     @Value("${url}")
     private String url;
 
-    @Value("${username}")
-    private String username;
+    @Value("${usernameDB}")
+    private String usernameDB;
 
     @Value("${password}")
     private String password;
@@ -19,8 +19,8 @@ public class DatasourceSettings {
         return url;
     }
 
-    public String getUsername() {
-        return username;
+    public String getUsernameDB() {
+        return usernameDB;
     }
 
     public String getPassword() {

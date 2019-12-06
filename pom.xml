@@ -26,6 +26,7 @@
         <!-- dependencies -->
         <spring-webmvc.version>5.2.1.RELEASE</spring-webmvc.version>
         <spring-orm.version>5.2.1.RELEASE</spring-orm.version>
+        <spring-data-jpa.version>2.2.2.RELEASE</spring-data-jpa.version>
         <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
         <jstl.version>1.2</jstl.version>
         <hibernate-core.version>5.4.6.Final</hibernate-core.version>
@@ -59,6 +60,11 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-orm</artifactId>
                 <version>${spring-orm.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-jpa</artifactId>
+                <version>${spring-data-jpa.version}</version>
             </dependency>
             <dependency>
                 <groupId>javax.servlet</groupId>

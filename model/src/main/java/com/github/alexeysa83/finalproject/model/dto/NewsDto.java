@@ -1,26 +1,27 @@
 package com.github.alexeysa83.finalproject.model.dto;
 
 import java.sql.Timestamp;
+import java.util.Objects;
 
 public class NewsDto {
 
-    private long id;
+    private Long id;
     private String title;
     private String content;
     private Timestamp creationTime;
-    private long authId;
+    private Long authId;
     private String authorNews;
 
     public NewsDto() {
     }
 
-    public NewsDto(long id, String title, String content) {
+    public NewsDto(Long id, String title, String content) {
         this.id = id;
         this.title = title;
         this.content = content;
     }
 
-    public NewsDto(String title, String content, Timestamp creationTime, long authId, String authorNews) {
+    public NewsDto(String title, String content, Timestamp creationTime, Long authId, String authorNews) {
         this.title = title;
         this.content = content;
         this.creationTime = creationTime;
@@ -28,7 +29,7 @@ public class NewsDto {
         this.authorNews = authorNews;
     }
 
-    public NewsDto(long id, String title, String content, Timestamp creationTime, long authId, String authorNews) {
+    public NewsDto(Long id, String title, String content, Timestamp creationTime, Long authId, String authorNews) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -37,11 +38,11 @@ public class NewsDto {
         this.authorNews = authorNews;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -69,11 +70,11 @@ public class NewsDto {
         this.creationTime = creationTime;
     }
 
-    public long getAuthId() {
+    public Long getAuthId() {
         return authId;
     }
 
-    public void setAuthId(long authId) {
+    public void setAuthId(Long authId) {
         this.authId = authId;
     }
 
@@ -93,5 +94,23 @@ public class NewsDto {
                 ", creation time=" + creationTime +
                 ", authId=" + authId +
                 ", author=" + authorNews + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NewsDto newsDto = (NewsDto) o;
+        return id.equals(newsDto.id) &&
+                title.equals(newsDto.title) &&
+                content.equals(newsDto.content) &&
+                creationTime.equals(newsDto.creationTime) &&
+                authId.equals(newsDto.authId) &&
+                authorNews.equals(newsDto.authorNews);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, content, creationTime, authId, authorNews);
     }
 }

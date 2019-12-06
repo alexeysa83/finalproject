@@ -7,13 +7,11 @@ import java.util.List;
 
 public interface BadgeBaseDao extends BaseDao<BadgeDto> {
 
-    BadgeDto add(BadgeDto badge);
-
-    BadgeDto addPersistence(BadgeDto badge);
+//    BadgeDto add(BadgeDto badge);
 
     boolean isNameTaken(String name);
 
     List<BadgeDto> getAll();
 
-    boolean delete(long id);
+//    boolean delete(long id);
 }

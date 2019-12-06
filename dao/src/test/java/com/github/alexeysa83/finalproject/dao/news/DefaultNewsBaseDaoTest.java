@@ -3,15 +3,16 @@ package com.github.alexeysa83.finalproject.dao.news;
 import com.github.alexeysa83.finalproject.dao.AddDeleteTestEntity;
 import com.github.alexeysa83.finalproject.dao.comment.CommentBaseDao;
 import com.github.alexeysa83.finalproject.dao.config.DaoConfig;
-import com.github.alexeysa83.finalproject.dao.config.HibernateConfig;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.dto.CommentDto;
 import com.github.alexeysa83.finalproject.model.dto.NewsDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -19,7 +20,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {HibernateConfig.class, DaoConfig.class, AddDeleteTestEntity.class})
+@ContextConfiguration(classes = {DaoConfig.class, AddDeleteTestEntity.class})
+@Transactional
 class DefaultNewsBaseDaoTest {
 
     @Autowired
@@ -32,7 +34,7 @@ class DefaultNewsBaseDaoTest {
     @Test
     void add() {
         final String testName = "CreateNewsTest";
-        final AuthUserDto user = util.addTestUserToDB(testName);
+        final AuthUserDto user = util.addTestAuthUserToDB(testName);
 
         final NewsDto testNews = util.createNewsDto(testName, user);
 
@@ -46,15 +48,12 @@ class DefaultNewsBaseDaoTest {
         assertEquals(testNews.getCreationTime(), savedNews.getCreationTime());
         assertEquals(testNews.getAuthId(), savedNews.getAuthId());
         assertEquals(testNews.getAuthorNews(), savedNews.getAuthorNews());
-
-        util.completeDeleteUser(user.getId());
     }
-
 
     @Test
     void getByIdExist() {
         final String testName = "GetByIdNewsTest";
-        final AuthUserDto user = util.addTestUserToDB(testName);
+        final AuthUserDto user = util.addTestAuthUserToDB(testName);
 
         final NewsDto testNews = util.addTestNewsToDB(testName, user);
         final long id = testNews.getId();
@@ -67,27 +66,33 @@ class DefaultNewsBaseDaoTest {
         assertEquals(testNews.getCreationTime(), newsFromDB.getCreationTime());
         assertEquals(testNews.getAuthId(), newsFromDB.getAuthId());
         assertEquals(testNews.getAuthorNews(), newsFromDB.getAuthorNews());
-
-        util.completeDeleteUser(user.getId());
     }
 
     @Test
     void getByIdNotExist() {
-        final NewsDto newsFromDB = newsDao.getById(0);
+        final NewsDto newsFromDB = newsDao.getById(0L);
         assertNull(newsFromDB);
     }
 
-    /**
-     * Get count?
-     */
-//    @Test
-//    void getCountNews() {
-//        System.out.println(newsDao.getCountNews());
-//    }
+    @Test
+    void getCountNews() {
+        final String testName = "GetCountNewsTest";
+        final AuthUserDto user = util.addTestAuthUserToDB(testName);
+
+        final int testCount = 3;
+
+        for (int i = 0; i < testCount; i++) {
+            util.addTestNewsToDB(testName + i, user);
+        }
+
+        final int countFromDB = newsDao.getRows();
+        assertEquals(testCount, countFromDB);
+    }
+
     @Test
     void getNewsOnPage() {
         final String testName = "GetNewsOnPageTest";
-        final AuthUserDto user = util.addTestUserToDB(testName);
+        final AuthUserDto user = util.addTestAuthUserToDB(testName);
         final int PAGE_SIZE = 10;
         LinkedList<NewsDto> testList = new LinkedList<>();
         for (int i = 0; i < PAGE_SIZE * 2; i++) {
@@ -109,17 +114,14 @@ class DefaultNewsBaseDaoTest {
                 assertEquals(testNews.getCreationTime(), newsFromDB.getCreationTime());
                 assertEquals(testNews.getAuthId(), newsFromDB.getAuthId());
                 assertEquals(testNews.getAuthorNews(), newsFromDB.getAuthorNews());
-
-                newsDao.delete(newsFromDB.getId());
             }
         }
-        util.completeDeleteUser(user.getId());
     }
 
     @Test
     void updateSuccess() {
         final String testName = "UpdateNewsTest";
-        final AuthUserDto user = util.addTestUserToDB(testName);
+        final AuthUserDto user = util.addTestAuthUserToDB(testName);
 
         final NewsDto testNews = util.addTestNewsToDB(testName, user);
         final long id = testNews.getId();
@@ -127,7 +129,7 @@ class DefaultNewsBaseDaoTest {
          /*FakeUser is needed to create different from test news authid and author login fields
          which should not be updated
           */
-         user.setLogin("FakeUser");
+        user.setLogin("FakeUser");
         final NewsDto newsToUpdate = util.createNewsDto("UpdateNewsComplete", user);
         newsToUpdate.setId(id);
 
@@ -155,9 +157,10 @@ class DefaultNewsBaseDaoTest {
     }
 
     @Test
+    @Rollback(false)
     void delete() {
         final String testName = "DeleteNewsTest";
-        final AuthUserDto user = util.addTestUserToDB(testName);
+        final AuthUserDto user = util.addTestAuthUserToDB(testName);
 
         final NewsDto testNews = util.addTestNewsToDB(testName, user);
         final CommentDto testComment = util.addTestCommentToDB(testName, testNews);
@@ -173,7 +176,5 @@ class DefaultNewsBaseDaoTest {
 
         final CommentDto commentAfterDelete = commentDao.getById(testComment.getId());
         assertNull(commentAfterDelete);
-
-        util.completeDeleteUser(user.getId());
     }
 }

@@ -16,7 +16,7 @@ import java.util.Set;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class BadgeEntity {
 
-    private long id;
+    private Long id;
     private String badgeName;
 
     private Set<UserInfoEntity>users = new HashSet<>();
@@ -26,11 +26,11 @@ public class BadgeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -69,7 +69,7 @@ public class BadgeEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BadgeEntity badge = (BadgeEntity) o;
-        return id == badge.id &&
+        return id.equals(badge.id) &&
                 badgeName.equals(badge.badgeName);
     }
 

@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface CommentBaseDao extends BaseDao<CommentDto> {
 
-    CommentDto add(CommentDto comment);
+//    CommentDto add(CommentDto comment);
 
     List<CommentDto> getCommentsOnNews(long newsId);
 
-    boolean delete (long id);
+//    boolean delete (long id);
 }

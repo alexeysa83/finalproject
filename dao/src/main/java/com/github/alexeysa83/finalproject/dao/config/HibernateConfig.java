@@ -4,17 +4,18 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.sql.DataSource;
 
 @Configuration
 @Import(SettingsConfig.class)
 @EnableTransactionManagement
+@EnableJpaRepositories (basePackages = "com.github.alexeysa83.finalproject.dao.repository")
 public class HibernateConfig {
 
     private final SettingsConfig settingsConfig;
@@ -28,8 +29,7 @@ public class HibernateConfig {
         final DatasourceSettings datasourceSettings = settingsConfig.datasourceSettings();
         final HikariDataSource hikariDataSource = new HikariDataSource();
         hikariDataSource.setJdbcUrl(datasourceSettings.getUrl());
-//        hikariDataSource.setUsername(datasourceSettings.getUsername());
-        hikariDataSource.setUsername("root");
+        hikariDataSource.setUsername(datasourceSettings.getUsernameDB());
         hikariDataSource.setPassword(datasourceSettings.getPassword());
         hikariDataSource.setDriverClassName(datasourceSettings.getDriver());
         hikariDataSource.setMaximumPoolSize(20);
@@ -52,7 +52,7 @@ public class HibernateConfig {
            }
 
     @Bean
-    public LocalSessionFactoryBean sessionFactoryBean () {
+    public LocalSessionFactoryBean entityManagerFactory() {
         final LocalSessionFactoryBean sessionFactoryBean = new LocalSessionFactoryBean();
         sessionFactoryBean.setDataSource(dataSource());
         sessionFactoryBean.setPackagesToScan("com.github.alexeysa83.finalproject.dao.entity");
@@ -61,20 +61,14 @@ public class HibernateConfig {
     }
 
     @Bean
-    public PlatformTransactionManager hibernateTransactionManager () {
+    public PlatformTransactionManager transactionManager() {
         final JpaTransactionManager transactionManager = new JpaTransactionManager();
-        transactionManager.setEntityManagerFactory(sessionFactoryBean().getObject());
-
-
-
-//        final HibernateTransactionManager transactionManager = new HibernateTransactionManager();
-//        transactionManager.setSessionFactory(sessionFactoryBean().getObject());
-//        transactionManager.setDataSource(dataSource());
+        transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
         return transactionManager;
     }
 
-    @Bean
-    public TransactionTemplate transactionTemplate() {
-        return new TransactionTemplate(hibernateTransactionManager());
-    }
+//    @Bean
+//    public TransactionTemplate transactionTemplate() {
+//        return new TransactionTemplate(transactionManager());
+//    }
 }

@@ -9,7 +9,7 @@ import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
 
 public interface UserInfoBaseDao extends BaseDao<UserInfoDto> {
 
-   UserInfoDto addBadgeToUser (long authId, long badgeId);
+   UserInfoDto addBadgeToUser (Long authId, Long badgeId);
 
-   UserInfoDto deleteBadgeFromUser (long authId, long badgeId);
+   UserInfoDto deleteBadgeFromUser (Long authId, Long badgeId);
    }

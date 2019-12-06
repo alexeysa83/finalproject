@@ -5,8 +5,8 @@ import com.github.alexeysa83.finalproject.dao.entity.UserInfoEntity;
 import com.github.alexeysa83.finalproject.model.dto.BadgeDto;
 import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class UserInfoConvert {
 
@@ -25,23 +25,29 @@ public abstract class UserInfoConvert {
         userInfoDto.setPhone(userInfoEntity.getPhone());
         userInfoDto.setUserLogin(userInfoEntity.getAuthUser().getLogin());
 
-        Set<BadgeEntity> badgeEntities = userInfoEntity.getBadges();
+        List<BadgeEntity> badgeEntities = userInfoEntity.getBadges();
         if (badgeEntities.size() > 0) {
-            userInfoDto.setBadges(new HashSet<>());
+            final List<BadgeDto> badgeDtos = new ArrayList<>();
             badgeEntities.forEach(badgeEntity -> {
-                BadgeDto badgeDto = BadgeConvert.toDto(badgeEntity);
-                userInfoDto.getBadges().add(badgeDto);
+                final BadgeDto badgeDto = BadgeConvert.toDto(badgeEntity);
+                badgeDtos.add(badgeDto);
             });
+            userInfoDto.setBadges(badgeDtos);
         }
         return userInfoDto;
     }
 
+    /**
+     * Is used only in add method in DefaultUserInfoBaseDao
+          */
     public static UserInfoEntity toEntity(UserInfoDto userInfoDto) {
         if (userInfoDto == null) {
             return null;
         }
+
+        final Long authId = userInfoDto.getAuthId();
         final UserInfoEntity userInfoEntity = new UserInfoEntity();
-        userInfoEntity.setAuthId(userInfoDto.getAuthId());
+        userInfoEntity.setAuthId(authId);
         userInfoEntity.setFirstName(userInfoDto.getFirstName());
         userInfoEntity.setLastName(userInfoDto.getLastName());
         userInfoEntity.setRegistrationTime(userInfoDto.getRegistrationTime());

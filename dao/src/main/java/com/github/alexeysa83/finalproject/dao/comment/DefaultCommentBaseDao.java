@@ -5,6 +5,7 @@ import com.github.alexeysa83.finalproject.dao.convert_entity.CommentConvert;
 import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
 import com.github.alexeysa83.finalproject.dao.entity.CommentEntity;
 import com.github.alexeysa83.finalproject.dao.entity.NewsEntity;
+import com.github.alexeysa83.finalproject.dao.repository.CommentRepository;
 import com.github.alexeysa83.finalproject.model.dto.CommentDto;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -22,8 +23,11 @@ public class DefaultCommentBaseDao extends SessionManager implements CommentBase
 
     private static final Logger log = LoggerFactory.getLogger(DefaultCommentBaseDao.class);
 
-    public DefaultCommentBaseDao(SessionFactory factory) {
+    private final CommentRepository repository;
+
+    public DefaultCommentBaseDao(CommentRepository repository, SessionFactory factory) {
         super(factory);
+        this.repository = repository;
     }
 
     /**
@@ -33,14 +37,13 @@ public class DefaultCommentBaseDao extends SessionManager implements CommentBase
     public CommentDto add(CommentDto commentDto) {
         final CommentEntity commentEntity = CommentConvert.toEntity(commentDto);
 
-        try (Session session = getSession()) {
-            session.beginTransaction();
+        try  {
+            Session session = getSession();
             final AuthUserEntity authUserEntity = session.get(AuthUserEntity.class, commentDto.getAuthId());
             final NewsEntity newsEntity = session.get(NewsEntity.class, commentDto.getNewsId());
             commentEntity.setAuthUser(authUserEntity);
             commentEntity.setNews(newsEntity);
             session.save(commentEntity);
-            session.getTransaction().commit();
             log.info("Comment id: {} saved to DB at: {}", commentEntity.getId(), LocalDateTime.now());
             return CommentConvert.toDto(commentEntity);
         } catch (PersistenceException | NullPointerException e) {
@@ -50,12 +53,12 @@ public class DefaultCommentBaseDao extends SessionManager implements CommentBase
     }
 
     @Override
-    public CommentDto getById(long id) {
+    public CommentDto getById(Long id) {
         Session session = getSession();
-        session.beginTransaction();
+//        session.beginTransaction();
         final CommentEntity commentEntity = session.get(CommentEntity.class, id);
-        session.getTransaction().commit();
-        session.close();
+//        session.getTransaction().commit();
+//        session.close();
         return CommentConvert.toDto(commentEntity);
     }
 
@@ -98,7 +101,7 @@ public class DefaultCommentBaseDao extends SessionManager implements CommentBase
     }
 
     @Override
-    public boolean delete(long id) {
+    public boolean delete(Long id) {
         try (Session session = getSession()) {
             session.beginTransaction();
             final int i = session.createQuery("delete CommentEntity c where c.id=:id")

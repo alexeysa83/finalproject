@@ -1,29 +1,28 @@
 package com.github.alexeysa83.finalproject.model.dto;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 public class UserInfoDto {
 
-    private long authId;
+    private Long authId;
     private String firstName;
     private String lastName;
     private Timestamp registrationTime;
     private String email;
     private String phone;
     private String userLogin;
-    private Set <BadgeDto> badges;
+    private List<BadgeDto> badges;
 
     public UserInfoDto() {
     }
 
     public UserInfoDto(Timestamp registrationTime) {
         this.registrationTime = registrationTime;
-//        this.authId = authId;
     }
 
-    public UserInfoDto(long authId, String firstName, String lastName, String email, String phone) {
+    public UserInfoDto(Long authId, String firstName, String lastName, String email, String phone) {
         this.authId = authId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -31,7 +30,7 @@ public class UserInfoDto {
         this.phone = phone;
     }
 
-    public UserInfoDto(long authId, String firstName, String lastName, Timestamp registrationTime, String email, String phone, String userLogin) {
+    public UserInfoDto(Long authId, String firstName, String lastName, Timestamp registrationTime, String email, String phone, String userLogin) {
         this.authId = authId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -41,11 +40,11 @@ public class UserInfoDto {
         this.userLogin = userLogin;
     }
 
-    public long getAuthId() {
+    public Long getAuthId() {
         return authId;
     }
 
-    public void setAuthId(long authId) {
+    public void setAuthId(Long authId) {
         this.authId = authId;
     }
 
@@ -97,11 +96,11 @@ public class UserInfoDto {
         this.userLogin = userLogin;
     }
 
-    public Set<BadgeDto> getBadges() {
+    public List<BadgeDto> getBadges() {
         return badges;
     }
 
-    public void setBadges(Set<BadgeDto> badges) {
+    public void setBadges(List<BadgeDto> badges) {
         this.badges = badges;
     }
 
@@ -118,22 +117,22 @@ public class UserInfoDto {
                 '}';
     }
 
-    // UserLogin filed is not included as it references to AuthUser
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UserInfoDto userInfoDto = (UserInfoDto) o;
-        return authId == userInfoDto.authId &&
-                Objects.equals(firstName, userInfoDto.firstName) &&
-                Objects.equals(lastName, userInfoDto.lastName) &&
-                Objects.equals(registrationTime, userInfoDto.registrationTime) &&
-                Objects.equals(email, userInfoDto.email) &&
-                Objects.equals(phone, userInfoDto.phone);
+        UserInfoDto user = (UserInfoDto) o;
+        return authId.equals(user.authId) &&
+                Objects.equals(firstName, user.firstName) &&
+                Objects.equals(lastName, user.lastName) &&
+                registrationTime.equals(user.registrationTime) &&
+                Objects.equals(email, user.email) &&
+                Objects.equals(phone, user.phone) &&
+                userLogin.equals(user.userLogin);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(authId, firstName, lastName, registrationTime, email, phone);
+        return Objects.hash(authId, firstName, lastName, registrationTime, email, phone, userLogin);
     }
 }

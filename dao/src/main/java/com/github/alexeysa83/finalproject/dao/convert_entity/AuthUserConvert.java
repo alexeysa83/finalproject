@@ -1,7 +1,6 @@
 package com.github.alexeysa83.finalproject.dao.convert_entity;
 
 import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
-import com.github.alexeysa83.finalproject.dao.entity.UserInfoEntity;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
 
@@ -37,11 +36,11 @@ public abstract class AuthUserConvert {
         authUserEntity.setRole(authUserDto.getRole());
         authUserEntity.setDeleted(authUserDto.isDeleted());
 
-        final UserInfoEntity userInfoEntity = UserInfoConvert.toEntity(authUserDto.getUserInfoDto());
-        if (userInfoEntity != null) {
-            userInfoEntity.setAuthUser(authUserEntity);
-        }
-        authUserEntity.setUser(userInfoEntity);
+//        final UserInfoEntity userInfoEntity = UserInfoConvert.toEntity(authUserDto.getUserInfoDto());
+//        if (userInfoEntity != null) {
+//            userInfoEntity.setAuthUser(authUserEntity);
+//        }
+//        authUserEntity.setUser(userInfoEntity);
         return authUserEntity;
     }
 }

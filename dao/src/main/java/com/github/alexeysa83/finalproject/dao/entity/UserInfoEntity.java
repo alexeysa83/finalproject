@@ -1,14 +1,12 @@
 package com.github.alexeysa83.finalproject.dao.entity;
 
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "user_info")
@@ -16,7 +14,7 @@ import java.util.Set;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class UserInfoEntity {
 
-    private long authId;
+    private Long authId;
     private String firstName;
     private String lastName;
     private Timestamp registrationTime;
@@ -25,22 +23,23 @@ public class UserInfoEntity {
 
     private AuthUserEntity authUser;
 
-    private Set<BadgeEntity> badges = new HashSet<>();
+    private List<BadgeEntity> badges = new ArrayList<>();
 
     public UserInfoEntity() {
     }
 
     @Id
     @Column(name = "auth_id", updatable = false)
-    @GenericGenerator(name = "gen",
-            strategy = "foreign",
-            parameters = @Parameter(name = "property", value = "authUser"))
-    @GeneratedValue(generator = "gen")
-    public long getAuthId() {
+//    @GenericGenerator(name = "gen",
+//            strategy = "foreign",
+//            parameters = @Parameter(name = "property", value = "authUser"))
+//    @GeneratedValue(generator = "gen")
+
+    public Long getAuthId() {
         return authId;
     }
 
-    public void setAuthId(long id) {
+    public void setAuthId(Long id) {
         this.authId = id;
     }
 
@@ -101,16 +100,12 @@ public class UserInfoEntity {
         this.authUser = authUser;
     }
 
-//    @ManyToMany (fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    @JoinTable(name = "user_badge",
-//            joinColumns = {@JoinColumn(name = "user_id")},
-//            inverseJoinColumns = {@JoinColumn(name = "badge_id")})
     @ManyToMany (mappedBy = "users", fetch = FetchType.LAZY)
-    public Set<BadgeEntity> getBadges() {
+    public List<BadgeEntity> getBadges() {
         return badges;
     }
 
-    public void setBadges(Set<BadgeEntity> badges) {
+    public void setBadges(List<BadgeEntity> badges) {
         this.badges = badges;
     }
 

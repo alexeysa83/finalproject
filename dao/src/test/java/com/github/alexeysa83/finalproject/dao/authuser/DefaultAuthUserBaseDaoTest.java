@@ -2,7 +2,6 @@ package com.github.alexeysa83.finalproject.dao.authuser;
 
 import com.github.alexeysa83.finalproject.dao.AddDeleteTestEntity;
 import com.github.alexeysa83.finalproject.dao.config.DaoConfig;
-import com.github.alexeysa83.finalproject.dao.config.HibernateConfig;
 import com.github.alexeysa83.finalproject.dao.news.NewsBaseDao;
 import com.github.alexeysa83.finalproject.model.Role;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
@@ -13,11 +12,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {HibernateConfig.class, DaoConfig.class, AddDeleteTestEntity.class})
+@ContextConfiguration(classes = {DaoConfig.class, AddDeleteTestEntity.class})
+@Transactional
 class DefaultAuthUserBaseDaoTest {
 
     @Autowired
@@ -33,18 +34,11 @@ class DefaultAuthUserBaseDaoTest {
 
     @Test
     void cacheTest() {
-//        getAuthUser(1L);
-//        getAuthUser(1L);
-//        getAuthUser(1L);
-
-                authUserDao.getByLogin("admin");
-        authUserDao.getByLogin("admin");
-        authUserDao.getByLogin("admin");
+        authUserDao.getById(28L);
+        authUserDao.getById(28L);
+        authUserDao.getById(28L);
     }
 
-    /**
-     * Testing for fail to add?
-     */
     @Test
     void add() {
         final String testLogin = "CreateTestAuth";
@@ -59,17 +53,12 @@ class DefaultAuthUserBaseDaoTest {
         assertEquals(testUser.getPassword(), savedUser.getPassword());
         assertEquals(testUser.getRole(), savedUser.getRole());
         assertEquals(testUser.isDeleted(), savedUser.isDeleted());
-
-        assertEquals(id, savedUser.getUserInfoDto().getAuthId());
-        assertEquals(testUser.getUserInfoDto().getRegistrationTime(), savedUser.getUserInfoDto().getRegistrationTime());
-
-        util.completeDeleteUser(id);
     }
 
     @Test
     void getByLoginExist() {
         final String testLogin = "GetByLoginTestAuth";
-        final AuthUserDto testUser = util.addTestUserToDB(testLogin);
+        final AuthUserDto testUser = util.addTestAuthUserToDB(testLogin);
 
         final AuthUserDto userFromDB = authUserDao.getByLogin(testLogin);
         assertNotNull(userFromDB);
@@ -78,9 +67,6 @@ class DefaultAuthUserBaseDaoTest {
         assertEquals(testUser.getPassword(), userFromDB.getPassword());
         assertEquals(testUser.getRole(), userFromDB.getRole());
         assertEquals(testUser.isDeleted(), userFromDB.isDeleted());
-        assertEquals(testUser.getUserInfoDto(), userFromDB.getUserInfoDto());
-
-        util.completeDeleteUser(userFromDB.getId());
     }
 
     @Test
@@ -93,8 +79,8 @@ class DefaultAuthUserBaseDaoTest {
     @Test
     void getByIdExist() {
         final String testLogin = "GetByIdTestAuth";
-        final AuthUserDto testUser = util.addTestUserToDB(testLogin);
-        final long id = testUser.getId();
+        final AuthUserDto testUser = util.addTestAuthUserToDB(testLogin);
+        final Long id = testUser.getId();
 
         final AuthUserDto userFromDB = authUserDao.getById(id);
         assertNotNull(userFromDB);
@@ -103,31 +89,25 @@ class DefaultAuthUserBaseDaoTest {
         assertEquals(testUser.getPassword(), userFromDB.getPassword());
         assertEquals(testUser.getRole(), userFromDB.getRole());
         assertEquals(testUser.isDeleted(), userFromDB.isDeleted());
-        assertEquals(testUser.getUserInfoDto(), userFromDB.getUserInfoDto());
-
-        util.completeDeleteUser(id);
     }
 
     @Test
     void getByIdNotExist() {
-        final AuthUserDto userFromDB = authUserDao.getById(0);
+        final AuthUserDto userFromDB = authUserDao.getById(0L);
         assertNull(userFromDB);
     }
 
     @Test
     void updateSuccess() {
         final String testLogin = "UpdateTestAuth";
-        final AuthUserDto testUser = util.addTestUserToDB(testLogin);
-        final long id = testUser.getId();
-        // Create updated UserInfoDto entity which has not to be updated in AuthUserDao update method
-        UserInfoDto userInfoDtoToUpdate = util.createUserInfoDto();
-        userInfoDtoToUpdate.setFirstName("Update");
-        userInfoDtoToUpdate.setAuthId(testUser.getId());
+        final AuthUserDto testUser = util.addTestAuthUserToDB(testLogin);
+        final Long id = testUser.getId();
+
 /**
  * Optimization
  */
         final AuthUserDto userToUpdate = new AuthUserDto
-                (id, "Updated", "updated", Role.ADMIN, true, userInfoDtoToUpdate);
+                (id, "Updated", "updated", Role.ADMIN, true, new UserInfoDto());
 
         final boolean isUpdated = authUserDao.update(userToUpdate);
         assertTrue(isUpdated);
@@ -142,40 +122,43 @@ class DefaultAuthUserBaseDaoTest {
 
 //         check UserInfoEntity is not updated
         assertEquals(testUser.getUserInfoDto(), afterUpdate.getUserInfoDto());
-
-        util.completeDeleteUser(id);
     }
 
+    /**
+     * Optimization
+     */
     @Test
     void updateFail() {
         final AuthUserDto userToUpdate = new AuthUserDto
-                (0, "Updated", "updated", Role.ADMIN, true, null);
+                (0L, "Updated", "updated", Role.ADMIN, true, null);
         final boolean isUpdated = authUserDao.update(userToUpdate);
         assertFalse(isUpdated);
     }
 
     @Test
-    void delete() {
+    void deleteSuccess() {
         final String testLogin = "DeleteTestAuth";
-        final AuthUserDto testUser = util.addTestUserToDB(testLogin);
+        final AuthUserDto testUser = util.addTestAuthUserToDB(testLogin);
         final NewsDto testNews = util.addTestNewsToDB(testLogin, testUser);
 
         final long id = testUser.getId();
         final AuthUserDto userToDelete = authUserDao.getById(id);
         assertNotNull(userToDelete);
-        assertNotNull(userToDelete.getUserInfoDto());
 
         final boolean isDeleted = authUserDao.delete(id);
         assertTrue(isDeleted);
 
         final AuthUserDto afterDelete = authUserDao.getById(id);
         assertTrue(afterDelete.isDeleted());
-        assertNull(afterDelete.getUserInfoDto());
 
         // Check User News is not deleted
         final NewsDto newsAfterDeleteUser = newsDao.getById(testNews.getId());
         assertNotNull(newsAfterDeleteUser);
+    }
 
-        util.completeDeleteUser(id);
+    @Test
+    void deleteFail() {
+        final boolean isDeleted = authUserDao.delete(0L);
+        assertFalse(isDeleted);
     }
 }

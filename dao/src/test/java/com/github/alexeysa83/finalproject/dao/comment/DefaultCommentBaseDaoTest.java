@@ -29,7 +29,7 @@ class DefaultCommentBaseDaoTest {
     @Test
     void add() {
         final String testName = "CreateCommentTest";
-        final AuthUserDto user = util.addTestUserToDB(testName);
+        final AuthUserDto user = util.addTestAuthUserToDB(testName);
         final NewsDto testNews = util.addTestNewsToDB(testName, user);
 
         final CommentDto testComment = util.createCommentDto(testName, testNews);
@@ -51,7 +51,7 @@ class DefaultCommentBaseDaoTest {
     @Test
     void getByIdExist() {
         final String testName = "GetByIdCommentTest";
-        final AuthUserDto user = util.addTestUserToDB(testName);
+        final AuthUserDto user = util.addTestAuthUserToDB(testName);
         final NewsDto testNews = util.addTestNewsToDB(testName, user);
 
         final CommentDto testComment = util.addTestCommentToDB(testName, testNews);
@@ -72,14 +72,14 @@ class DefaultCommentBaseDaoTest {
 
     @Test
     void getByIdNotExist() {
-        final CommentDto commentFromDB = commentDao.getById(0);
+        final CommentDto commentFromDB = commentDao.getById(0L);
         assertNull(commentFromDB);
     }
 
     @Test
     void getCommentsOnNewsHaveComments() {
         final String testName = "GetCommentOnNewsTest";
-        final AuthUserDto user = util.addTestUserToDB(testName);
+        final AuthUserDto user = util.addTestAuthUserToDB(testName);
         final NewsDto testNews = util.addTestNewsToDB(testName, user);
         List<CommentDto> testList = new LinkedList<>();
         for (int i = 0; i < 10; i++) {
@@ -106,7 +106,7 @@ class DefaultCommentBaseDaoTest {
     @Test
     void getCommentsOnNewsWithoutComments() {
         final String testName = "NoCommentsOnNewsTest";
-        final AuthUserDto user = util.addTestUserToDB(testName);
+        final AuthUserDto user = util.addTestAuthUserToDB(testName);
         final NewsDto testNews = util.addTestNewsToDB(testName, user);
 
         List<CommentDto> listFromDB = commentDao.getCommentsOnNews(testNews.getId());
@@ -117,7 +117,7 @@ class DefaultCommentBaseDaoTest {
     @Test
     void updateSuccess() {
         final String testName = "UpdateCommentTest";
-        final AuthUserDto user = util.addTestUserToDB(testName);
+        final AuthUserDto user = util.addTestAuthUserToDB(testName);
         final NewsDto testNews = util.addTestNewsToDB(testName, user);
 
         final CommentDto testComment = util.addTestCommentToDB(testName, testNews);
@@ -125,8 +125,8 @@ class DefaultCommentBaseDaoTest {
 
         /*Changing the fields which should not be updated
          */
-        testNews.setId(0);
-        testNews.setAuthId(0);
+        testNews.setId(0L);
+        testNews.setAuthId(0L);
         testNews.setAuthorNews("FakeAuthor");
 
         final CommentDto commentToUpdate = util.createCommentDto("UpdateComplete", testNews);
@@ -150,7 +150,7 @@ class DefaultCommentBaseDaoTest {
     @Test
     void updateFail() {
         final String testName = "UpdateCommentFailTest";
-        final AuthUserDto user = util.addTestUserToDB(testName);
+        final AuthUserDto user = util.addTestAuthUserToDB(testName);
         final NewsDto testNews = util.addTestNewsToDB(testName, user);
 
         final CommentDto testComment = util.addTestCommentToDB(testName, testNews);
@@ -167,7 +167,7 @@ class DefaultCommentBaseDaoTest {
     @Test
     void delete() {
         final String testName = "DeleteCommentTest";
-        final AuthUserDto user = util.addTestUserToDB(testName);
+        final AuthUserDto user = util.addTestAuthUserToDB(testName);
         final NewsDto testNews = util.addTestNewsToDB(testName, user);
 
         final CommentDto testComment = util.addTestCommentToDB(testName, testNews);

@@ -3,17 +3,16 @@ package com.github.alexeysa83.finalproject.dao.entity;
 import com.github.alexeysa83.finalproject.model.Role;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cache;
-
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
 @Table(name = "auth_user")
 @Cacheable
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@Cache (usage = CacheConcurrencyStrategy.READ_WRITE)
 public class AuthUserEntity {
 
-    private long id;
+    private Long id;
     private String login;
     private String password;
     private Role role;
@@ -30,11 +29,11 @@ public class AuthUserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -79,8 +78,6 @@ public class AuthUserEntity {
     public UserInfoEntity getUser() {
         return user;
     }
-
-//    cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE}
 
     public void setUser(UserInfoEntity user) {
         this.user = user;

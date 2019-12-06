@@ -8,11 +8,9 @@ import java.util.Objects;
 @Table(name = "comment")
 public class CommentEntity {
 
-    private long id;
+    private Long id;
     private String content;
     private Timestamp creationTime;
-//    private long authId;
-//    private long newsId;
 
     private AuthUserEntity authUser;
 
@@ -23,11 +21,11 @@ public class CommentEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -48,24 +46,6 @@ public class CommentEntity {
     public void setCreationTime(Timestamp creationTime) {
         this.creationTime = creationTime;
     }
-
-//    @Column (name = "auth_id")
-//    public long getAuthId() {
-//        return authId;
-//    }
-//
-//    public void setAuthId(long authId) {
-//        this.authId = authId;
-//    }
-//
-//    @Column (name = "news_id")
-//    public long getNewsId() {
-//        return newsId;
-//    }
-//
-//    public void setNewsId(long newsId) {
-//        this.newsId = newsId;
-//    }
 
     @ManyToOne (fetch = FetchType.EAGER)
     @JoinColumn (name = "auth_id", nullable = false, updatable = false)
@@ -93,8 +73,6 @@ public class CommentEntity {
                 "id=" + id +
                 ", content=" + content +
                 ", creationTime=" + creationTime +
-//                ", authId=" + authId +
-//                ", newsId=" + newsId +
                 '}';
     }
 
@@ -102,10 +80,10 @@ public class CommentEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CommentEntity comm = (CommentEntity) o;
-        return id == comm.id &&
-                content.equals(comm.content) &&
-                creationTime.equals(comm.creationTime);
+        CommentEntity comment = (CommentEntity) o;
+        return id.equals(comment.id) &&
+                content.equals(comment.content) &&
+                creationTime.equals(comment.creationTime);
     }
 
     @Override

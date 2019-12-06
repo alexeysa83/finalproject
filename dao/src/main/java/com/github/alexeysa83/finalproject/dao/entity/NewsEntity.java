@@ -14,11 +14,10 @@ import java.util.Objects;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class NewsEntity {
 
-    private long id;
+    private Long id;
     private String title;
     private String content;
     private Timestamp creationTime;
-//    private long authId;
 
     private AuthUserEntity authUser;
 
@@ -29,11 +28,11 @@ public class NewsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -65,15 +64,6 @@ public class NewsEntity {
         this.creationTime = creationTime;
     }
 
-//    @JoinColumn (name = "auth_id")
-//    public long getAuthId() {
-//        return authId;
-//    }
-//
-//    public void setAuthId(long authId) {
-//        this.authId = authId;
-//    }
-
     @ManyToOne (fetch = FetchType.EAGER)
     @JoinColumn (name = "auth_id", nullable = false, updatable = false)
     public AuthUserEntity getAuthUser() {
@@ -85,6 +75,7 @@ public class NewsEntity {
     }
 
     @OneToMany (mappedBy = "news", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+//    @Cascade(value = org.hibernate.annotations.CascadeType.ALL)
     public List<CommentEntity> getComments() {
         return comments;
     }
@@ -99,17 +90,15 @@ public class NewsEntity {
                 "id=" + id +
                 ", title=" + title +
                 ", creation time=" + creationTime +
-//                ", authId=" + authId +
                 '}';
     }
 
-           @Override
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         NewsEntity news = (NewsEntity) o;
-        return id == news.id &&
-//                authId == news.authId &&
+        return id.equals(news.id) &&
                 title.equals(news.title) &&
                 content.equals(news.content) &&
                 creationTime.equals(news.creationTime);

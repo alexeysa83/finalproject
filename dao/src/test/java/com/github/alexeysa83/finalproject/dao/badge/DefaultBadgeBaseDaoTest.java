@@ -2,10 +2,9 @@ package com.github.alexeysa83.finalproject.dao.badge;
 
 import com.github.alexeysa83.finalproject.dao.AddDeleteTestEntity;
 import com.github.alexeysa83.finalproject.dao.config.DaoConfig;
-import com.github.alexeysa83.finalproject.dao.config.HibernateConfig;
 import com.github.alexeysa83.finalproject.dao.user.UserInfoBaseDao;
-import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.dto.BadgeDto;
+import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +12,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {HibernateConfig.class, DaoConfig.class, AddDeleteTestEntity.class})
+@ContextConfiguration(classes = {DaoConfig.class, AddDeleteTestEntity.class})
+@Transactional
 class DefaultBadgeBaseDaoTest {
 
     @Autowired
@@ -26,36 +28,15 @@ class DefaultBadgeBaseDaoTest {
     @Autowired
     private AddDeleteTestEntity util;
 
-@Transactional
-//@Rollback()
     @Test
     void add() {
         final String testName = "CreateTestBadge";
         final BadgeDto testBadge = util.createBadgeDto(testName);
         final BadgeDto savedBadge = badgeDao.add(testBadge);
-        final Long id = savedBadge.getId();
 
         assertNotNull(savedBadge);
-        assertNotNull(id);
+        assertNotNull(savedBadge.getId());
         assertEquals(testBadge.getBadgeName(), savedBadge.getBadgeName());
-
-//        badgeDao.delete(id);
-    }
-
-    @Transactional
-//@Rollback()
-    @Test
-    void addPersistence() {
-        final String testName = "CreateTestBadgePersistence";
-        final BadgeDto testBadge = util.createBadgeDto(testName);
-        final BadgeDto savedBadge = badgeDao.addPersistence(testBadge);
-        final Long id = savedBadge.getId();
-
-        assertNotNull(savedBadge);
-        assertNotNull(id);
-        assertEquals(testBadge.getBadgeName(), savedBadge.getBadgeName());
-
-//        badgeDao.delete(id);
     }
 
     @Test
@@ -66,8 +47,6 @@ class DefaultBadgeBaseDaoTest {
 
         final boolean nameIsTaken = badgeDao.isNameTaken(testName);
         assertTrue(nameIsTaken);
-
-        badgeDao.delete(testBadge.getId());
     }
 
     @Test
@@ -87,23 +66,35 @@ class DefaultBadgeBaseDaoTest {
         assertNotNull(badgeFromDB);
         assertEquals(id, badgeFromDB.getId());
         assertEquals(testBadge.getBadgeName(), badgeFromDB.getBadgeName());
-
-        badgeDao.delete(id);
     }
 
     @Test
     void getByIdNotExist() {
-        final BadgeDto badgeFromDB = badgeDao.getById(0);
+        final BadgeDto badgeFromDB = badgeDao.getById(0L);
         assertNull(badgeFromDB);
     }
 
-//    @Test
-//    void getAllBadges() {
-//        List<BadgeDto> allBadges = badgeDao.getAll();
-//        for (BadgeDto allBadge : allBadges) {
-//            System.out.println(allBadge);
-//        }
-//    }
+    @Test
+    void getAllBadges() {
+        final String third = "Third";
+        final BadgeDto thirdTestBadge = util.addTestBadgeToDB(third);
+
+        final String first = "First";
+        final BadgeDto firstTestBadge = util.addTestBadgeToDB(first);
+
+        final String second = "Second";
+        final BadgeDto secondTestBadge = util.addTestBadgeToDB(second);
+
+        List<BadgeDto> allBadges = badgeDao.getAll();
+        final BadgeDto firstBadgeFromDB = allBadges.get(0);
+        assertEquals(firstTestBadge,firstBadgeFromDB);
+
+        final BadgeDto secondBadgeFromDB = allBadges.get(1);
+        assertEquals(secondTestBadge,secondBadgeFromDB);
+
+        final BadgeDto thirdBadgeFromDB = allBadges.get(2);
+        assertEquals(thirdTestBadge,thirdBadgeFromDB);
+    }
 
     @Test
     void updateSuccess() {
@@ -118,27 +109,31 @@ class DefaultBadgeBaseDaoTest {
 
         final BadgeDto afterUpdate = badgeDao.getById(id);
         assertEquals(badgeToUpdate.getBadgeName(), afterUpdate.getBadgeName());
-
-        badgeDao.delete(id);
     }
 
     @Test
     void updateFail() {
         final BadgeDto badgeToUpdate = util.createBadgeDto("Updated");
-        badgeToUpdate.setId(0);
+        badgeToUpdate.setId(0L);
 
         final boolean isUpdated = badgeDao.update(badgeToUpdate);
         assertFalse(isUpdated);
     }
 
+    /**
+     * User correction
+     */
     @Test
-    void delete() {
+    void deleteSuccess() {
         final String testName = "DeleteTestBadge";
-        final AuthUserDto testUser = util.addTestUserToDB(testName);
+        final UserInfoDto testUser = util.addTestUserInfoToDB(testName);
 
         final BadgeDto testBadge = util.addTestBadgeToDB(testName);
-        final long badgeId = testBadge.getId();
-        userDAO.addBadgeToUser(testUser.getId(), badgeId);
+        final Long badgeId = testBadge.getId();
+        /**
+         *
+         */
+        userDAO.addBadgeToUser(testUser.getAuthId(), badgeId);
 
         final BadgeDto badgeToDelete = badgeDao.getById(badgeId);
         assertNotNull(badgeToDelete);
@@ -148,7 +143,11 @@ class DefaultBadgeBaseDaoTest {
 
         final BadgeDto afterDelete = badgeDao.getById(badgeId);
         assertNull(afterDelete);
+    }
 
-        util.completeDeleteUser(testUser.getId());
+    @Test
+    void deleteFail() {
+        final boolean isDeleted = badgeDao.delete(0L);
+        assertFalse(isDeleted);
     }
 }

@@ -1,111 +1,101 @@
 package com.github.alexeysa83.finalproject.dao.authuser;
 
-import com.github.alexeysa83.finalproject.dao.SessionManager;
 import com.github.alexeysa83.finalproject.dao.convert_entity.AuthUserConvert;
 import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
+import com.github.alexeysa83.finalproject.dao.repository.AuthUserRepository;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.PersistenceException;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
-public class DefaultAuthUserBaseDao extends SessionManager implements AuthUserBaseDao {
+public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultAuthUserBaseDao.class);
 
-    public DefaultAuthUserBaseDao(SessionFactory factory) {
-        super(factory);
+    private final AuthUserRepository authRepository;
+
+    public DefaultAuthUserBaseDao(AuthUserRepository authRepository) {
+        this.authRepository = authRepository;
     }
 
-    // default role and block status in DB or constructor???
+    /**
+     *
+     */
     @Override
-    public AuthUserDto add(AuthUserDto user) {
-        final AuthUserEntity authUserEntity = AuthUserConvert.toEntity(user);
-        try (Session session = getSession()) {
-            session.beginTransaction();
-            session.save(authUserEntity);
-            session.getTransaction().commit();
-            log.info("AuthUser id: {} saved to DB at: {}", authUserEntity.getId(), LocalDateTime.now());
-            return AuthUserConvert.toDto(authUserEntity);
-        } catch (PersistenceException e) {
-            log.error("Fail to save new user to DB: {}, at: {}", user, LocalDateTime.now(), e);
-            throw new RuntimeException(e);
+    @Transactional(propagation = Propagation.MANDATORY)
+    public AuthUserDto add(AuthUserDto authUserDto) {
+        final AuthUserEntity authUserEntity = AuthUserConvert.toEntity(authUserDto);
+        AuthUserEntity savedToDB;
+        try {
+            savedToDB = authRepository.save(authUserEntity);
+//        } catch (PersistenceException | IllegalArgumentException e) {
+        } catch (RuntimeException e) {
+            log.error("Fail to save new user to DB: {}, at: {}", authUserDto, LocalDateTime.now(), e);
+//            throw new RuntimeException(e);
+            return null;
         }
+        log.info("AuthUser id: {} saved to DB at: {}", savedToDB.getId(), LocalDateTime.now());
+        return AuthUserConvert.toDto(savedToDB);
     }
 
+    /**
+     * Need try/catch?
+     */
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public AuthUserDto getByLogin(String login) {
-        try (Session session = getSession()) {
-            session.beginTransaction();
-            Query query = session.createQuery("from AuthUserEntity where login = :login").setCacheable(true);
-            AuthUserEntity authUserEntity = (AuthUserEntity) query.setParameter("login", login).uniqueResult();
-            session.getTransaction().commit();
+        final AuthUserEntity authUserEntity = authRepository.findByLogin(login);
+        return AuthUserConvert.toDto(authUserEntity);
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public AuthUserDto getById(Long id) {
+        final Optional<AuthUserEntity> optional = authRepository.findById(id);
+        if (optional.isPresent()) {
+            final AuthUserEntity authUserEntity = optional.get();
             return AuthUserConvert.toDto(authUserEntity);
-        } catch (PersistenceException e) {
-            log.error("Fail to get user from DB by login: {}, at: {}", login, LocalDateTime.now(), e);
-            throw new RuntimeException(e);
         }
+        return null;
     }
 
     @Override
-    public AuthUserDto getById(long id) {
-        Session session = getSession();
-        session.beginTransaction();
-        final AuthUserEntity authUser = session.get(AuthUserEntity.class, id);
-        session.getTransaction().commit();
-        final AuthUserDto authUserDto = AuthUserConvert.toDto(authUser);
-        session.close();
-        return authUserDto;
-    }
-
-    @Override
+    @Transactional(propagation = Propagation.MANDATORY)
     public boolean update(AuthUserDto authUserDto) {
-
-        try (Session session = getSession()) {
-            session.beginTransaction();
-
-            final int i = session.createQuery("update AuthUserEntity a set a.login=:login," +
-                    " a.password=:password, a.role=:role where a.id=:id")
-                    .setParameter("login", authUserDto.getLogin())
-                    .setParameter("password", authUserDto.getPassword())
-                    .setParameter("role", authUserDto.getRole())
-                    .setParameter("id", authUserDto.getId())
-                    .executeUpdate();
-            session.getTransaction().commit();
-            log.info("AuthUser id: {} updated in DB at: {}", authUserDto.getId(), LocalDateTime.now());
-            return i > 0;
+        String message = "AuthUser id: {} updated in DB at: {}";
+        try {
+            final int rowsUpdated = authRepository.updateLoginPasswordRole(
+                    authUserDto.getId(),
+                    authUserDto.getLogin(),
+                    authUserDto.getPassword(),
+                    authUserDto.getRole());
+            if (rowsUpdated <= 0) {
+                message = "Fail to update in DB AuthUser: {} at: {}";
+            }
+            log.info(message, authUserDto.getId(), LocalDateTime.now());
+            return rowsUpdated > 0;
         } catch (PersistenceException e) {
             log.error("Fail to update in DB AuthUser: {} at: {}", authUserDto, LocalDateTime.now(), e);
             throw new RuntimeException(e);
         }
     }
 
-    /**
-     * AuthUser flag isDeleted set to true, UserInfo deleted
-     */
     @Override
-    public boolean delete(long id) {
-        try (Session session = getSession()) {
-            session.beginTransaction();
-            final int userInfoDeleted = session.createQuery("delete UserInfoEntity u where u.id=:id")
-                    .setParameter("id", id)
-                    .executeUpdate();
-            session.flush();
-            int authUserDeleted = 0;
-            if (userInfoDeleted > 0) {
-                authUserDeleted = session.createQuery
-                        ("update AuthUserEntity a set a.deleted=:isDeleted where a.id=:id")
-                        .setParameter("isDeleted", true)
-                        .setParameter("id", id)
-                        .executeUpdate();
+    @Transactional(propagation = Propagation.MANDATORY)
+    public boolean delete(Long id) {
+        String message = "AuthUser id : {} deleted from DB at: {}";
+        try {
+            final int rowsUpdated = authRepository.isDeletedSetTrue(id);
+            if (rowsUpdated <= 0) {
+                message = "Fail to delete AuthUser id: {} from DB, at: {}";
             }
-            session.getTransaction().commit();
-            log.info("AuthUser id : {} deleted from DB at: {}", id, LocalDateTime.now());
-            return authUserDeleted > 0;
+            log.info(message, id, LocalDateTime.now());
+            return rowsUpdated > 0;
         } catch (PersistenceException e) {
             log.error("Fail to delete AuthUser id: {} from DB, at: {}", id, LocalDateTime.now());
             throw new RuntimeException(e);

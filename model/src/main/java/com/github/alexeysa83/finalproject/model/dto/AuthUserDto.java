@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public class AuthUserDto {
 
-    private long id;
+    private Long id;
     private String login;
     private String password;
     private Role role;
@@ -18,15 +18,14 @@ public class AuthUserDto {
     }
 
     // User created in login/registration servlets
-    public AuthUserDto(String login, String password, UserInfoDto userInfoDto) {
+    public AuthUserDto(String login, String password) {
         this.login = login;
         this.password = password;
         role = Role.USER;
         isDeleted = false;
-        this.userInfoDto = userInfoDto;
-    }
+         }
 
-    public AuthUserDto(long id, String login, String password, Role role, boolean isDeleted, UserInfoDto userInfoDto) {
+    public AuthUserDto(Long id, String login, String password, Role role, boolean isDeleted, UserInfoDto userInfoDto) {
         this.id = id;
         this.login = login;
         this.password = password;
@@ -35,11 +34,11 @@ public class AuthUserDto {
         this.userInfoDto = userInfoDto;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -97,8 +96,8 @@ public class AuthUserDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AuthUserDto user = (AuthUserDto) o;
-        return id == user.id &&
-                isDeleted == user.isDeleted &&
+        return isDeleted == user.isDeleted &&
+                id.equals(user.id) &&
                 login.equals(user.login) &&
                 password.equals(user.password) &&
                 role == user.role;

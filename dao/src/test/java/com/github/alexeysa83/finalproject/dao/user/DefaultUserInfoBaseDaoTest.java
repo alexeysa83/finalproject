@@ -3,7 +3,6 @@ package com.github.alexeysa83.finalproject.dao.user;
 import com.github.alexeysa83.finalproject.dao.AddDeleteTestEntity;
 import com.github.alexeysa83.finalproject.dao.badge.BadgeBaseDao;
 import com.github.alexeysa83.finalproject.dao.config.DaoConfig;
-import com.github.alexeysa83.finalproject.dao.config.HibernateConfig;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.dto.BadgeDto;
 import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
@@ -12,13 +11,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Iterator;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration (classes = {HibernateConfig.class, DaoConfig.class, AddDeleteTestEntity.class})
+@ContextConfiguration (classes = {DaoConfig.class, AddDeleteTestEntity.class})
+@Transactional
 class DefaultUserInfoBaseDaoTest {
 
     @Autowired
@@ -28,11 +29,31 @@ class DefaultUserInfoBaseDaoTest {
     @Autowired
     private AddDeleteTestEntity util;
 
+    @Test
+    void add() {
+        final String testLogin = "CreateTestUserInfo";
+        final AuthUserDto testAuthUser = util.addTestAuthUserToDB(testLogin);
+
+        final UserInfoDto testUserInfoDto = util.createUserInfoDto();
+        testUserInfoDto.setAuthId(testAuthUser.getId());
+
+        final UserInfoDto savedUser = userDAO.add(testUserInfoDto);
+        assertNotNull(savedUser);
+        assertEquals(testUserInfoDto.getAuthId(), savedUser.getAuthId());
+        assertEquals(testUserInfoDto.getRegistrationTime(), savedUser.getRegistrationTime());
+        assertEquals(testAuthUser.getLogin(), savedUser.getUserLogin());
+
+        assertNull(savedUser.getFirstName());
+        assertNull(savedUser.getLastName());
+        assertNull(savedUser.getEmail());
+        assertNull(savedUser.getPhone());
+        }
+
+
      @Test
     void getByIdExist() {
         final String testLogin = "GetByIdTestUserInfo";
-        final AuthUserDto authUser = util.addTestUserToDB(testLogin);
-        final UserInfoDto testUser = authUser.getUserInfoDto();
+        final UserInfoDto testUser = util.addTestUserInfoToDB(testLogin);
         final long authId = testUser.getAuthId();
 
         final UserInfoDto userFromDB = userDAO.getById(authId);
@@ -46,21 +67,18 @@ class DefaultUserInfoBaseDaoTest {
         assertNull(userFromDB.getLastName());
         assertNull(userFromDB.getEmail());
         assertNull(userFromDB.getPhone());
-
-        util.completeDeleteUser(authId);
          }
 
     @Test
     void getByIdNotExist() {
-        final UserInfoDto userFromDB = userDAO.getById(0);
+        final UserInfoDto userFromDB = userDAO.getById(0L);
         assertNull(userFromDB);
     }
 
     @Test
     void updateSuccess() {
         final String testLogin = "UpdateTestUserInfo";
-        final AuthUserDto authUser = util.addTestUserToDB(testLogin);
-        final UserInfoDto testUser = authUser.getUserInfoDto();
+        final UserInfoDto testUser = util.addTestUserInfoToDB(testLogin);
         final long authId = testUser.getAuthId();
 
         /**
@@ -84,32 +102,51 @@ class DefaultUserInfoBaseDaoTest {
         assertEquals(userInfoDtoToUpdate.getEmail(), afterUpdate.getEmail());
         assertEquals(userInfoDtoToUpdate.getPhone(), afterUpdate.getPhone());
 
+        // non-changeable fields
         assertEquals(authId, afterUpdate.getAuthId());
         assertEquals(testUser.getRegistrationTime(), afterUpdate.getRegistrationTime());
         assertEquals(testUser.getUserLogin(), afterUpdate.getUserLogin());
-
-        util.completeDeleteUser(authId);
     }
 
     @Test
     void updateFail() {
         final UserInfoDto userInfoDtoToUpdate = util.createUserInfoDto();
-        userInfoDtoToUpdate.setAuthId(0);
-        userInfoDtoToUpdate.setFirstName("First");
-        userInfoDtoToUpdate.setLastName("Last");
-        userInfoDtoToUpdate.setEmail("email");
-        userInfoDtoToUpdate.setPhone("phone");
-        userInfoDtoToUpdate.setUserLogin("FakeLogin");
+        userInfoDtoToUpdate.setAuthId(0L);
 
         final boolean isUpdated = userDAO.update(userInfoDtoToUpdate);
         assertFalse(isUpdated);
     }
 
+    /**
+     * Badges???
+     */
+    @Test
+    void deleteSuccess() {
+        final String testLogin = "DeleteTestUserInfo";
+        final UserInfoDto testUser = util.addTestUserInfoToDB(testLogin);
+        final long authId = testUser.getAuthId();
+
+        final UserInfoDto userToDelete = userDAO.getById(authId);
+        assertNotNull(userToDelete);
+
+        final boolean isDeleted = userDAO.delete(authId);
+        assertTrue(isDeleted);
+
+        final UserInfoDto afterDelete = userDAO.getById(authId);
+        assertNull(afterDelete);
+            }
+
+    @Test
+    void deleteFail() {
+        final boolean isDeleted = userDAO.delete(0L);
+        assertFalse(isDeleted);
+    }
+
+
     @Test
     void addBadgeToUser() {
         final String testLogin = "AddBadgeToUserInfoTest";
-        final AuthUserDto authUser = util.addTestUserToDB(testLogin);
-        final UserInfoDto testUser = authUser.getUserInfoDto();
+        final UserInfoDto testUser = util.addTestUserInfoToDB(testLogin);
         final long authId = testUser.getAuthId();
 
         final BadgeDto testBadge = util.addTestBadgeToDB(testLogin);
@@ -118,6 +155,7 @@ class DefaultUserInfoBaseDaoTest {
         final UserInfoDto userWithBadge = userDAO.addBadgeToUser(authId, badgeId);
         assertNotNull(userWithBadge);
         assertEquals(testUser, userWithBadge);
+        assertNotNull(userWithBadge.getBadges());
 
         final Iterator<BadgeDto> iterator = userWithBadge.getBadges().iterator();
         assertTrue(iterator.hasNext());
@@ -125,29 +163,23 @@ class DefaultUserInfoBaseDaoTest {
         final BadgeDto addedBadge = iterator.next();
         assertEquals(testBadge.getId(), addedBadge.getId());
         assertEquals(testBadge.getBadgeName(), addedBadge.getBadgeName());
-
-        userDAO.deleteBadgeFromUser(authId, badgeId);
-        badgeDao.delete(badgeId);
-        util.completeDeleteUser(authId);
     }
 
     @Test
     void deleteBadgeFromUser() {
         final String testLogin = "DeleteBadgeFromUserInfoTest";
-        final AuthUserDto authUser = util.addTestUserToDB(testLogin);
-        final UserInfoDto testUser = authUser.getUserInfoDto();
+        final UserInfoDto testUser = util.addTestUserInfoToDB(testLogin);
         final long authId = testUser.getAuthId();
 
         final BadgeDto testBadge = util.addTestBadgeToDB(testLogin);
         final long badgeId = testBadge.getId();
+
         final UserInfoDto userWithBadge = userDAO.addBadgeToUser(authId, badgeId);
         assertNotNull(userWithBadge);
         assertNotNull(userWithBadge.getBadges());
 
         final UserInfoDto userDeletedBadge = userDAO.deleteBadgeFromUser(authId, badgeId);
+        assertEquals(userWithBadge, userDeletedBadge);
         assertNull(userDeletedBadge.getBadges());
-
-        badgeDao.delete(badgeId);
-        util.completeDeleteUser(authId);
     }
 }

@@ -1,115 +1,82 @@
 package com.github.alexeysa83.finalproject.dao.badge;
 
-import com.github.alexeysa83.finalproject.dao.SessionManager;
 import com.github.alexeysa83.finalproject.dao.convert_entity.BadgeConvert;
 import com.github.alexeysa83.finalproject.dao.entity.BadgeEntity;
+import com.github.alexeysa83.finalproject.dao.repository.BadgeRepository;
 import com.github.alexeysa83.finalproject.model.dto.BadgeDto;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
-public class DefaultBadgeBaseDao extends SessionManager implements BadgeBaseDao {
+public class DefaultBadgeBaseDao implements BadgeBaseDao {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultBadgeBaseDao.class);
 
-    public DefaultBadgeBaseDao(SessionFactory factory) {
-        super(factory);
+    private final BadgeRepository badgeRepository;
+
+    public DefaultBadgeBaseDao(BadgeRepository badgeRepository) {
+        this.badgeRepository = badgeRepository;
     }
 
-    @PersistenceContext
-    private EntityManager manager;
-
-    private Session getSessionPersistence () {
-       return manager.unwrap(Session.class);
-    }
-
+    /**
+     * ??
+         */
     @Override
     @Transactional(propagation = Propagation.MANDATORY)
     public BadgeDto add(BadgeDto badgeDto) {
         final BadgeEntity badgeEntity = BadgeConvert.toEntity(badgeDto);
-                try (Session session = getSession()) {
-//            session.beginTransaction();
-            session.save(badgeEntity);
-//            session.getTransaction().commit();
-            log.info("Badge id: {} saved to DB at: {}", badgeEntity.getId(), LocalDateTime.now());
-            return BadgeConvert.toDto(badgeEntity);
-        } catch (PersistenceException e) {
+        BadgeEntity savedToDB;
+        try {
+            savedToDB = badgeRepository.save(badgeEntity);
+//        } catch (PersistenceException | IllegalArgumentException e) {
+        } catch (RuntimeException e) {
             log.error("Fail to save new badge to DB: {}, at: {}", badgeDto, LocalDateTime.now(), e);
-            throw new RuntimeException(e);
+//            throw new RuntimeException(e);
+            return null;
         }
+        log.info("Badge id: {} saved to DB at: {}", savedToDB.getId(), LocalDateTime.now());
+        return BadgeConvert.toDto(savedToDB);
     }
 
+    /**
+     * Need try/catch?
+     */
     @Override
-    @Transactional(propagation = Propagation.MANDATORY)
-    public BadgeDto addPersistence(BadgeDto badgeDto) {
-        final BadgeEntity badgeEntity = BadgeConvert.toEntity(badgeDto);
-        final Session session = getSessionPersistence();
-//            session.beginTransaction();
-            session.save(badgeEntity);
-//            session.getTransaction().commit();
-            log.info("Badge id: {} saved to DB at: {}", badgeEntity.getId(), LocalDateTime.now());
-//            session.close();
-            return BadgeConvert.toDto(badgeEntity);
-    }
-
-    @Override
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public boolean isNameTaken(String name) {
-        try (Session session = getSession()) {
-            session.beginTransaction();
-            Query query = session.createQuery("from BadgeEntity b where b.badgeName=:name");
-            BadgeEntity badgeEntity = (BadgeEntity) query.setParameter("name", name).uniqueResult();
-            session.getTransaction().commit();
-            return badgeEntity != null;
-        } catch (PersistenceException e) {
-            log.error("Fail to get badge from DB by name: {}, at: {}", name, LocalDateTime.now(), e);
-            throw new RuntimeException(e);
-        }
+        final BadgeEntity badgeEntity = badgeRepository.findByBadgeName(name);
+        return badgeEntity != null;
     }
 
     /**
      * Used only in tests
      */
     @Override
-    public BadgeDto getById(long id) {
-        Session session = getSession();
-        session.beginTransaction();
-        final BadgeEntity badgeEntity = session.get(BadgeEntity.class, id);
-        session.getTransaction().commit();
-        session.close();
-        return BadgeConvert.toDto(badgeEntity);
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public BadgeDto getById(Long id) {
+        final Optional<BadgeEntity> optional = badgeRepository.findById(id);
+        if (optional.isPresent()) {
+            final BadgeEntity badgeEntity = optional.get();
+            return BadgeConvert.toDto(badgeEntity);
+        }
+        return null;
     }
 
-    /**
-     * Testing?
-     */
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<BadgeDto> getAll() {
-        List<BadgeDto> badgeDtos;
-        try (Session session = getSession()) {
-            session.beginTransaction();
-
-            final CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-            final CriteriaQuery<BadgeEntity> criteria = criteriaBuilder.createQuery(BadgeEntity.class);
-            final Root<BadgeEntity> badge = criteria.from(BadgeEntity.class);
-            criteria.select(badge).orderBy(criteriaBuilder.asc(badge.get("badgeName")));
-            final List<BadgeEntity> listEntities = session.createQuery(criteria).getResultList();
-
-            session.getTransaction().commit();
+        try {
+            List<BadgeDto> badgeDtos;
+            final List<BadgeEntity> listEntities = badgeRepository.findAll(Sort.by("badgeName"));
             badgeDtos = listEntities.stream().map(BadgeConvert::toDto).collect(Collectors.toList());
             return badgeDtos;
         } catch (PersistenceException e) {
@@ -118,38 +85,20 @@ public class DefaultBadgeBaseDao extends SessionManager implements BadgeBaseDao 
         }
     }
 
-    //    @Override
-//    public List<BadgeDto> getAll() {
-//        List<BadgeDto> badgeDtos = new ArrayList<>();
-//        try (Session session = HibernateUtil.getSession()) {
-//            session.beginTransaction();
-//
-//            Query query = session.createQuery("from BadgeEntity b order by b.id")
-//                    .setReadOnly(true);
-//            List<BadgeEntity> list = query.list();
-//            session.getTransaction().commit();
-//            list.forEach(badgeEntity -> {
-//                badgeDtos.add(ConvertEntityDTO.BadgeToDto(badgeEntity));
-//            });
-//            return badgeDtos;
-//        } catch (PersistenceException e) {
-//            log.error("Fail to get list of badges from DB at: {}", LocalDateTime.now(), e);
-//            return null;
-//        }
-//    }
-
+    /**
+     * Optimization
+     */
     @Override
+    @Transactional(propagation = Propagation.MANDATORY)
     public boolean update(BadgeDto badgeDto) {
-        try (Session session = getSession()) {
-            session.beginTransaction();
-
-            final int i = session.createQuery("update BadgeEntity b set b.badgeName=:badgeName where b.id=:id")
-                    .setParameter("badgeName", badgeDto.getBadgeName())
-                    .setParameter("id", badgeDto.getId())
-                    .executeUpdate();
-            session.getTransaction().commit();
-            log.info("Badge id: {} updated in DB at: {}", badgeDto.getId(), LocalDateTime.now());
-            return i > 0;
+        String message = "Badge id: {} updated in DB at: {}";
+        try {
+            final int rowsUpdated = badgeRepository.updateBadgeName(badgeDto.getId(), badgeDto.getBadgeName());
+            if (rowsUpdated <= 0) {
+                message = "Fail to update in DB badge: {} at: {}";
+            }
+            log.info(message, badgeDto.getId(), LocalDateTime.now());
+            return rowsUpdated > 0;
         } catch (PersistenceException e) {
             log.error("Fail to update in DB badge: {} at: {}", badgeDto, LocalDateTime.now(), e);
             throw new RuntimeException(e);
@@ -157,18 +106,19 @@ public class DefaultBadgeBaseDao extends SessionManager implements BadgeBaseDao 
     }
 
     @Override
-    public boolean delete(long id) {
-        try (Session session = getSession()) {
-            session.beginTransaction();
-            final int i = session.createQuery("delete BadgeEntity b where b.id=:id")
-                    .setParameter("id", id)
-                    .executeUpdate();
-            session.getTransaction().commit();
-            log.info("Badge id: {} deleted from DB at: {}", id, LocalDateTime.now());
-            return i > 0;
+    @Transactional(propagation = Propagation.MANDATORY)
+    public boolean delete(Long id) {
+        String message = "Badge id: {} deleted from DB at: {}";
+        try {
+            final int rowsDeleted = badgeRepository.deleteBadge(id);
+            if (rowsDeleted <= 0) {
+                message = "Fail to delete badge id from DB: {}, at: {}";
+            }
+            log.info(message, id, LocalDateTime.now());
+            return rowsDeleted > 0;
         } catch (PersistenceException e) {
             log.error("Fail to delete badge id from DB: {}, at: {}", id, LocalDateTime.now(), e);
-            return false;
+            throw new RuntimeException(e);
         }
     }
 }

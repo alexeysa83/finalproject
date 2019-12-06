@@ -1,20 +1,21 @@
 package com.github.alexeysa83.finalproject.model.dto;
 
 import java.sql.Timestamp;
+import java.util.Objects;
 
 public class CommentDto {
 
-    private long id;
+    private Long id;
     private String content;
     private Timestamp creationTime;
-    private long authId;
-    private long newsId;
+    private Long authId;
+    private Long newsId;
     private String authorComment;
 
     public CommentDto() {
     }
 
-    public CommentDto(String content, Timestamp creationTime, long authId, long newsId, String authorComment) {
+    public CommentDto(String content, Timestamp creationTime, Long authId, Long newsId, String authorComment) {
         this.content = content;
         this.creationTime = creationTime;
         this.authId = authId;
@@ -22,7 +23,7 @@ public class CommentDto {
         this.authorComment = authorComment;
     }
 
-    public CommentDto(long id, String content, Timestamp creationTime, long authId, long newsId, String authorComment) {
+    public CommentDto(Long id, String content, Timestamp creationTime, Long authId, Long newsId, String authorComment) {
         this.id = id;
         this.content = content;
         this.creationTime = creationTime;
@@ -31,11 +32,11 @@ public class CommentDto {
         this.authorComment = authorComment;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -55,19 +56,19 @@ public class CommentDto {
         this.creationTime = creationTime;
     }
 
-    public long getAuthId() {
+    public Long getAuthId() {
         return authId;
     }
 
-    public void setAuthId(long authId) {
+    public void setAuthId(Long authId) {
         this.authId = authId;
     }
 
-    public long getNewsId() {
+    public Long getNewsId() {
         return newsId;
     }
 
-    public void setNewsId(long newsId) {
+    public void setNewsId(Long newsId) {
         this.newsId = newsId;
     }
 
@@ -89,5 +90,23 @@ public class CommentDto {
                 ", newsId=" + newsId +
                 ", authorComment=" + authorComment +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CommentDto comment = (CommentDto) o;
+        return id.equals(comment.id) &&
+                content.equals(comment.content) &&
+                creationTime.equals(comment.creationTime) &&
+                authId.equals(comment.authId) &&
+                newsId.equals(comment.newsId) &&
+                authorComment.equals(comment.authorComment);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, content, creationTime, authId, newsId, authorComment);
     }
 }

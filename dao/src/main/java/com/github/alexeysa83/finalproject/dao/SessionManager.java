@@ -11,7 +11,7 @@ public abstract class SessionManager {
         this.factory = factory;
     }
 
-    public Session getSession() {
-        return factory.openSession();
+    protected Session getSession() {
+        return factory.getCurrentSession();
     }
 }

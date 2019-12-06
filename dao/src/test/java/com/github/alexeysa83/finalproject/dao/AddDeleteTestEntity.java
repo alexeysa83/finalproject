@@ -7,11 +7,11 @@ import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
 import com.github.alexeysa83.finalproject.dao.news.NewsBaseDao;
 import com.github.alexeysa83.finalproject.dao.user.UserInfoBaseDao;
 import com.github.alexeysa83.finalproject.model.dto.*;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
@@ -29,7 +29,7 @@ public class AddDeleteTestEntity {
     @Autowired
     private BadgeBaseDao badgeDao;
     @Autowired
-    private EntityManagerFactory factory;
+    private SessionFactory factory;
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -40,11 +40,10 @@ public class AddDeleteTestEntity {
 
     // Test AuthUser util methods
     public AuthUserDto createAuthUserDto(String name) {
-        UserInfoDto userInfoDto = createUserInfoDto();
-        return new AuthUserDto(name, name + "Pass", userInfoDto);
+        return new AuthUserDto(name, name + "Pass");
     }
 
-    public AuthUserDto addTestUserToDB(String name) {
+    public AuthUserDto addTestAuthUserToDB(String name) {
         final AuthUserDto user = createAuthUserDto(name);
         return authUserDao.add(user);
     }
@@ -61,6 +60,13 @@ public class AddDeleteTestEntity {
     // Test UserInfo util methods
     public UserInfoDto createUserInfoDto() {
         return new UserInfoDto(getTime());
+    }
+
+    public UserInfoDto addTestUserInfoToDB(String name) {
+        final AuthUserDto testAuthUser = addTestAuthUserToDB(name);
+        final UserInfoDto userInfoDto = createUserInfoDto();
+        userInfoDto.setAuthId(testAuthUser.getId());
+        return userDAO.add(userInfoDto);
     }
 
     // Test News util methods
