@@ -1,8 +1,9 @@
 package com.github.alexeysa83.finalproject.dao.badge;
 
-import com.github.alexeysa83.finalproject.dao.AddDeleteTestEntity;
+import com.github.alexeysa83.finalproject.dao.util.AddDeleteTestEntity;
 import com.github.alexeysa83.finalproject.dao.config.DaoConfig;
 import com.github.alexeysa83.finalproject.dao.user.UserInfoBaseDao;
+import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.dto.BadgeDto;
 import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
 import org.junit.jupiter.api.Test;
@@ -120,19 +121,15 @@ class DefaultBadgeBaseDaoTest {
         assertFalse(isUpdated);
     }
 
-    /**
-     * User correction
-     */
     @Test
     void deleteSuccess() {
         final String testName = "DeleteTestBadge";
-        final UserInfoDto testUser = util.addTestUserInfoToDB(testName);
+        final AuthUserDto testAuthUser = util.addTestAuthUserToDB(testName);
+        final UserInfoDto testUser = util.addTestUserInfoToDB(testAuthUser.getId());
 
         final BadgeDto testBadge = util.addTestBadgeToDB(testName);
         final Long badgeId = testBadge.getId();
-        /**
-         *
-         */
+
         userDAO.addBadgeToUser(testUser.getAuthId(), badgeId);
 
         final BadgeDto badgeToDelete = badgeDao.getById(badgeId);

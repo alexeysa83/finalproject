@@ -1,8 +1,7 @@
 package com.github.alexeysa83.finalproject.dao.comment;
 
-import com.github.alexeysa83.finalproject.dao.AddDeleteTestEntity;
+import com.github.alexeysa83.finalproject.dao.util.AddDeleteTestEntity;
 import com.github.alexeysa83.finalproject.dao.config.DaoConfig;
-import com.github.alexeysa83.finalproject.dao.config.HibernateConfig;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.dto.CommentDto;
 import com.github.alexeysa83.finalproject.model.dto.NewsDto;
@@ -11,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -18,7 +18,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {HibernateConfig.class, DaoConfig.class, AddDeleteTestEntity.class})
+@ContextConfiguration(classes = {DaoConfig.class, AddDeleteTestEntity.class})
+@Transactional
 class DefaultCommentBaseDaoTest {
 
     @Autowired
@@ -44,8 +45,6 @@ class DefaultCommentBaseDaoTest {
         assertEquals(testComment.getAuthId(), savedComment.getAuthId());
         assertEquals(testComment.getNewsId(), savedComment.getNewsId());
         assertEquals(testComment.getAuthorComment(), savedComment.getAuthorComment());
-
-        util.completeDeleteUser(user.getId());
     }
 
     @Test
@@ -56,7 +55,7 @@ class DefaultCommentBaseDaoTest {
 
         final CommentDto testComment = util.addTestCommentToDB(testName, testNews);
 
-        final long id = testComment.getId();
+        final Long id = testComment.getId();
         final CommentDto commentFromDB = commentDao.getById(id);
 
         assertNotNull(commentFromDB);
@@ -66,8 +65,6 @@ class DefaultCommentBaseDaoTest {
         assertEquals(testComment.getAuthId(), commentFromDB.getAuthId());
         assertEquals(testComment.getNewsId(), commentFromDB.getNewsId());
         assertEquals(testComment.getAuthorComment(), commentFromDB.getAuthorComment());
-
-        util.completeDeleteUser(user.getId());
     }
 
     @Test
@@ -100,7 +97,6 @@ class DefaultCommentBaseDaoTest {
             assertEquals(testComment.getNewsId(), commentFromDB.getNewsId());
             assertEquals(testComment.getAuthorComment(), commentFromDB.getAuthorComment());
         }
-        util.completeDeleteUser(user.getId());
     }
 
     @Test
@@ -110,8 +106,7 @@ class DefaultCommentBaseDaoTest {
         final NewsDto testNews = util.addTestNewsToDB(testName, user);
 
         List<CommentDto> listFromDB = commentDao.getCommentsOnNews(testNews.getId());
-        assertNotNull(listFromDB);
-        util.completeDeleteUser(user.getId());
+        assertEquals(0, listFromDB.size());
     }
 
     @Test
@@ -143,8 +138,6 @@ class DefaultCommentBaseDaoTest {
         assertEquals(testComment.getAuthId(), afterUpdate.getAuthId());
         assertEquals(testComment.getNewsId(), afterUpdate.getNewsId());
         assertEquals(testComment.getAuthorComment(), afterUpdate.getAuthorComment());
-
-        util.completeDeleteUser(user.getId());
     }
 
     @Test
@@ -153,25 +146,19 @@ class DefaultCommentBaseDaoTest {
         final AuthUserDto user = util.addTestAuthUserToDB(testName);
         final NewsDto testNews = util.addTestNewsToDB(testName, user);
 
-        final CommentDto testComment = util.addTestCommentToDB(testName, testNews);
-
         final CommentDto commentToUpdate = util.createCommentDto("UpdateComplete", testNews);
         final boolean isUpdated = commentDao.update(commentToUpdate);
         assertFalse(isUpdated);
-
-        final CommentDto afterUpdate = commentDao.getById(testComment.getId());
-        assertEquals(testComment.getContent(), afterUpdate.getContent());
-        util.completeDeleteUser(user.getId());
     }
 
     @Test
-    void delete() {
+    void deleteSuccess() {
         final String testName = "DeleteCommentTest";
         final AuthUserDto user = util.addTestAuthUserToDB(testName);
         final NewsDto testNews = util.addTestNewsToDB(testName, user);
 
         final CommentDto testComment = util.addTestCommentToDB(testName, testNews);
-        final long id = testComment.getId();
+        final Long id = testComment.getId();
         CommentDto commentToDelete = commentDao.getById(id);
         assertNotNull(commentToDelete);
 
@@ -180,6 +167,11 @@ class DefaultCommentBaseDaoTest {
 
         final CommentDto afterDelete = commentDao.getById(id);
         assertNull(afterDelete);
-        util.completeDeleteUser(user.getId());
+            }
+
+    @Test
+    void deleteFail() {
+        final boolean isDeleted = commentDao.delete(0L);
+        assertFalse(isDeleted);
     }
 }

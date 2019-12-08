@@ -1,7 +1,6 @@
 package com.github.alexeysa83.finalproject.dao.user;
 
-import com.github.alexeysa83.finalproject.dao.AddDeleteTestEntity;
-import com.github.alexeysa83.finalproject.dao.badge.BadgeBaseDao;
+import com.github.alexeysa83.finalproject.dao.util.AddDeleteTestEntity;
 import com.github.alexeysa83.finalproject.dao.config.DaoConfig;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.dto.BadgeDto;
@@ -24,8 +23,6 @@ class DefaultUserInfoBaseDaoTest {
 
     @Autowired
     private UserInfoBaseDao userDAO;
-    @Autowired
-    private BadgeBaseDao badgeDao;
     @Autowired
     private AddDeleteTestEntity util;
 
@@ -53,7 +50,8 @@ class DefaultUserInfoBaseDaoTest {
      @Test
     void getByIdExist() {
         final String testLogin = "GetByIdTestUserInfo";
-        final UserInfoDto testUser = util.addTestUserInfoToDB(testLogin);
+         final AuthUserDto testAuthUser = util.addTestAuthUserToDB(testLogin);
+        final UserInfoDto testUser = util.addTestUserInfoToDB(testAuthUser.getId());
         final long authId = testUser.getAuthId();
 
         final UserInfoDto userFromDB = userDAO.getById(authId);
@@ -78,7 +76,8 @@ class DefaultUserInfoBaseDaoTest {
     @Test
     void updateSuccess() {
         final String testLogin = "UpdateTestUserInfo";
-        final UserInfoDto testUser = util.addTestUserInfoToDB(testLogin);
+        final AuthUserDto testAuthUser = util.addTestAuthUserToDB(testLogin);
+        final UserInfoDto testUser = util.addTestUserInfoToDB(testAuthUser.getId());
         final long authId = testUser.getAuthId();
 
         /**
@@ -117,14 +116,16 @@ class DefaultUserInfoBaseDaoTest {
         assertFalse(isUpdated);
     }
 
-    /**
-     * Badges???
-     */
     @Test
     void deleteSuccess() {
         final String testLogin = "DeleteTestUserInfo";
-        final UserInfoDto testUser = util.addTestUserInfoToDB(testLogin);
+        final AuthUserDto testAuthUser = util.addTestAuthUserToDB(testLogin);
+        final UserInfoDto testUser = util.addTestUserInfoToDB(testAuthUser.getId());
         final long authId = testUser.getAuthId();
+
+        final BadgeDto testBadge = util.addTestBadgeToDB(testLogin);
+        final Long badgeId = testBadge.getId();
+       userDAO.addBadgeToUser(authId, badgeId);
 
         final UserInfoDto userToDelete = userDAO.getById(authId);
         assertNotNull(userToDelete);
@@ -144,13 +145,14 @@ class DefaultUserInfoBaseDaoTest {
 
 
     @Test
-    void addBadgeToUser() {
+    void addBadgeToUserSuccess() {
         final String testLogin = "AddBadgeToUserInfoTest";
-        final UserInfoDto testUser = util.addTestUserInfoToDB(testLogin);
-        final long authId = testUser.getAuthId();
+        final AuthUserDto testAuthUser = util.addTestAuthUserToDB(testLogin);
+        final UserInfoDto testUser = util.addTestUserInfoToDB(testAuthUser.getId());
+        final Long authId = testUser.getAuthId();
 
         final BadgeDto testBadge = util.addTestBadgeToDB(testLogin);
-        final long badgeId = testBadge.getId();
+        final Long badgeId = testBadge.getId();
 
         final UserInfoDto userWithBadge = userDAO.addBadgeToUser(authId, badgeId);
         assertNotNull(userWithBadge);
@@ -168,11 +170,12 @@ class DefaultUserInfoBaseDaoTest {
     @Test
     void deleteBadgeFromUser() {
         final String testLogin = "DeleteBadgeFromUserInfoTest";
-        final UserInfoDto testUser = util.addTestUserInfoToDB(testLogin);
-        final long authId = testUser.getAuthId();
+        final AuthUserDto testAuthUser = util.addTestAuthUserToDB(testLogin);
+        final UserInfoDto testUser = util.addTestUserInfoToDB(testAuthUser.getId());
+        final Long authId = testUser.getAuthId();
 
         final BadgeDto testBadge = util.addTestBadgeToDB(testLogin);
-        final long badgeId = testBadge.getId();
+        final Long badgeId = testBadge.getId();
 
         final UserInfoDto userWithBadge = userDAO.addBadgeToUser(authId, badgeId);
         assertNotNull(userWithBadge);

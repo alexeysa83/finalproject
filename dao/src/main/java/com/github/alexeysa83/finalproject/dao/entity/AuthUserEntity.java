@@ -4,6 +4,7 @@ import com.github.alexeysa83.finalproject.model.Role;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cache;
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -20,9 +21,9 @@ public class AuthUserEntity {
 
     private UserInfoEntity user;
 
-    private List<NewsEntity> news;
+    private List<NewsEntity> news = new ArrayList<>();
 
-    private List<CommentEntity> comments;
+    private List<CommentEntity> comments = new ArrayList<>();
 
     public AuthUserEntity() {
     }
@@ -74,7 +75,7 @@ public class AuthUserEntity {
         isDeleted = deleted;
     }
 
-    @OneToOne (mappedBy = "authUser", fetch = FetchType.EAGER, cascade = CascadeType.ALL , orphanRemoval = true)
+    @OneToOne (mappedBy = "authUser", fetch = FetchType.EAGER)
     public UserInfoEntity getUser() {
         return user;
     }
@@ -85,7 +86,7 @@ public class AuthUserEntity {
 
     @OneToMany(targetEntity =com.github.alexeysa83.finalproject.dao.entity.NewsEntity.class,
             mappedBy = "authUser",
-            fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+            fetch = FetchType.LAZY)
     public List<NewsEntity> getNews() {
         return news;
     }

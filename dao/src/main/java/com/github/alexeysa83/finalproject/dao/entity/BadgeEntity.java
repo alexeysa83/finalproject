@@ -5,9 +5,7 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 
 @Entity
@@ -19,7 +17,7 @@ public class BadgeEntity {
     private Long id;
     private String badgeName;
 
-    private Set<UserInfoEntity>users = new HashSet<>();
+    private List<UserInfoEntity> users = new ArrayList<>();
 
     public BadgeEntity() {
     }
@@ -47,12 +45,11 @@ public class BadgeEntity {
     @JoinTable(name = "user_badge",
             joinColumns = {@JoinColumn(name = "badge_id")},
             inverseJoinColumns = {@JoinColumn(name = "user_id")})
-//    @ManyToMany (mappedBy = "badges", fetch = FetchType.LAZY)
-    public Set<UserInfoEntity> getUsers() {
+    public List<UserInfoEntity> getUsers() {
         return users;
     }
 
-    public void setUsers(Set<UserInfoEntity> users) {
+    public void setUsers(List<UserInfoEntity> users) {
         this.users = users;
     }
 

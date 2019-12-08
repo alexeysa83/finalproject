@@ -12,7 +12,6 @@ public interface AuthUserRepository extends JpaRepository <AuthUserEntity, Long>
     AuthUserEntity findByLogin (String login);
 
     @Modifying (clearAutomatically = true)
-//    @Transactional
     @Query (value = "update AuthUserEntity a set a.login=:login,a.password=:password, a.role=:role where a.id=:id")
     int updateLoginPasswordRole (@Param("id")Long id,
                                  @Param("login")String login,
@@ -20,7 +19,6 @@ public interface AuthUserRepository extends JpaRepository <AuthUserEntity, Long>
                                  @Param("role")Role role);
 
     @Modifying (clearAutomatically = true)
-    //    @Transactional
     @Query (value = "update AuthUserEntity a set a.deleted=true where a.id=:id")
     int isDeletedSetTrue (@Param("id")Long id);
 }

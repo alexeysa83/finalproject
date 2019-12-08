@@ -11,7 +11,6 @@ import com.github.alexeysa83.finalproject.dao.news.NewsBaseDao;
 import com.github.alexeysa83.finalproject.dao.repository.*;
 import com.github.alexeysa83.finalproject.dao.user.DefaultUserInfoBaseDao;
 import com.github.alexeysa83.finalproject.dao.user.UserInfoBaseDao;
-import org.hibernate.SessionFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -21,27 +20,27 @@ import org.springframework.context.annotation.Import;
 public class DaoConfig {
 
     @Bean
-    public AuthUserBaseDao authUserBaseDao (AuthUserRepository repository) {
+    public AuthUserBaseDao authUserBaseDao(AuthUserRepository repository) {
         return new DefaultAuthUserBaseDao(repository);
     }
 
     @Bean
-    public UserInfoBaseDao userInfoBaseDao (UserInfoRepository repository, SessionFactory factory) {
-        return new DefaultUserInfoBaseDao(repository, factory);
+    public UserInfoBaseDao userInfoBaseDao(UserInfoRepository repository) {
+        return new DefaultUserInfoBaseDao(repository);
     }
 
     @Bean
-    public NewsBaseDao newsBaseDao (NewsRepository repository, SessionFactory factory) {
-        return new DefaultNewsBaseDao(repository, factory);
+    public NewsBaseDao newsBaseDao(NewsRepository repository) {
+        return new DefaultNewsBaseDao(repository);
     }
 
     @Bean
-    public CommentBaseDao commentBaseDao (CommentRepository repository, SessionFactory factory) {
-        return new DefaultCommentBaseDao(repository, factory);
+    public CommentBaseDao commentBaseDao(CommentRepository repository) {
+        return new DefaultCommentBaseDao(repository);
     }
 
     @Bean
-    public BadgeBaseDao badgeBaseDao (BadgeRepository repository) {
+    public BadgeBaseDao badgeBaseDao(BadgeRepository repository) {
         return new DefaultBadgeBaseDao(repository);
     }
 }

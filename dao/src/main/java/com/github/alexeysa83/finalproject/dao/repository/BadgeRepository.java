@@ -11,12 +11,10 @@ public interface BadgeRepository extends JpaRepository <BadgeEntity, Long> {
     BadgeEntity findByBadgeName (String badgeName);
 
     @Modifying (clearAutomatically = true)
-//    @Transactional
     @Query (value = "update BadgeEntity b set b.badgeName=:badgeName where b.id=:id")
     int updateBadgeName (@Param("id") Long id, @Param("badgeName") String badgeName);
 
     @Modifying (clearAutomatically = true)
-//    @Transactional
     @Query (value = "delete from BadgeEntity b where b.id=:id")
     int deleteBadge  (@Param("id")Long id);
 }

@@ -1,17 +1,14 @@
-package com.github.alexeysa83.finalproject.dao;
+package com.github.alexeysa83.finalproject.dao.util;
 
 import com.github.alexeysa83.finalproject.dao.authuser.AuthUserBaseDao;
 import com.github.alexeysa83.finalproject.dao.badge.BadgeBaseDao;
 import com.github.alexeysa83.finalproject.dao.comment.CommentBaseDao;
-import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
 import com.github.alexeysa83.finalproject.dao.news.NewsBaseDao;
 import com.github.alexeysa83.finalproject.dao.user.UserInfoBaseDao;
 import com.github.alexeysa83.finalproject.model.dto.*;
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.EntityManager;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
@@ -28,8 +25,6 @@ public class AddDeleteTestEntity {
     private CommentBaseDao commentDao;
     @Autowired
     private BadgeBaseDao badgeDao;
-    @Autowired
-    private SessionFactory factory;
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -48,24 +43,14 @@ public class AddDeleteTestEntity {
         return authUserDao.add(user);
     }
 
-    public void completeDeleteUser(long id) {
-        final EntityManager entityManager = factory.createEntityManager();
-        entityManager.getTransaction().begin();
-        AuthUserEntity toDelete = entityManager.find(AuthUserEntity.class, id);
-        entityManager.remove(toDelete);
-        entityManager.getTransaction().commit();
-        entityManager.clear();
-    }
-
     // Test UserInfo util methods
     public UserInfoDto createUserInfoDto() {
         return new UserInfoDto(getTime());
     }
 
-    public UserInfoDto addTestUserInfoToDB(String name) {
-        final AuthUserDto testAuthUser = addTestAuthUserToDB(name);
+    public UserInfoDto addTestUserInfoToDB(Long authId) {
         final UserInfoDto userInfoDto = createUserInfoDto();
-        userInfoDto.setAuthId(testAuthUser.getId());
+        userInfoDto.setAuthId(authId);
         return userDAO.add(userInfoDto);
     }
 

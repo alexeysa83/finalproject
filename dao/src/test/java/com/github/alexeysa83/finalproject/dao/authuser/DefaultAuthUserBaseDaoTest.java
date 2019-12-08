@@ -1,8 +1,9 @@
 package com.github.alexeysa83.finalproject.dao.authuser;
 
-import com.github.alexeysa83.finalproject.dao.AddDeleteTestEntity;
+import com.github.alexeysa83.finalproject.dao.util.AddDeleteTestEntity;
 import com.github.alexeysa83.finalproject.dao.config.DaoConfig;
 import com.github.alexeysa83.finalproject.dao.news.NewsBaseDao;
+import com.github.alexeysa83.finalproject.dao.user.UserInfoBaseDao;
 import com.github.alexeysa83.finalproject.model.Role;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.dto.NewsDto;
@@ -23,6 +24,8 @@ class DefaultAuthUserBaseDaoTest {
 
     @Autowired
     private AuthUserBaseDao authUserDao;
+    @Autowired
+    private UserInfoBaseDao userInfoDao;
     @Autowired
     private NewsBaseDao newsDao;
     @Autowired
@@ -102,6 +105,7 @@ class DefaultAuthUserBaseDaoTest {
         final String testLogin = "UpdateTestAuth";
         final AuthUserDto testUser = util.addTestAuthUserToDB(testLogin);
         final Long id = testUser.getId();
+        final UserInfoDto testUserInfoDto = util.addTestUserInfoToDB(id);
 
 /**
  * Optimization
@@ -121,7 +125,7 @@ class DefaultAuthUserBaseDaoTest {
         assertEquals(testUser.isDeleted(), afterUpdate.isDeleted());
 
 //         check UserInfoEntity is not updated
-        assertEquals(testUser.getUserInfoDto(), afterUpdate.getUserInfoDto());
+        assertEquals(testUserInfoDto, afterUpdate.getUserInfoDto());
     }
 
     /**
@@ -139,9 +143,10 @@ class DefaultAuthUserBaseDaoTest {
     void deleteSuccess() {
         final String testLogin = "DeleteTestAuth";
         final AuthUserDto testUser = util.addTestAuthUserToDB(testLogin);
+        final Long id = testUser.getId();
+        util.addTestUserInfoToDB(id);
         final NewsDto testNews = util.addTestNewsToDB(testLogin, testUser);
 
-        final long id = testUser.getId();
         final AuthUserDto userToDelete = authUserDao.getById(id);
         assertNotNull(userToDelete);
 
@@ -151,6 +156,9 @@ class DefaultAuthUserBaseDaoTest {
         final AuthUserDto afterDelete = authUserDao.getById(id);
         assertTrue(afterDelete.isDeleted());
 
+        // Check User Info is not deleted
+        final UserInfoDto userInfoAfterDelete = userInfoDao.getById(id);
+        assertNotNull(userInfoAfterDelete);
         // Check User News is not deleted
         final NewsDto newsAfterDeleteUser = newsDao.getById(testNews.getId());
         assertNotNull(newsAfterDeleteUser);

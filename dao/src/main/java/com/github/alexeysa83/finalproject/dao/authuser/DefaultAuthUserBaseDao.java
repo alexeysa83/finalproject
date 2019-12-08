@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.PersistenceException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -23,29 +22,19 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
         this.authRepository = authRepository;
     }
 
-    /**
-     *
-     */
     @Override
     @Transactional(propagation = Propagation.MANDATORY)
     public AuthUserDto add(AuthUserDto authUserDto) {
         final AuthUserEntity authUserEntity = AuthUserConvert.toEntity(authUserDto);
-        AuthUserEntity savedToDB;
-        try {
-            savedToDB = authRepository.save(authUserEntity);
-//        } catch (PersistenceException | IllegalArgumentException e) {
-        } catch (RuntimeException e) {
-            log.error("Fail to save new user to DB: {}, at: {}", authUserDto, LocalDateTime.now(), e);
-//            throw new RuntimeException(e);
-            return null;
+        final AuthUserEntity savedToDB = authRepository.save(authUserEntity);
+        if (savedToDB != null) {
+            log.info("AuthUser id: {} saved to DB at: {}", savedToDB.getId(), LocalDateTime.now());
+        } else {
+            log.error("Fail to save new user to DB: {}, at: {}", authUserDto, LocalDateTime.now());
         }
-        log.info("AuthUser id: {} saved to DB at: {}", savedToDB.getId(), LocalDateTime.now());
         return AuthUserConvert.toDto(savedToDB);
     }
 
-    /**
-     * Need try/catch?
-     */
     @Override
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public AuthUserDto getByLogin(String login) {
@@ -67,38 +56,28 @@ public class DefaultAuthUserBaseDao implements AuthUserBaseDao {
     @Override
     @Transactional(propagation = Propagation.MANDATORY)
     public boolean update(AuthUserDto authUserDto) {
-        String message = "AuthUser id: {} updated in DB at: {}";
-        try {
-            final int rowsUpdated = authRepository.updateLoginPasswordRole(
-                    authUserDto.getId(),
-                    authUserDto.getLogin(),
-                    authUserDto.getPassword(),
-                    authUserDto.getRole());
-            if (rowsUpdated <= 0) {
-                message = "Fail to update in DB AuthUser: {} at: {}";
-            }
-            log.info(message, authUserDto.getId(), LocalDateTime.now());
-            return rowsUpdated > 0;
-        } catch (PersistenceException e) {
-            log.error("Fail to update in DB AuthUser: {} at: {}", authUserDto, LocalDateTime.now(), e);
-            throw new RuntimeException(e);
+        final int rowsUpdated = authRepository.updateLoginPasswordRole(
+                authUserDto.getId(),
+                authUserDto.getLogin(),
+                authUserDto.getPassword(),
+                authUserDto.getRole());
+        if (rowsUpdated > 0) {
+            log.info("AuthUser id: {} updated in DB at: {}", authUserDto.getId(), LocalDateTime.now());
+        } else {
+            log.error("Fail to update in DB AuthUser: {} at: {}", authUserDto, LocalDateTime.now());
         }
+        return rowsUpdated > 0;
     }
 
     @Override
     @Transactional(propagation = Propagation.MANDATORY)
     public boolean delete(Long id) {
-        String message = "AuthUser id : {} deleted from DB at: {}";
-        try {
-            final int rowsUpdated = authRepository.isDeletedSetTrue(id);
-            if (rowsUpdated <= 0) {
-                message = "Fail to delete AuthUser id: {} from DB, at: {}";
-            }
-            log.info(message, id, LocalDateTime.now());
-            return rowsUpdated > 0;
-        } catch (PersistenceException e) {
+        final int rowsUpdated = authRepository.isDeletedSetTrue(id);
+        if (rowsUpdated > 0) {
+            log.info("AuthUser id : {} deleted from DB at: {}", id, LocalDateTime.now());
+        } else {
             log.error("Fail to delete AuthUser id: {} from DB, at: {}", id, LocalDateTime.now());
-            throw new RuntimeException(e);
         }
+        return rowsUpdated > 0;
     }
 }
