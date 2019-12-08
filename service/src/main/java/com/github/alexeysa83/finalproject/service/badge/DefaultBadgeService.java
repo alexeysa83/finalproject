@@ -2,7 +2,6 @@ package com.github.alexeysa83.finalproject.service.badge;
 
 import com.github.alexeysa83.finalproject.dao.badge.BadgeBaseDao;
 import com.github.alexeysa83.finalproject.model.dto.BadgeDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,8 +9,11 @@ import java.util.List;
 @Service
 public class DefaultBadgeService implements BadgeService {
 
-    @Autowired
-    private BadgeBaseDao badgeDao;
+    private final BadgeBaseDao badgeDao;
+
+    public DefaultBadgeService(BadgeBaseDao badgeDao) {
+        this.badgeDao = badgeDao;
+    }
 
     @Override
     public BadgeDto createBadge(BadgeDto badgeDto) {
@@ -34,7 +36,7 @@ public class DefaultBadgeService implements BadgeService {
     }
 
     @Override
-    public boolean deleteBadge(long id) {
+    public boolean deleteBadge(Long id) {
         return badgeDao.delete(id);
     }
 }

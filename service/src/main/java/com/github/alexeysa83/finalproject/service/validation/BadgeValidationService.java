@@ -1,12 +1,18 @@
 package com.github.alexeysa83.finalproject.service.validation;
 
 import com.github.alexeysa83.finalproject.service.badge.BadgeService;
-import com.github.alexeysa83.finalproject.service.badge.DefaultBadgeService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class BadgeValidationService {
 
-    private BadgeService badgeService = DefaultBadgeService.getInstance();
+    @Autowired
+    private BadgeService badgeService;
 
+    /**
+     *
+     * @param name
+     * @return
+     */
     public String isNameValid (String name) {
         String message = null;
         if (name.length() <1) {

@@ -2,8 +2,8 @@ package com.github.alexeysa83.finalproject.web.servlet.auth.user;
 
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.service.UtilService;
-import com.github.alexeysa83.finalproject.service.auth.DefaultSecurityService;
-import com.github.alexeysa83.finalproject.service.auth.SecurityService;
+import com.github.alexeysa83.finalproject.service.auth.DefaultAuthUserService;
+import com.github.alexeysa83.finalproject.service.auth.AuthUserService;
 import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +20,7 @@ import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToServletMe
 public class UpdateLoginServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(UpdateLoginServlet.class);
-    private SecurityService securityService = DefaultSecurityService.getInstance();
+    private AuthUserService authUserService = DefaultAuthUserService.getInstance();
     private AuthValidationService validationService = new AuthValidationService();
 
     // optimize
@@ -34,9 +34,9 @@ public class UpdateLoginServlet extends HttpServlet {
         }
         final String authId = req.getParameter("authId");
         final long id = UtilService.stringToLong(authId);
-        final AuthUserDto userOld = securityService.getById(id);
+        final AuthUserDto userOld = authUserService.getById(id);
 
-        final boolean isUpdated = securityService.updateAuthUser
+        final boolean isUpdated = authUserService.updateAuthUser
                 (new AuthUserDto(userOld.getId(), loginNew, userOld.getPassword(),
                         userOld.getRole(), userOld.isDeleted(), userOld.getUserInfoDto()));
         message = "update.success";

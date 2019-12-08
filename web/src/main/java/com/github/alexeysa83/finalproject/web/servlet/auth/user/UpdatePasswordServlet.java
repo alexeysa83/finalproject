@@ -2,8 +2,8 @@ package com.github.alexeysa83.finalproject.web.servlet.auth.user;
 
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.service.UtilService;
-import com.github.alexeysa83.finalproject.service.auth.DefaultSecurityService;
-import com.github.alexeysa83.finalproject.service.auth.SecurityService;
+import com.github.alexeysa83.finalproject.service.auth.DefaultAuthUserService;
+import com.github.alexeysa83.finalproject.service.auth.AuthUserService;
 import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +21,7 @@ import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToServletMe
 public class UpdatePasswordServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(UpdatePasswordServlet.class);
-    private SecurityService securityService = DefaultSecurityService.getInstance();
+    private AuthUserService authUserService = DefaultAuthUserService.getInstance();
     private AuthValidationService validationService = new AuthValidationService();
 
     @Override
@@ -39,7 +39,7 @@ public class UpdatePasswordServlet extends HttpServlet {
         final String passwordBefore = req.getParameter("passwordBefore");
         final String authId = req.getParameter("authId");
         final long id = UtilService.stringToLong(authId);
-        final AuthUserDto user = securityService.getById(id);
+        final AuthUserDto user = authUserService.getById(id);
         final boolean isValid = validationService.isPasswordEqual(passwordBefore, user.getPassword());
         if (!isValid) {
             message = "wrong.pass";
@@ -48,7 +48,7 @@ public class UpdatePasswordServlet extends HttpServlet {
             return;
         }
 
-        final boolean isUpdated = securityService.updateAuthUser
+        final boolean isUpdated = authUserService.updateAuthUser
                 (new AuthUserDto(user.getId(), user.getLogin(), passwordNew,
                         user.getRole(), user.isDeleted(), user.getUserInfoDto()));
         message = "update.success";

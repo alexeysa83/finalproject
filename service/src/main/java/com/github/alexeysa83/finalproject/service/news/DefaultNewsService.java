@@ -2,7 +2,6 @@ package com.github.alexeysa83.finalproject.service.news;
 
 import com.github.alexeysa83.finalproject.dao.news.NewsBaseDao;
 import com.github.alexeysa83.finalproject.model.dto.NewsDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,8 +12,11 @@ public class DefaultNewsService implements NewsService {
     // In service page size select
     private final int PAGE_SIZE = 10;
 
-    @Autowired
-    private NewsBaseDao newsDao;
+    private final NewsBaseDao newsDao;
+
+    public DefaultNewsService(NewsBaseDao newsDao) {
+        this.newsDao = newsDao;
+    }
 
     @Override
     public NewsDto createNews(NewsDto news) {
@@ -22,7 +24,7 @@ public class DefaultNewsService implements NewsService {
     }
 
     @Override
-    public NewsDto getNewsOnId(long id) {
+    public NewsDto getNewsOnId(Long id) {
         return newsDao.getById(id);
     }
 
@@ -48,7 +50,7 @@ public class DefaultNewsService implements NewsService {
     }
 
     @Override
-    public boolean deleteNews(long id) {
+    public boolean deleteNews(Long id) {
         return newsDao.delete(id);
     }
 }

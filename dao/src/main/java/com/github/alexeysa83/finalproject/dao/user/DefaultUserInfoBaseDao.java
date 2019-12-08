@@ -7,14 +7,12 @@ import com.github.alexeysa83.finalproject.dao.repository.UserInfoRepository;
 import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-@Repository
 public class DefaultUserInfoBaseDao implements UserInfoBaseDao {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultUserInfoBaseDao.class);
@@ -74,7 +72,7 @@ public class DefaultUserInfoBaseDao implements UserInfoBaseDao {
     public boolean delete(Long id) {
         final int rowsUpdated = userInfoRepository.deleteUserInfo(id);
 
-        if (rowsUpdated <= 0) {
+        if (rowsUpdated > 0) {
             log.info("UserInfo id: {} deleted from DB at: {}", id, LocalDateTime.now());
         } else {
             log.error("Fail to delete UserInfo: {} at: {}", id, LocalDateTime.now());

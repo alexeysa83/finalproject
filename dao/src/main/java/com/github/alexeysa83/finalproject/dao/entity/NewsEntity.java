@@ -2,7 +2,6 @@ package com.github.alexeysa83.finalproject.dao.entity;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -76,8 +75,7 @@ public class NewsEntity {
         this.authUser = authUser;
     }
 
-    @OneToMany (mappedBy = "news", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @Cascade(value = org.hibernate.annotations.CascadeType.ALL)
+    @OneToMany (mappedBy = "news", fetch = FetchType.LAZY)
     public List<CommentEntity> getComments() {
         return comments;
     }

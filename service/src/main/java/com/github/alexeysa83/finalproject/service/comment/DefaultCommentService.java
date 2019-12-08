@@ -2,7 +2,6 @@ package com.github.alexeysa83.finalproject.service.comment;
 
 import com.github.alexeysa83.finalproject.dao.comment.CommentBaseDao;
 import com.github.alexeysa83.finalproject.model.dto.CommentDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,8 +9,11 @@ import java.util.List;
 @Service
 public class DefaultCommentService implements CommentService {
 
-    @Autowired
-    private CommentBaseDao commentDao;
+    private final CommentBaseDao commentDao;
+
+    public DefaultCommentService(CommentBaseDao commentDao) {
+        this.commentDao = commentDao;
+    }
 
     @Override
     public CommentDto createComment(CommentDto comment) {
@@ -19,7 +21,7 @@ public class DefaultCommentService implements CommentService {
     }
 
     @Override
-    public List<CommentDto> getCommentsOnNews(long newsId) {
+    public List<CommentDto> getCommentsOnNews(Long newsId) {
         return commentDao.getCommentsOnNews(newsId);
     }
 
@@ -29,7 +31,7 @@ public class DefaultCommentService implements CommentService {
     }
 
     @Override
-    public boolean deleteComment(long id) {
+    public boolean deleteComment(Long id) {
         return commentDao.delete(id);
     }
 }

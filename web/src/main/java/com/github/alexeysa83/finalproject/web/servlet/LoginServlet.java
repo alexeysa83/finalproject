@@ -1,7 +1,7 @@
 package com.github.alexeysa83.finalproject.web.servlet;
 
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
-import com.github.alexeysa83.finalproject.service.auth.SecurityService;
+import com.github.alexeysa83.finalproject.service.auth.AuthUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class LoginServlet {
 
     private static final Logger log = LoggerFactory.getLogger(LoginServlet.class);
     @Autowired
-    private SecurityService securityService;
+    private AuthUserService authUserService;
 
     @GetMapping("/login")
     public String doGet(HttpServletRequest req) {
@@ -39,7 +39,7 @@ public class LoginServlet {
         final String login = req.getParameter("login");
         final String password = req.getParameter("password");
 
-        AuthUserDto userFromDB = securityService.loginAuthUser(new AuthUserDto(login, password, null));
+        AuthUserDto userFromDB = authUserService.loginAuthUser(new AuthUserDto(login, password, null));
         if (userFromDB == null) {
             req.setAttribute("message", "wrong.logpass");
             log.info("Invalid login or password enter for user: {} at: {}", login, LocalDateTime.now());

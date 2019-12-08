@@ -14,5 +14,5 @@ public interface BadgeService {
 
     boolean updateBadge(BadgeDto badgeDto);
 
-    boolean deleteBadge (long id);
+    boolean deleteBadge (Long id);
 }

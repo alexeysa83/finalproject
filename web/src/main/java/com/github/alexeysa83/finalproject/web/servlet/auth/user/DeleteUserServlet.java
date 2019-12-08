@@ -2,8 +2,8 @@ package com.github.alexeysa83.finalproject.web.servlet.auth.user;
 
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.service.UtilService;
-import com.github.alexeysa83.finalproject.service.auth.DefaultSecurityService;
-import com.github.alexeysa83.finalproject.service.auth.SecurityService;
+import com.github.alexeysa83.finalproject.service.auth.DefaultAuthUserService;
+import com.github.alexeysa83.finalproject.service.auth.AuthUserService;
 import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +20,7 @@ import static com.github.alexeysa83.finalproject.web.WebUtils.*;
 public class DeleteUserServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(DeleteUserServlet.class);
-    private SecurityService securityService = DefaultSecurityService.getInstance();
+    private AuthUserService authUserService = DefaultAuthUserService.getInstance();
     private AuthValidationService validationService = new AuthValidationService();
 
     // unsuccessful delete
@@ -28,7 +28,7 @@ public class DeleteUserServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         final String authId = req.getParameter("authId");
         final long id = UtilService.stringToLong(authId);
-        final boolean isDeleted = securityService.deleteUser(id);
+        final boolean isDeleted = authUserService.deleteUser(id);
         String logMessage = "User id: {} deleted at: {}";
         String message = "delete.success";
         if (!isDeleted) {

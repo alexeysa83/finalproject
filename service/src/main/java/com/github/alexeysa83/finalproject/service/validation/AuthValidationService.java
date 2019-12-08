@@ -1,21 +1,26 @@
 package com.github.alexeysa83.finalproject.service.validation;
 
-import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.Role;
+import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.service.UtilService;
-import com.github.alexeysa83.finalproject.service.auth.DefaultSecurityService;
-import com.github.alexeysa83.finalproject.service.auth.SecurityService;
+import com.github.alexeysa83.finalproject.service.auth.AuthUserService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class AuthValidationService {
+@Autowired
+      private AuthUserService authUserService;
 
-      private SecurityService securityService = DefaultSecurityService.getInstance();
-
+    /**
+     *
+     * @param login
+     * @return
+     */
     // +add Regex patterns
     public String isLoginValid(String login) {
         String message = null;
         if (login.length() < 1) {
             message = "invalid.login";
-        } else if (securityService.checkLoginIsTaken(login)) {
+        } else if (authUserService.checkLoginIsTaken(login)) {
             message = "login.istaken";
         }
         return message;

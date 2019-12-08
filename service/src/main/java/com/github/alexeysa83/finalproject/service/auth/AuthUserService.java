@@ -2,11 +2,11 @@ package com.github.alexeysa83.finalproject.service.auth;
 
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 
-public interface SecurityService {
+public interface AuthUserService {
 
-    AuthUserDto createAuthUser(String login, String password);
+    AuthUserDto createAuthUserAndUserInfo(String login, String password);
 
-    AuthUserDto getById (long id);
+    AuthUserDto getById (Long id);
 
     AuthUserDto loginAuthUser(AuthUserDto user);
 
@@ -14,5 +14,5 @@ public interface SecurityService {
 
     boolean updateAuthUser(AuthUserDto user);
 
-    boolean deleteUser(long id);
+    boolean deleteUser(Long id);
 }

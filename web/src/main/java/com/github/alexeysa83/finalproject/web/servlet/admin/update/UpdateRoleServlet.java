@@ -3,8 +3,8 @@ package com.github.alexeysa83.finalproject.web.servlet.admin.update;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.Role;
 import com.github.alexeysa83.finalproject.service.UtilService;
-import com.github.alexeysa83.finalproject.service.auth.DefaultSecurityService;
-import com.github.alexeysa83.finalproject.service.auth.SecurityService;
+import com.github.alexeysa83.finalproject.service.auth.DefaultAuthUserService;
+import com.github.alexeysa83.finalproject.service.auth.AuthUserService;
 import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +22,7 @@ import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToServletMe
 public class UpdateRoleServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(UpdateRoleServlet.class);
-    private SecurityService securityService = DefaultSecurityService.getInstance();
+    private AuthUserService authUserService = DefaultAuthUserService.getInstance();
     private AuthValidationService validationService = new AuthValidationService();
 
     @Override
@@ -40,8 +40,8 @@ public class UpdateRoleServlet extends HttpServlet {
         }
 
         final Role role = Role.valueOf(r);
-        final AuthUserDto user = securityService.getById(id);
-        final boolean isUpdated = securityService.updateAuthUser
+        final AuthUserDto user = authUserService.getById(id);
+        final boolean isUpdated = authUserService.updateAuthUser
                 (new AuthUserDto(user.getId(), user.getLogin(),
                         user.getPassword(), role, user.isDeleted(), user.getUserInfoDto()));
         message = "update.success";

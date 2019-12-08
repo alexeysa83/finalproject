@@ -2,19 +2,21 @@ package com.github.alexeysa83.finalproject.service.user;
 
 import com.github.alexeysa83.finalproject.dao.user.UserInfoBaseDao;
 import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DefaultUserService implements UserService {
 
-    @Autowired
     private UserInfoBaseDao userDAO;
 
-    //   User create/delete service is made in transaction with AuthUserDAO methods
+    public DefaultUserService(UserInfoBaseDao userDAO) {
+        this.userDAO = userDAO;
+    }
+
+    //   User create/delete service is made in transaction with AuthUserService methods
 
     @Override
-    public UserInfoDto getById(long id) {
+    public UserInfoDto getById(Long id) {
         return userDAO.getById(id);
     }
 
@@ -24,12 +26,12 @@ public class DefaultUserService implements UserService {
     }
 
     @Override
-    public UserInfoDto addBadgeToUser(long authId, long badgeId) {
+    public UserInfoDto addBadgeToUser(Long authId, Long badgeId) {
         return userDAO.addBadgeToUser(authId, badgeId);
     }
 
     @Override
-    public UserInfoDto deleteBadgeFromUser(long authId, long badgeId) {
+    public UserInfoDto deleteBadgeFromUser(Long authId, Long badgeId) {
         return userDAO.deleteBadgeFromUser(authId, badgeId);
     }
 }

@@ -97,7 +97,7 @@ public class AuthUserDto {
         if (o == null || getClass() != o.getClass()) return false;
         AuthUserDto user = (AuthUserDto) o;
         return isDeleted == user.isDeleted &&
-                id.equals(user.id) &&
+                Objects.equals(id, user.id) &&
                 login.equals(user.login) &&
                 password.equals(user.password) &&
                 role == user.role;

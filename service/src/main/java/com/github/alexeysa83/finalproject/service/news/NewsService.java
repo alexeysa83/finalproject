@@ -8,7 +8,7 @@ public interface NewsService {
 
     NewsDto createNews(NewsDto news);
 
-    NewsDto getNewsOnId (long id);
+    NewsDto getNewsOnId (Long id);
 
     int getNewsTotalPages ();
 
@@ -16,5 +16,5 @@ public interface NewsService {
 
     boolean updateNews (NewsDto news);
 
-    boolean deleteNews (long id);
+    boolean deleteNews (Long id);
 }

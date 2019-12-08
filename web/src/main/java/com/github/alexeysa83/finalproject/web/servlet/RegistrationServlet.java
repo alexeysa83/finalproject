@@ -1,7 +1,7 @@
 package com.github.alexeysa83.finalproject.web.servlet;
 
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
-import com.github.alexeysa83.finalproject.service.auth.SecurityService;
+import com.github.alexeysa83.finalproject.service.auth.AuthUserService;
 import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +26,7 @@ public class RegistrationServlet {
 
     private static final Logger log = LoggerFactory.getLogger(RegistrationServlet.class);
     @Autowired
-    private SecurityService securityService;
+    private AuthUserService authUserService;
     private AuthValidationService validationService = new AuthValidationService();
 
     @GetMapping("/registration")
@@ -53,7 +53,7 @@ public class RegistrationServlet {
             return "registration";
         }
 
-        final AuthUserDto authUser = securityService.createAuthUser(login, password);
+        final AuthUserDto authUser = authUserService.createAuthUserAndUserInfo(login, password);
         if (authUser == null) {
             req.setAttribute("message", "error.unknown");
             log.error("Failed to registrate user with login: {} pass {}, at: {}", login, password, LocalDateTime.now());

@@ -122,16 +122,17 @@ public class UserInfoDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserInfoDto user = (UserInfoDto) o;
-        return authId.equals(user.authId) &&
+        return Objects.equals(authId, user.authId) &&
                 Objects.equals(firstName, user.firstName) &&
                 Objects.equals(lastName, user.lastName) &&
                 registrationTime.equals(user.registrationTime) &&
                 Objects.equals(email, user.email) &&
-                Objects.equals(phone, user.phone);
+                Objects.equals(phone, user.phone) &&
+                Objects.equals(userLogin, user.userLogin);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(authId, firstName, lastName, registrationTime, email, phone);
+        return Objects.hash(authId, firstName, lastName, registrationTime, email, phone, userLogin);
     }
 }

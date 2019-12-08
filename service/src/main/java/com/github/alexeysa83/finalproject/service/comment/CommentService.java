@@ -8,9 +8,9 @@ public interface CommentService {
 
     CommentDto createComment(CommentDto comment);
 
-    List<CommentDto> getCommentsOnNews(long newsId);
+    List<CommentDto> getCommentsOnNews(Long newsId);
 
     boolean updateComment(CommentDto comment);
 
-    boolean deleteComment(long id);
+    boolean deleteComment(Long id);
 }
