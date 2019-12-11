@@ -7,12 +7,10 @@ import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
 import com.github.alexeysa83.finalproject.service.UtilService;
 import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 
-@Service
 public class DefaultAuthUserService implements AuthUserService {
 
     private final AuthUserBaseDao authUserDao;

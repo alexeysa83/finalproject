@@ -3,34 +3,35 @@ package com.github.alexeysa83.finalproject.web.servlet.auth.comment;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.dto.CommentDto;
 import com.github.alexeysa83.finalproject.service.UtilService;
-import com.github.alexeysa83.finalproject.service.comment.DefaultCommentService;
 import com.github.alexeysa83.finalproject.service.comment.CommentService;
 import com.github.alexeysa83.finalproject.service.validation.CommentValidationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
-import static com.github.alexeysa83.finalproject.web.WebUtils.*;
+@Controller
+@RequestMapping
+public class AddCommentServlet {
 
-@WebServlet(name = "AddCommentServlet", urlPatterns = {"/auth/comment/add"})
-public class AddCommentServlet extends HttpServlet {
+    @Autowired
+    private CommentService commentService;
 
     private static final Logger log = LoggerFactory.getLogger(AddCommentServlet.class);
-    private CommentService commentService = DefaultCommentService.getInstance();
 
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
+    @PostMapping("/auth/comment/add")
+    public String doPost(HttpServletRequest req) {
         final String content = req.getParameter("content");
         String message = CommentValidationService.isValidContent(content);
         if (message != null) {
-            forwardToServletMessage("/news/view", message, req, resp);
-            return;
+            req.setAttribute("message", message);
+            return "forward:/news/view";
         }
 
         AuthUserDto authUser = (AuthUserDto) req.getSession().getAttribute("authUser");
@@ -46,6 +47,7 @@ public class AddCommentServlet extends HttpServlet {
             logMessage = "Failed to create comment to news id: {} , at: {}";
         }
         log.info(logMessage, newsId, LocalDateTime.now());
-        forwardToServlet("/news/view", req, resp);
+        req.setAttribute("message", message);
+        return "forward:/news/view";
     }
 }

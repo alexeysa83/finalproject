@@ -13,15 +13,16 @@ import java.util.List;
 @Controller
 @RequestMapping
 public class AdminPageServlet {
+
     @Autowired
     private BadgeService badgeService;
 
     @GetMapping("/admin/main")
-    public String  doGet(HttpServletRequest req) {
+    public String doGet(HttpServletRequest req) {
         final List<BadgeDto> badgesDB = badgeService.getAllBadges();
         req.setAttribute("badgesDB", badgesDB);
         return "adminpage";
-         }
+    }
 
 //    @Override
 //    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {

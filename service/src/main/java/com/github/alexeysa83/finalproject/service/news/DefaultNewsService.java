@@ -2,11 +2,9 @@ package com.github.alexeysa83.finalproject.service.news;
 
 import com.github.alexeysa83.finalproject.dao.news.NewsBaseDao;
 import com.github.alexeysa83.finalproject.model.dto.NewsDto;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
 public class DefaultNewsService implements NewsService {
 
     // In service page size select

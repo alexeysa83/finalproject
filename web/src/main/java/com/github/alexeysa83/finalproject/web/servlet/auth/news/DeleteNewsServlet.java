@@ -1,27 +1,28 @@
 package com.github.alexeysa83.finalproject.web.servlet.auth.news;
 
 import com.github.alexeysa83.finalproject.service.UtilService;
-import com.github.alexeysa83.finalproject.service.news.DefaultNewsService;
 import com.github.alexeysa83.finalproject.service.news.NewsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 
-import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToJspMessage;
+@Controller
+@RequestMapping
+public class DeleteNewsServlet {
 
-@WebServlet (name = "DeleteNewsServlet", urlPatterns = {"/auth/news/delete"})
-public class DeleteNewsServlet extends HttpServlet {
+    @Autowired
+    private NewsService newsService;
 
     private static final Logger log = LoggerFactory.getLogger(DeleteNewsServlet.class);
-    private NewsService newsService = DefaultNewsService.getInstance();
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+    @GetMapping("/auth/news/delete")
+    public String doGet(HttpServletRequest req) {
         final String newsId = req.getParameter("newsId");
         final long id = UtilService.stringToLong(newsId);
         final boolean isDeleted = newsService.deleteNews(id);
@@ -32,6 +33,7 @@ public class DeleteNewsServlet extends HttpServlet {
             logMessage = "Failed to delete news id: {} , at: {}";
         }
         log.info(logMessage, newsId, LocalDateTime.now());
-        forwardToJspMessage("index", message, req, resp);
-    }
+        req.setAttribute("message", message);
+        return "index";
+           }
 }

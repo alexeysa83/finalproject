@@ -2,42 +2,44 @@ package com.github.alexeysa83.finalproject.web.servlet.auth.user;
 
 import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
 import com.github.alexeysa83.finalproject.service.UtilService;
-import com.github.alexeysa83.finalproject.service.user.DefaultUserService;
 import com.github.alexeysa83.finalproject.service.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 
-import static com.github.alexeysa83.finalproject.web.WebUtils.*;
+@Controller
+@RequestMapping
+public class UpdateUserServlet {
 
-@WebServlet(name = "UpdateUserServlet", urlPatterns = {"/auth/user/update"})
-public class UpdateUserServlet extends HttpServlet {
+    @Autowired
+    private UserService userService;
 
     private static final Logger log = LoggerFactory.getLogger(UpdateUserServlet.class);
-    private UserService userService = DefaultUserService.getInstance();
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+    @GetMapping("/auth/user/update")
+    public String doGet(HttpServletRequest req) {
         final String authId = req.getParameter("authId");
         final long id = UtilService.stringToLong(authId);
         final UserInfoDto user = userService.getById(id);
         if (user == null) {
-            String message = "deleted";
-            forwardToJspMessage("userpage", message, req, resp);
-            return;
+            req.setAttribute("message", "deleted");
+            return "userpage";
         }
         req.setAttribute("user", user);
-        forwardToJsp("userupdate", req, resp);
+        return "userupdate";
     }
 
     // Validation + add null to DB instead of ""
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
+    @PostMapping("/auth/user/update")
+    public String doPost(HttpServletRequest req, HttpServletResponse resp) {
         final String id = req.getParameter("authId");
         final long authId = UtilService.stringToLong(id);
         final String firstName = req.getParameter("firstName");
@@ -52,6 +54,7 @@ public class UpdateUserServlet extends HttpServlet {
             logMessage = "Failed to update profile to user id: {} , at: {}";
         }
         log.info(logMessage, id, LocalDateTime.now());
-        forwardToServletMessage("/auth/user/view", message, req, resp);
+        req.setAttribute("message", message);
+        return "forward:/auth/user/view";
     }
 }

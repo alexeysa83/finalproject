@@ -34,12 +34,12 @@ public class LoginServlet {
         return "index";
     }
 
-   @PostMapping("login")
+   @PostMapping("/login")
     public String doPost(HttpServletRequest req) {
         final String login = req.getParameter("login");
         final String password = req.getParameter("password");
 
-        AuthUserDto userFromDB = authUserService.loginAuthUser(new AuthUserDto(login, password, null));
+        AuthUserDto userFromDB = authUserService.loginAuthUser(new AuthUserDto(login, password));
         if (userFromDB == null) {
             req.setAttribute("message", "wrong.logpass");
             log.info("Invalid login or password enter for user: {} at: {}", login, LocalDateTime.now());

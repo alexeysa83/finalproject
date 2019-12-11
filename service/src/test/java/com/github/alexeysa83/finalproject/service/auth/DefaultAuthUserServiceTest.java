@@ -41,6 +41,8 @@ class DefaultAuthUserServiceTest {
     }
 
     private UserInfoDto createTestUserInfo() {
+
+
         return new UserInfoDto(getTime());
     }
 

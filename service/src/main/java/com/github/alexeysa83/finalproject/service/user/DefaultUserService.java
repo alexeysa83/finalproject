@@ -2,9 +2,7 @@ package com.github.alexeysa83.finalproject.service.user;
 
 import com.github.alexeysa83.finalproject.dao.user.UserInfoBaseDao;
 import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
-import org.springframework.stereotype.Service;
 
-@Service
 public class DefaultUserService implements UserService {
 
     private UserInfoBaseDao userDAO;

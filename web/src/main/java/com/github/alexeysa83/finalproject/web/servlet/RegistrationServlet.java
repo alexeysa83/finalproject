@@ -5,7 +5,6 @@ import com.github.alexeysa83.finalproject.service.auth.AuthUserService;
 import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,10 +23,15 @@ Password to hash class-->
 @RequestMapping
 public class RegistrationServlet {
 
-    private static final Logger log = LoggerFactory.getLogger(RegistrationServlet.class);
-    @Autowired
-    private AuthUserService authUserService;
+    private final AuthUserService authUserService;
+
+    public RegistrationServlet(AuthUserService authUserService) {
+        this.authUserService = authUserService;
+    }
+
     private AuthValidationService validationService = new AuthValidationService();
+
+    private static final Logger log = LoggerFactory.getLogger(RegistrationServlet.class);
 
     @GetMapping("/registration")
     public String doGet() {

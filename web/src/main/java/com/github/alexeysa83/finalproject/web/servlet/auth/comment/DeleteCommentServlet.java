@@ -1,28 +1,29 @@
 package com.github.alexeysa83.finalproject.web.servlet.auth.comment;
 
 import com.github.alexeysa83.finalproject.service.UtilService;
-import com.github.alexeysa83.finalproject.service.comment.DefaultCommentService;
 import com.github.alexeysa83.finalproject.service.comment.CommentService;
 import com.github.alexeysa83.finalproject.web.servlet.auth.news.DeleteNewsServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 
-import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToServletMessage;
+@Controller
+@RequestMapping
+public class DeleteCommentServlet {
 
-@WebServlet(name = "DeleteCommentServlet", urlPatterns = {"/auth/comment/delete"})
-public class DeleteCommentServlet extends HttpServlet {
+    @Autowired
+    private CommentService commentService;
 
     private static final Logger log = LoggerFactory.getLogger(DeleteNewsServlet.class);
-    private CommentService commentService = DefaultCommentService.getInstance();
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+    @GetMapping("/auth/comment/delete")
+    public String doGet(HttpServletRequest req) {
         final String commentId = req.getParameter("commentId");
         final long commId = UtilService.stringToLong(commentId);
         final boolean isDeleted = commentService.deleteComment(commId);
@@ -33,6 +34,7 @@ public class DeleteCommentServlet extends HttpServlet {
             logMessage = "Failed to delete comment id: {} , at: {}";
         }
         log.info(logMessage, commentId, LocalDateTime.now());
-        forwardToServletMessage("/news/view", message, req, resp);
+        req.setAttribute("message", message);
+        return "forward:/news/view";
     }
 }

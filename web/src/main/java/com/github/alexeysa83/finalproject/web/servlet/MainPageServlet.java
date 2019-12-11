@@ -11,14 +11,14 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Controller
-@RequestMapping
+@RequestMapping ("/main")
 public class MainPageServlet {
 
     @Autowired
     private NewsService newsService;
 
     // Check null
-    @GetMapping("/main")
+    @GetMapping
     public String doGet(HttpServletRequest req) {
 
         String currentPage = req.getParameter("currentPage");

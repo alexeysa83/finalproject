@@ -2,30 +2,32 @@ package com.github.alexeysa83.finalproject.web.servlet.auth.user;
 
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.service.UtilService;
-import com.github.alexeysa83.finalproject.service.auth.DefaultAuthUserService;
 import com.github.alexeysa83.finalproject.service.auth.AuthUserService;
 import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 
-import static com.github.alexeysa83.finalproject.web.WebUtils.*;
+@Controller
+@RequestMapping
+public class DeleteUserServlet {
 
-@WebServlet(name = "DeleteUserServlet", urlPatterns = {"/auth/user/delete"})
-public class DeleteUserServlet extends HttpServlet {
+    @Autowired
+    private AuthUserService authUserService;
 
-    private static final Logger log = LoggerFactory.getLogger(DeleteUserServlet.class);
-    private AuthUserService authUserService = DefaultAuthUserService.getInstance();
     private AuthValidationService validationService = new AuthValidationService();
 
+    private static final Logger log = LoggerFactory.getLogger(DeleteUserServlet.class);
+
     // unsuccessful delete
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+    @GetMapping("/auth/user/delete")
+    public String doGet(HttpServletRequest req) {
         final String authId = req.getParameter("authId");
         final long id = UtilService.stringToLong(authId);
         final boolean isDeleted = authUserService.deleteUser(id);
@@ -35,16 +37,17 @@ public class DeleteUserServlet extends HttpServlet {
             message = "delete.fail";
             logMessage = "Failed to delete user id: {} , at: {}";
             log.info(logMessage, authId, LocalDateTime.now());
-            forwardToJspMessage("index", message, req, resp);
+            req.setAttribute("message", message);
+            return "index";
         }
         log.info(logMessage, authId, LocalDateTime.now());
 
         final AuthUserDto authUser = (AuthUserDto) req.getSession().getAttribute("authUser");
         final boolean needLogout = validationService.needLogout(authUser, authId);
         if (needLogout) {
-            forwardToServletMessage("/auth/logout", message, req, resp);
-            return;
+            req.setAttribute("message", message);
+            return "forward:/auth/logout";
         }
-        forwardToServletMessage("/auth/user/view", message, req, resp);
+        return "forward:/auth/user/view";
     }
 }

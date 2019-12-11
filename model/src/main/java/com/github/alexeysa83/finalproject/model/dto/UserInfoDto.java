@@ -127,12 +127,11 @@ public class UserInfoDto {
                 Objects.equals(lastName, user.lastName) &&
                 registrationTime.equals(user.registrationTime) &&
                 Objects.equals(email, user.email) &&
-                Objects.equals(phone, user.phone) &&
-                Objects.equals(userLogin, user.userLogin);
+                Objects.equals(phone, user.phone);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(authId, firstName, lastName, registrationTime, email, phone, userLogin);
+        return Objects.hash(authId, firstName, lastName, registrationTime, email, phone);
     }
 }

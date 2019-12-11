@@ -1,32 +1,34 @@
 package com.github.alexeysa83.finalproject.web.servlet.admin.update;
 
-import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.Role;
+import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.service.UtilService;
-import com.github.alexeysa83.finalproject.service.auth.DefaultAuthUserService;
 import com.github.alexeysa83.finalproject.service.auth.AuthUserService;
 import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 
-import static com.github.alexeysa83.finalproject.web.WebUtils.forwardToServletMessage;
-
 // Optimization
-@WebServlet(name = "UpdateRoleServlet", urlPatterns = {"/admin/update/role"})
-public class UpdateRoleServlet extends HttpServlet {
+@Controller
+@RequestMapping
+public class UpdateRoleServlet {
 
-    private static final Logger log = LoggerFactory.getLogger(UpdateRoleServlet.class);
-    private AuthUserService authUserService = DefaultAuthUserService.getInstance();
+    @Autowired
+    private AuthUserService authUserService;
+
     private AuthValidationService validationService = new AuthValidationService();
 
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
+    private static final Logger log = LoggerFactory.getLogger(UpdateRoleServlet.class);
+
+    @PostMapping("/admin/update/role")
+    public String doPost(HttpServletRequest req) {
         final String authId = req.getParameter("authId");
         final long id = UtilService.stringToLong(authId);
         final String r = req.getParameter("role");
@@ -35,8 +37,8 @@ public class UpdateRoleServlet extends HttpServlet {
         if (!isRoleValid) {
             message = "update.fail";
             log.error("Failed to update role to user id: {} , at: {}", authId, LocalDateTime.now());
-            forwardToServletMessage("/auth/user/view", message, req, resp);
-            return;
+            req.setAttribute("message", message);
+            return "forward:/auth/user/view";
         }
 
         final Role role = Role.valueOf(r);
@@ -48,16 +50,17 @@ public class UpdateRoleServlet extends HttpServlet {
         if (!isUpdated) {
             message = "update.fail";
             log.error("Failed to update role to user id: {} , at: {}", authId, LocalDateTime.now());
-            forwardToServletMessage("/auth/user/view", message, req, resp);
-            return;
+            req.setAttribute("message", message);
+            return "forward:/auth/user/view";
         }
         log.info("Updated role to user id: {} , at: {}", authId, LocalDateTime.now());
         final AuthUserDto authUser = (AuthUserDto) req.getSession().getAttribute("authUser");
         final boolean needLogout = validationService.needLogout(authUser, authId);
         if (needLogout) {
-            forwardToServletMessage("/auth/logout", message, req, resp);
-            return;
+            req.setAttribute("message", message);
+            return "forward:/auth/logout";
         }
-        forwardToServletMessage("/auth/user/view", message, req, resp);
+        req.setAttribute("message", message);
+        return "forward:/auth/user/view";
     }
 }

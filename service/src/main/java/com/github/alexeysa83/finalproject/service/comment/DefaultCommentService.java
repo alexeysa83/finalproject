@@ -2,11 +2,9 @@ package com.github.alexeysa83.finalproject.service.comment;
 
 import com.github.alexeysa83.finalproject.dao.comment.CommentBaseDao;
 import com.github.alexeysa83.finalproject.model.dto.CommentDto;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
 public class DefaultCommentService implements CommentService {
 
     private final CommentBaseDao commentDao;

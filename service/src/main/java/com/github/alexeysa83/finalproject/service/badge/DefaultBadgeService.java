@@ -2,11 +2,9 @@ package com.github.alexeysa83.finalproject.service.badge;
 
 import com.github.alexeysa83.finalproject.dao.badge.BadgeBaseDao;
 import com.github.alexeysa83.finalproject.model.dto.BadgeDto;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
 public class DefaultBadgeService implements BadgeService {
 
     private final BadgeBaseDao badgeDao;

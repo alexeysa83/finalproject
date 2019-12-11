@@ -77,6 +77,10 @@
                 <artifactId>jstl</artifactId>
                 <version>${jstl.version}</version>
             </dependency>
+
+
+
+
             <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-core</artifactId>
@@ -156,7 +160,6 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
     <build>
         <finalName>project</finalName>
         <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->

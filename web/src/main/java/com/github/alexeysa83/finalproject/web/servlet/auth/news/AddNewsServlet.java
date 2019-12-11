@@ -3,40 +3,42 @@ package com.github.alexeysa83.finalproject.web.servlet.auth.news;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.dto.NewsDto;
 import com.github.alexeysa83.finalproject.service.UtilService;
-import com.github.alexeysa83.finalproject.service.news.DefaultNewsService;
 import com.github.alexeysa83.finalproject.service.news.NewsService;
 import com.github.alexeysa83.finalproject.service.validation.NewsValidationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
-import static com.github.alexeysa83.finalproject.web.WebUtils.*;
+@Controller
+@RequestMapping
+public class AddNewsServlet {
 
-@WebServlet(name = "AddNewsServlet", urlPatterns = {"/auth/news/add"})
-public class AddNewsServlet extends HttpServlet {
+    @Autowired
+    private NewsService newsService;
 
     private static final Logger log = LoggerFactory.getLogger(AddNewsServlet.class);
-    private NewsService newsService = DefaultNewsService.getInstance();
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-        forwardToJsp("addnews", req, resp);
+    @GetMapping("/auth/news/add")
+    public String doGet() {
+        return "addnews";
     }
 
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
+    @PostMapping("/auth/news/add")
+    public String doPost(HttpServletRequest req) {
         final String title = req.getParameter("title");
         final String content = req.getParameter("content");
         String message = NewsValidationService.isValidTitleContent(title, content);
         if (message != null) {
-            forwardToJspMessage("addnews", message, req, resp);
-            return;
+            req.setAttribute("message", message);
+            return "addnews";
         }
 
         AuthUserDto user = (AuthUserDto) req.getSession().getAttribute("authUser");
@@ -45,10 +47,9 @@ public class AddNewsServlet extends HttpServlet {
         if (news == null) {
             req.setAttribute("message", "error.unknown");
             log.error("Failed to add news for user id: {}, at: {}", user.getId(), LocalDateTime.now());
-            doGet(req, resp);
-            return;
+            return "addnews";
         }
         log.info("Added news id: {}, at: {}", news.getId(), LocalDateTime.now());
-        redirect("/index.jsp", req, resp);
+        return "redirect:/index.jsp";
     }
 }

@@ -34,21 +34,6 @@ public class HibernateConfig {
         hikariDataSource.setDriverClassName(datasourceSettings.getDriver());
         hikariDataSource.setMaximumPoolSize(20);
         return hikariDataSource;
-
-//        final ComboPooledDataSource dataSource = new ComboPooledDataSource();
-//        dataSource.setJdbcUrl(datasourceSettings.getUrl());
-//        dataSource.setUser(datasourceSettings.getUsername());
-//        dataSource.setPassword(datasourceSettings.getPassword());
-//        try {
-//            dataSource.setDriverClass(datasourceSettings.getDriver());
-//        } catch (PropertyVetoException e) {
-//            throw new RuntimeException(e);
-//        }
-//        dataSource.setMinPoolSize(5);
-//        dataSource.setAcquireIncrement(5);
-//        dataSource.setMaxPoolSize(20);
-//        dataSource.setMaxStatements(180);
-//        return dataSource;
            }
 
     @Bean
