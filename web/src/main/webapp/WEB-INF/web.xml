@@ -14,11 +14,16 @@
     </filter-mapping>
     <filter-mapping>
         <filter-name>AuthFilter</filter-name>
-        <url-pattern>/admin/*</url-pattern>
-        <url-pattern>/auth/*</url-pattern>
+        <url-pattern>/auth_users/*/*</url-pattern>
+        <url-pattern>/user_infos/*</url-pattern>
+        <url-pattern>/badges/*</url-pattern>
+        <url-pattern>/comments/*</url-pattern>
     </filter-mapping>
     <filter-mapping>
         <filter-name>AdminFilter</filter-name>
-        <url-pattern>/admin/*</url-pattern>
+        <url-pattern>/badges/*</url-pattern>
+        <url-pattern>/user_infos/*/add/*</url-pattern>
+        <url-pattern>/user_infos/*/delete/*</url-pattern>
+        <url-pattern>/auth_users/*/update_role"</url-pattern>
     </filter-mapping>
 </web-app>

@@ -115,8 +115,8 @@ public class UserInfoEntity {
     }
 
     public void deleteBadge (BadgeEntity badgeEntity) {
-        badges.remove(badgeEntity);
         badgeEntity.getUsers().remove(this);
+        badges.remove(badgeEntity);
     }
 
     @Override

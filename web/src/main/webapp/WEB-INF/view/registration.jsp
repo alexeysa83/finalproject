@@ -17,7 +17,7 @@
     <h2 style="color: firebrick">
         <fmt:message key="${requestScope.get('message')}" bundle="${msgs}"/></h2>
 </c:if>
-<form action="${pageContext.request.contextPath}/registration" method="POST">
+<form action="${pageContext.request.contextPath}/auth_users/" method="POST">
     <fieldset>
         <legend><fmt:message key="form.registration" bundle="${intr}"/></legend>
         <label for="login"><strong><fmt:message key="choose.login" bundle="${intr}"/>:</strong></label>

@@ -21,32 +21,23 @@
     <h4>${loop.index+1}) ${badge.badgeName}</h4>
     <c:choose>
         <c:when test="${badge.id == badgeToUpdateId}">
-            <form action="${pageContext.request.contextPath}/admin/update/badge" method="POST">
+            <form action="${pageContext.request.contextPath}/badges/${badge.id}/update" method="POST">
                 <input class="form-control" type="text" name="badgeName"
                        value="${badge.badgeName}">
-                <label>
-                    <input hidden="hidden" type="text" name="badgeId" value="${badge.id}">
-                </label>
                 <input type="submit" value="<fmt:message key="update.badge" bundle="${intr}"/>"/>
             </form>
         </c:when>
         <c:otherwise>
-            <form action="${pageContext.request.contextPath}/admin/update/badge" method="GET">
+            <form action="${pageContext.request.contextPath}/badges/${badge.id}" method="GET">
                 <input type="submit" value="<fmt:message key="update.badge" bundle="${intr}"/>"/>
-                <label>
-                    <input hidden="hidden" type="text" name="badgeId" value="${badge.id}">
-                </label>
             </form>
         </c:otherwise>
     </c:choose>
-    <form action="${pageContext.request.contextPath}/admin/delete/badge" method="GET">
+    <form action="${pageContext.request.contextPath}/badges/${badge.id}/delete" method="POST">
         <input type="submit" value="<fmt:message key="delete.badge" bundle="${intr}"/>"/>
-        <label>
-            <input hidden="hidden" type="text" name="badgeId" value="${badge.id}">
-        </label>
     </form>
 </c:forEach>
-<form action="${pageContext.request.contextPath}/admin/add/badge" method="POST">
+<form action="${pageContext.request.contextPath}/badges/" method="POST">
     <input class="form-control" type="text" name="badgeName"
            placeholder="<fmt:message key="name.badge" bundle="${intr}"/>">
     <input type="submit" value="<fmt:message key="add.badge" bundle="${intr}"/>"/>

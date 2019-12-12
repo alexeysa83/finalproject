@@ -5,6 +5,6 @@
     <title>Index</title>
 </head>
 <body>
-<jsp:forward page="/main"/>
+<jsp:forward page="/news/"/>
 </body>
 </html>

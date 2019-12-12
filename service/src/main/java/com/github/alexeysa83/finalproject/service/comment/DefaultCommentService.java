@@ -2,6 +2,7 @@ package com.github.alexeysa83.finalproject.service.comment;
 
 import com.github.alexeysa83.finalproject.dao.comment.CommentBaseDao;
 import com.github.alexeysa83.finalproject.model.dto.CommentDto;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -14,21 +15,25 @@ public class DefaultCommentService implements CommentService {
     }
 
     @Override
+    @Transactional
     public CommentDto createComment(CommentDto comment) {
         return commentDao.add(comment);
     }
 
     @Override
+    @Transactional
     public List<CommentDto> getCommentsOnNews(Long newsId) {
         return commentDao.getCommentsOnNews(newsId);
     }
 
     @Override
+    @Transactional
     public boolean updateComment(CommentDto comment) {
         return commentDao.update(comment);
     }
 
     @Override
+    @Transactional
     public boolean deleteComment(Long id) {
         return commentDao.delete(id);
     }

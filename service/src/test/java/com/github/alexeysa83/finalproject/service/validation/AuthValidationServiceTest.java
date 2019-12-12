@@ -65,7 +65,7 @@ class AuthValidationServiceTest {
         final Long testId = 1L;
         final AuthUserDto testUser = new AuthUserDto();
         testUser.setId(testId);
-        boolean result = validationService.needLogout(testUser, Long.toString(testId));
+        boolean result = validationService.needLogout(testUser, testId);
         assertTrue(result);
     }
 
@@ -74,7 +74,7 @@ class AuthValidationServiceTest {
         final Long testId = 1L;
         final AuthUserDto testUser = new AuthUserDto();
         testUser.setId(testId);
-        boolean result = validationService.needLogout(testUser, "2");
+        boolean result = validationService.needLogout(testUser, 2L);
         assertFalse(result);
     }
 

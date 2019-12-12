@@ -15,24 +15,24 @@
         <fmt:message key="choose.lang" bundle="${intr}"/>
     </button>
     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <a class="dropdown-item" href="${pageContext.request.contextPath}/main?locale=en_US">
+        <a class="dropdown-item" href="${pageContext.request.contextPath}/news?locale=en_US">
             <fmt:message key="english" bundle="${intr}"/></a>
-        <a class="dropdown-item" href="${pageContext.request.contextPath}/main?locale=ru_RU">
+        <a class="dropdown-item" href="${pageContext.request.contextPath}/news?locale=ru_RU">
             <fmt:message key="russian" bundle="${intr}"/></a>
     </div>
 </div>
 <c:if test="${authUser.role == 'ADMIN'}">
-    <a href="${pageContext.request.contextPath}/admin/main"><fmt:message key="admin.page" bundle="${intr}"/></a>
+    <a href="${pageContext.request.contextPath}/badges/"><fmt:message key="admin.page" bundle="${intr}"/></a>
 </c:if>
-<a href="${pageContext.request.contextPath}/main"><fmt:message key="main" bundle="${intr}"/></a>
+<a href="${pageContext.request.contextPath}/news/"><fmt:message key="main" bundle="${intr}"/></a>
 <c:choose>
     <c:when test="${sessionScope.get('authUser') != null}">
-        <a href="${pageContext.request.contextPath}/auth/user/view?authId=${authUser.id}">${authUser.login}</a>
-        <a href="${pageContext.request.contextPath}/auth/logout"><fmt:message key="logout" bundle="${intr}"/></a>
+        <a href="${pageContext.request.contextPath}/user_infos/${authUser.id}">${authUser.login}</a>
+        <a href="${pageContext.request.contextPath}/logout"><fmt:message key="logout" bundle="${intr}"/></a>
     </c:when>
     <c:otherwise>
         <a href="${pageContext.request.contextPath}/login"><fmt:message key="login" bundle="${intr}"/></a>
-        <a href="${pageContext.request.contextPath}/registration">
+        <a href="${pageContext.request.contextPath}/auth_users/">
             <fmt:message key="registration" bundle="${intr}"/></a>
     </c:otherwise>
 </c:choose>

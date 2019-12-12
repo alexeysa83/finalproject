@@ -17,17 +17,16 @@
 </c:if>
 
 <c:if test="${sessionScope.get('authUser') != null}">
-    <a href="${pageContext.request.contextPath}/auth/news/add">
+    <a href="${pageContext.request.contextPath}/news/addnewstojsp">
         <fmt:message key="add.news" bundle="${intr}"/></a>
 </c:if>
 
-
 <c:forEach items="${requestScope.newsList}" var="news">
-    <h2 style="color: #2bb239"><a href="${pageContext.request.contextPath}/news/view?newsId=${news.id}">
+    <h2 style="color: #2bb239"><a href="${pageContext.request.contextPath}/news/${news.id}">
             ${news.title}</a></h2>
     <h2>${news.content}</h2>
     <h3><fmt:message key="author" bundle="${intr}"/>:
-        <a href="${pageContext.request.contextPath}/auth/user/view?authId=${news.authId}">
+        <a href="${pageContext.request.contextPath}/user_infos/${news.authId}">
                 ${news.authorNews}</a></h3>
     <h3><fmt:message key="created" bundle="${intr}"/>: ${news.creationTime}</h3>
     <h4><fmt:message key="comments" bundle="${intr}"/>: 0</h4>
@@ -39,7 +38,7 @@
         <c:if test="${currentPage > 1}">
             <li class="page-item">
                 <a class="page-link"
-                   href="${pageContext.request.contextPath}/main?currentPage=${currentPage-1}"
+                   href="${pageContext.request.contextPath}/news?currentPage=${currentPage-1}"
                    aria-label="Previous">
                     <span aria-hidden="true">&laquo;</span>
                 </a>
@@ -55,14 +54,14 @@
                 <c:otherwise>
                     <li class="page-item">
                         <a class="page-link"
-                           href="${pageContext.request.contextPath}/main?currentPage=${page}">${page}</a></li>
+                           href="${pageContext.request.contextPath}/news?currentPage=${page}">${page}</a></li>
                 </c:otherwise>
             </c:choose>
         </c:forEach>
         <c:if test="${currentPage < totalPages}">
             <li class="page-item">
                 <a class="page-link"
-                   href="${pageContext.request.contextPath}/main?currentPage=${currentPage+1}"
+                   href="${pageContext.request.contextPath}/news?currentPage=${currentPage+1}"
                    aria-label="Next">
                     <span aria-hidden="true">&raquo;</span>
                 </a>

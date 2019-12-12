@@ -8,10 +8,6 @@ public abstract class UtilService {
     private UtilService() {
     }
 
-    public static long stringToLong(String value) {
-        return Long.parseLong(value);
-    }
-
     private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     /**
