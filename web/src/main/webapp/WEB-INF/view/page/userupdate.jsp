@@ -10,7 +10,7 @@
     <title>Update user</title>
 </head>
 <body>
-<jsp:include page="header.jsp"/>
+<%--<jsp:include page="../common/header.jsp"/>--%>
 
 <c:if test="${requestScope.get('message') != null}">
     <h2 style="color: firebrick">

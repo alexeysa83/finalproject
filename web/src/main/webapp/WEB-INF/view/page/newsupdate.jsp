@@ -11,7 +11,7 @@
     <title>Update news</title>
 </head>
 <body>
-<jsp:include page="header.jsp"/>
+<%--<jsp:include page="../common/header.jsp"/>--%>
 <c:if test="${requestScope.get('message') != null}">
     <h2 style="color: firebrick">
         <fmt:message key="${requestScope.get('message')}" bundle="${msgs}"/></h2>
