@@ -1,35 +1,34 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
-<fmt:setLocale value="${locale}"/>
-<fmt:setBundle basename="messages" var="msgs"/>
-<fmt:setBundle basename="interface" var="intr"/>
 <html>
 <head>
     <title>Main page</title>
 </head>
 <body>
-<%--<jsp:include page="../common/header.jsp"/>--%>
 <c:if test="${requestScope.get('message') != null}">
     <h2 style="color: firebrick">
-        <fmt:message key="${requestScope.get('message')}" bundle="${msgs}"/></h2>
+        <spring:message code="${requestScope.get('message')}"/></h2>
 </c:if>
 
 <c:if test="${sessionScope.get('authUser') != null}">
     <a href="${pageContext.request.contextPath}/news/addnewstojsp">
-        <fmt:message key="add.news" bundle="${intr}"/></a>
+        <spring:message code="add.news"/></a>
 </c:if>
 
 <c:forEach items="${requestScope.newsList}" var="news">
     <h2 style="color: #2bb239"><a href="${pageContext.request.contextPath}/news/${news.id}">
             ${news.title}</a></h2>
     <h2>${news.content}</h2>
-    <h3><fmt:message key="author" bundle="${intr}"/>:
+    <h3><spring:message code="author"/>:
         <a href="${pageContext.request.contextPath}/user_infos/${news.authId}">
                 ${news.authorNews}</a></h3>
-    <h3><fmt:message key="created" bundle="${intr}"/>: ${news.creationTime}</h3>
-    <h4><fmt:message key="comments" bundle="${intr}"/>: 0</h4>
+    <h3><spring:message code="created"/>: ${news.creationTime}</h3>
+<%--    comments--%>
+<%--    comments--%>
+    <h4><spring:message code="comments"/>: 0</h4>
     <hr/>
 </c:forEach>
 

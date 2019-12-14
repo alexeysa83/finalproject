@@ -1,76 +1,72 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
-<fmt:setLocale value="${locale}"/>
-<fmt:setBundle basename="messages" var="msgs"/>
-<fmt:setBundle basename="interface" var="intr"/>
 <html>
 <head>
     <title>Update user</title>
 </head>
 <body>
-<%--<jsp:include page="../common/header.jsp"/>--%>
-
 <c:if test="${requestScope.get('message') != null}">
     <h2 style="color: firebrick">
-        <fmt:message key="${requestScope.get('message')}" bundle="${msgs}"/></h2>
+        <spring:message code="${requestScope.get('message')}"/></h2>
 </c:if>
 
 <c:if test="${authUser.login == user.userLogin || authUser.role == 'ADMIN'}">
     <form action="${pageContext.request.contextPath}/user_infos/${user.authId}/update" method="POST">
         <h2><span style='color: blue;'>${user.userLogin}</span></h2>
-        <h2><fmt:message key="update.settings" bundle="${intr}"/>:</h2><br/>
+        <h2><spring:message code="update.settings"/>:</h2><br/>
 
-        <br/> <fmt:message key="first" bundle="${intr}"/>: <br/>
+        <br/> <spring:message code="first"/>: <br/>
         <input type="text" name="firstName" value="${user.firstName}">
 
-        <br/><fmt:message key="last" bundle="${intr}"/>:<br/>
+        <br/><spring:message code="last"/>:<br/>
         <input type="text" name="lastName" value="${user.lastName}">
 
-        <br/><fmt:message key="email" bundle="${intr}"/>:<br/>
+        <br/><spring:message code="email"/>:<br/>
         <input type="text" name="email" value="${user.email}">
 
-        <br/><fmt:message key="phone" bundle="${intr}"/>:<br/>
+        <br/><spring:message code="phone"/>:<br/>
         <input type="text" name="phone" value="${user.phone}">
 
-        <input type="reset" value="<fmt:message key="reset" bundle="${intr}"/>">
-        <button type="submit" class="color-square"><fmt:message key="update.user" bundle="${intr}"/></button>
+        <input type="reset" value="<spring:message code="reset"/>">
+        <button type="submit" class="color-square"><spring:message code="update.user"/></button>
     </form>
 
     <c:if test="${authUser.login == user.userLogin}">
-        <h2><fmt:message key="update.security" bundle="${intr}"/>:</h2><br/>
+        <h2><spring:message code="update.security"/>:</h2><br/>
         <form action="${pageContext.request.contextPath}/auth_users/${user.authId}/update_login" method="POST">
-            <br/><fmt:message key="login" bundle="${intr}"/>:<br/>
+            <br/><spring:message code="login"/>:<br/>
             <input type="text" name="login" value="${user.userLogin}" required>
-            <button type="submit" class="color-square"><fmt:message key="change.login" bundle="${intr}"/></button>
+            <button type="submit" class="color-square"><spring:message code="change.login"/></button>
         </form>
 
         <form action="${pageContext.request.contextPath}/auth_users/${user.authId}/update_password" method="POST">
-            <br/><fmt:message key="current.pass" bundle="${intr}"/>:<br/>
+            <br/><spring:message code="current.pass"/>:<br/>
             <input type="password" name="passwordBefore" required>
 
-            <br/><fmt:message key="new.pass" bundle="${intr}"/>:<br/>
+            <br/><spring:message code="new.pass"/>:<br/>
             <input type="password" name="passwordNew" required>
 
-            <br/><fmt:message key="repeat.pass" bundle="${intr}"/>:<br/>
+            <br/><spring:message code="repeat.pass"/>:<br/>
             <input type="password" name="passwordRepeat" required>
 
-            <button type="submit" class="color-square"><fmt:message key="change.pass" bundle="${intr}"/></button>
+            <button type="submit" class="color-square"><spring:message code="change.pass"/></button>
         </form>
     </c:if>
 
     <c:if test="${authUser.role == 'ADMIN'}">
         <form action="${pageContext.request.contextPath}/auth_users/${user.authId}/update_role" method="POST">
             <br/><fmt:message key="role" bundle="${intr}"/>:<br/>
-            <input type="radio" name="role" value="USER" required> <fmt:message key="user" bundle="${intr}"/>
-            <input type="radio" name="role" value="ADMIN" required> <fmt:message key="admin" bundle="${intr}"/>
-            <button type="submit" class="color-square"><fmt:message key="change.role" bundle="${intr}"/></button>
+            <input type="radio" name="role" value="USER" required> <spring:message code="user"/>
+            <input type="radio" name="role" value="ADMIN" required> <spring:message code="admin"/>
+            <button type="submit" class="color-square"><spring:message code="change.role"/></button>
         </form>
     </c:if>
 
     <form action="${pageContext.request.contextPath}/auth_users/${user.authId}/delete" method="POST">
-        <input type="submit" value="<fmt:message key="delete.user" bundle="${intr}"/>"/>
+        <input type="submit" value="<spring:message code="delete.user"/>"/>
         <label>
             <input hidden="hidden" type="text" name="login" value="${user.userLogin}">
         </label>

@@ -30,7 +30,7 @@ public class HibernateConfig {
         final HikariDataSource hikariDataSource = new HikariDataSource();
         hikariDataSource.setJdbcUrl(datasourceSettings.getUrl());
         hikariDataSource.setUsername(datasourceSettings.getUsernameDB());
-        hikariDataSource.setPassword(datasourceSettings.getPassword());
+        hikariDataSource.setPassword(datasourceSettings.getPasswordDB());
         hikariDataSource.setDriverClassName(datasourceSettings.getDriver());
         hikariDataSource.setMaximumPoolSize(20);
         return hikariDataSource;

@@ -11,30 +11,39 @@
     </definition>
 
     <definition name="addnews" extends="default">
+        <put-attribute name="title" value="Add news"/>
         <put-attribute name="body" value="/WEB-INF/view/page/addnews.jsp"/>
     </definition>
     <definition name="adminpage" extends="default">
+        <put-attribute name="title" value="Admin page"/>
         <put-attribute name="body" value="/WEB-INF/view/page/adminpage.jsp"/>
     </definition>
     <definition name="login" extends="default">
+        <put-attribute name="title" value="Login"/>
         <put-attribute name="body" value="/WEB-INF/view/page/login.jsp"/>
     </definition>
     <definition name="mainpage" extends="default">
+        <put-attribute name="title" value="Main page"/>
         <put-attribute name="body" value="/WEB-INF/view/page/mainpage.jsp"/>
     </definition>
     <definition name="newsupdate" extends="default">
+        <put-attribute name="title" value="Update news"/>
         <put-attribute name="body" value="/WEB-INF/view/page/newsupdate.jsp"/>
     </definition>
     <definition name="newsview" extends="default">
+        <put-attribute name="title" value="News view"/>
         <put-attribute name="body" value="/WEB-INF/view/page/newsview.jsp"/>
     </definition>
     <definition name="registration" extends="default">
+        <put-attribute name="title" value="Registration"/>
         <put-attribute name="body" value="/WEB-INF/view/page/registration.jsp"/>
     </definition>
     <definition name="userpage" extends="default">
+        <put-attribute name="title" value="User page"/>
         <put-attribute name="body" value="/WEB-INF/view/page/userpage.jsp"/>
     </definition>
     <definition name="userupdate" extends="default">
+        <put-attribute name="title" value="Update user"/>
         <put-attribute name="body" value="/WEB-INF/view/page/userupdate.jsp"/>
     </definition>
 </tiles-definitions>

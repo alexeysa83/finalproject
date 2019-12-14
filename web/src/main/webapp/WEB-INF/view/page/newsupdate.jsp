@@ -1,31 +1,27 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-
-<fmt:setLocale value= "${locale}"/>
-<fmt:setBundle basename = "messages" var = "msgs"/>
-<fmt:setBundle basename = "interface" var = "intr"/>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
 <html>
 <head>
     <title>Update news</title>
 </head>
 <body>
-<%--<jsp:include page="../common/header.jsp"/>--%>
 <c:if test="${requestScope.get('message') != null}">
     <h2 style="color: firebrick">
-        <fmt:message key="${requestScope.get('message')}" bundle="${msgs}"/></h2>
+        <spring:message code="${requestScope.get('message')}"/></h2>
 </c:if>
 
 <form action="${pageContext.request.contextPath}/news/${news.id}/update" method="POST">
-    <label for="title"><strong><fmt:message key="title" bundle="${intr}"/></strong></label>
+    <label for="title"><strong><spring:message code="title"/></strong></label>
     <input id="title" type="text" name="title" value="${news.title}">
     <br/>
-    <label for="content"><strong><fmt:message key="content" bundle="${intr}"/></strong></label>
+    <label for="content"><strong><spring:message code="content"/></strong></label>
     <textarea id="content" name="content" rows="10">${news.content}</textarea>
     <br/>
-    <input type="reset" value="<fmt:message key="reset" bundle="${intr}"/>">
-    <button type="submit" class="color-square"><fmt:message key="update.news" bundle="${intr}"/></button>
+    <input type="reset" value="<spring:message code="reset"/>">
+    <button type="submit" class="color-square"><spring:message code="update.news"/></button>
 </form>
 </body>
 </html>

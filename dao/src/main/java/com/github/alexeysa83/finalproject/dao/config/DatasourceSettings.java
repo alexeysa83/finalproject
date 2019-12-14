@@ -9,8 +9,8 @@ public class DatasourceSettings {
     @Value("${usernameDB}")
     private String usernameDB;
 
-    @Value("${password}")
-    private String password;
+    @Value("${passwordDB}")
+    private String passwordDB;
 
     @Value("${driver}")
     private String driver;
@@ -23,8 +23,8 @@ public class DatasourceSettings {
         return usernameDB;
     }
 
-    public String getPassword() {
-        return password;
+    public String getPasswordDB() {
+        return passwordDB;
     }
 
     public String getDriver() {
