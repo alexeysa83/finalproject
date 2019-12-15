@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <html>
 <head>
@@ -23,7 +24,10 @@
 
     <h2><spring:message code="registered"/>: ${user.registrationTime}</h2>
 
-    <c:if test="${authUser.login == user.userLogin || authUser.role == 'ADMIN'}">
+    <sec:authorize access="hasRole('ADMIN')" var="isAdmin"/>
+    <sec:authentication property="principal.login" var="userInSessionLogin"/>
+
+    <c:if test="${user.userLogin == userInSessionLogin || isAdmin}">
         <form action="${pageContext.request.contextPath}/user_infos/${user.authId}/torequest" method="GET">
             <input type="submit" value="<spring:message code="update.user"/>"/>
         </form>
@@ -40,7 +44,7 @@
     <c:forEach items="${requestScope.userBadges}" var="badge">
         <h4><span class="badge badge-secondary" style="color: #2bb239">${badge.badgeName}</span></h4>
     </c:forEach>
-    <c:if test="${authUser.role == 'ADMIN'}">
+    <c:if test="${isAdmin}">
         <div class="dropdown">
             <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuAddBadge"
                     data-toggle="dropdown"
@@ -54,7 +58,7 @@
                             ${badge.badgeName}</a>
                 </c:forEach>
             </div>
-          </div>
+        </div>
         <div class="dropdown">
             <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuDeleteBadge"
                     data-toggle="dropdown"

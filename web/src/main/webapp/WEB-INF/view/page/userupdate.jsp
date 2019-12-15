@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <html>
 <head>
@@ -13,7 +14,11 @@
         <spring:message code="${requestScope.get('message')}"/></h2>
 </c:if>
 
-<c:if test="${authUser.login == user.userLogin || authUser.role == 'ADMIN'}">
+<sec:authorize access="hasRole('ADMIN')" var="isAdmin"/>
+<sec:authentication property="principal.login" var="userInSessionLogin"/>
+
+<c:if test="${user.userLogin == userInSessionLogin || isAdmin}">
+
     <form action="${pageContext.request.contextPath}/user_infos/${user.authId}/update" method="POST">
         <h2><span style='color: blue;'>${user.userLogin}</span></h2>
         <h2><spring:message code="update.settings"/>:</h2><br/>
@@ -34,7 +39,7 @@
         <button type="submit" class="color-square"><spring:message code="update.user"/></button>
     </form>
 
-    <c:if test="${authUser.login == user.userLogin}">
+    <c:if test="${user.userLogin == userInSessionLogin}">
         <h2><spring:message code="update.security"/>:</h2><br/>
         <form action="${pageContext.request.contextPath}/auth_users/${user.authId}/update_login" method="POST">
             <br/><spring:message code="login"/>:<br/>
@@ -56,7 +61,7 @@
         </form>
     </c:if>
 
-    <c:if test="${authUser.role == 'ADMIN'}">
+    <c:if test="${isAdmin}">
         <form action="${pageContext.request.contextPath}/auth_users/${user.authId}/update_role" method="POST">
             <br/><fmt:message key="role" bundle="${intr}"/>:<br/>
             <input type="radio" name="role" value="USER" required> <spring:message code="user"/>
@@ -72,6 +77,5 @@
         </label>
     </form>
 </c:if>
-
 </body>
 </html>

@@ -1,11 +1,12 @@
 package com.github.alexeysa83.finalproject.web.controller;
 
-import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
+import com.github.alexeysa83.finalproject.model.Role;
 import com.github.alexeysa83.finalproject.model.dto.BadgeDto;
 import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
 import com.github.alexeysa83.finalproject.service.badge.BadgeService;
 import com.github.alexeysa83.finalproject.service.user.UserService;
 import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
+import com.github.alexeysa83.finalproject.web.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -46,8 +47,8 @@ public class UserInfoController {
         req.setAttribute("userBadges", user.getBadges());
         req.setAttribute("user", user);
 
-        AuthUserDto authUserDto = (AuthUserDto) req.getSession().getAttribute("authUser");
-        boolean isAdmin = validationService.isAdmin(authUserDto.getRole());
+        final Role role = WebUtils.getUserInSession().getRole();
+        boolean isAdmin = validationService.isAdmin(role);
         if (isAdmin) {
             List<BadgeDto> badgesDB = badgeService.getAllBadges();
             req.setAttribute("badgesDB", badgesDB);

@@ -1,6 +1,5 @@
 package com.github.alexeysa83.finalproject.service.validation;
 
-import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.service.auth.AuthUserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,24 +57,6 @@ class AuthValidationServiceTest {
     void passwordMismatch() {
         final String returnMessage = validationService.isPasswordValid("Pass", "Sapp");
         assertEquals("invalid.repeatpass", returnMessage);
-    }
-
-    @Test
-    void needLogoutTrue() {
-        final Long testId = 1L;
-        final AuthUserDto testUser = new AuthUserDto();
-        testUser.setId(testId);
-        boolean result = validationService.needLogout(testUser, testId);
-        assertTrue(result);
-    }
-
-    @Test
-    void needLogoutFalse() {
-        final Long testId = 1L;
-        final AuthUserDto testUser = new AuthUserDto();
-        testUser.setId(testId);
-        boolean result = validationService.needLogout(testUser, 2L);
-        assertFalse(result);
     }
 
     @Test

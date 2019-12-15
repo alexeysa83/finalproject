@@ -26,7 +26,9 @@
         <!-- dependencies -->
         <spring-webmvc.version>5.2.1.RELEASE</spring-webmvc.version>
         <spring-orm.version>5.2.1.RELEASE</spring-orm.version>
-        <spring-data-jpa.version>2.2.2.RELEASE</spring-data-jpa.version>
+        <spring-security-web.version>5.2.1.RELEASE</spring-security-web.version>
+        <spring-security-config.version>5.2.1.RELEASE</spring-security-config.version>
+        <spring-security-taglibs.version>5.2.1.RELEASE</spring-security-taglibs.version>
         <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
         <jstl.version>1.2</jstl.version>
         <!--Tiles views-->
@@ -36,6 +38,7 @@
         <tiles-el.version>3.0.8</tiles-el.version>
         <tiles-template.version>3.0.8</tiles-template.version>
         <!--DB-->
+        <spring-data-jpa.version>2.2.2.RELEASE</spring-data-jpa.version>
         <hibernate-core.version>5.4.6.Final</hibernate-core.version>
         <mysql-connector-java.version>8.0.17</mysql-connector-java.version>
         <c3p0.version>0.9.5.4</c3p0.version>
@@ -69,9 +72,19 @@
                 <version>${spring-orm.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.springframework.data</groupId>
-                <artifactId>spring-data-jpa</artifactId>
-                <version>${spring-data-jpa.version}</version>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-web</artifactId>
+                <version>${spring-security-web.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-config</artifactId>
+                <version>${spring-security-config.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-taglibs</artifactId>
+                <version>${spring-security-taglibs.version}</version>
             </dependency>
             <dependency>
                 <groupId>javax.servlet</groupId>
@@ -111,6 +124,11 @@
                 <version>${tiles-template.version}</version>
             </dependency>
 <!--DB-->
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-jpa</artifactId>
+                <version>${spring-data-jpa.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-core</artifactId>

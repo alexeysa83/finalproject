@@ -4,7 +4,7 @@ import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import java.io.IOException;
 
-@WebFilter (filterName = "EncodeFilter")
+@WebFilter (filterName = "EncodeFilter", urlPatterns = "/*")
 public class EncodeServlet implements Filter {
 
     private static final String UTF_8 = "UTF-8";

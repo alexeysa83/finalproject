@@ -7,6 +7,7 @@ import com.github.alexeysa83.finalproject.service.UtilService;
 import com.github.alexeysa83.finalproject.service.comment.CommentService;
 import com.github.alexeysa83.finalproject.service.news.NewsService;
 import com.github.alexeysa83.finalproject.service.validation.NewsValidationService;
+import com.github.alexeysa83.finalproject.web.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -78,8 +79,8 @@ public class NewsController {
         return "newsupdate";
     }
 
-    //    "/auth/news/update" GET
-    @GetMapping(value = "/addnewstojsp")
+//        "/auth/news/update" GET
+    @GetMapping(value = "/add_news_to_jsp")
     public String forwardToJSP() {
         return "addnews";
     }
@@ -95,12 +96,13 @@ public class NewsController {
             return "addnews";
         }
 
-        AuthUserDto user = (AuthUserDto) req.getSession().getAttribute("authUser");
+        final AuthUserDto userInSession = WebUtils.getUserInSession();
         final Timestamp creationTime = UtilService.getTime();
-        final NewsDto news = newsService.createNews(new NewsDto(title, content, creationTime, user.getId(), user.getLogin()));
+        final NewsDto news = newsService.createNews(
+                new NewsDto(title, content, creationTime, userInSession.getId(), userInSession.getLogin()));
         if (news == null) {
             req.setAttribute("message", "error.unknown");
-            log.error("Failed to add news for user id: {}, at: {}", user.getId(), LocalDateTime.now());
+            log.error("Failed to add news for user id: {}, at: {}", userInSession.getId(), LocalDateTime.now());
             return "addnews";
         }
         log.info("Added news id: {}, at: {}", news.getId(), LocalDateTime.now());

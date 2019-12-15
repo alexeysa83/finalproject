@@ -20,7 +20,6 @@ public class WebConfig {
     @Bean
     public UrlBasedViewResolver tilesViewResolver(){
         UrlBasedViewResolver resolver = new UrlBasedViewResolver();
-
         resolver.setViewClass(TilesView.class);
         return resolver;
     }
@@ -37,7 +36,6 @@ public class WebConfig {
         ReloadableResourceBundleMessageSource source = new ReloadableResourceBundleMessageSource();
         source.setBasenames("classpath:/messages", "classpath:/interface");
         source.setDefaultEncoding("UTF-8");
-
         return source;
     }
 
@@ -49,11 +47,4 @@ public class WebConfig {
         resolver.setCookieMaxAge(3600);
         return resolver;
     }
-//    @Bean
-//    ViewResolver viewResolver () {
-//        final InternalResourceViewResolver resolver = new InternalResourceViewResolver();
-//        resolver.setPrefix("/WEB-INF/view/page/");
-//        resolver.setSuffix(".jsp");
-//        return resolver;
-//    }
 }

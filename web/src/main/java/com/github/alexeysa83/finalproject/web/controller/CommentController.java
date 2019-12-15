@@ -5,6 +5,7 @@ import com.github.alexeysa83.finalproject.model.dto.CommentDto;
 import com.github.alexeysa83.finalproject.service.UtilService;
 import com.github.alexeysa83.finalproject.service.comment.CommentService;
 import com.github.alexeysa83.finalproject.service.validation.CommentValidationService;
+import com.github.alexeysa83.finalproject.web.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -26,18 +27,18 @@ public class CommentController {
         this.commentService = commentService;
     }
 
-//    "/auth/comment/update" GET
+    //    "/auth/comment/update" GET
     @GetMapping(value = "/{commentId}")
     public String setCommentIdToRequest(HttpServletRequest req,
                                         @PathVariable Long commentId,
-                                        @RequestParam (value = "newsId") Long newsId) {
+                                        @RequestParam(value = "newsId") Long newsId) {
         req.setAttribute("commentToUpdateId", commentId);
         return "forward:/news/" + newsId;
     }
 
-//    "/auth/comment/add" POST
+    //    "/auth/comment/add" POST
     @PostMapping(value = "")
-    public String addComment(HttpServletRequest req, @RequestParam (value = "newsId") Long newsId) {
+    public String addComment(HttpServletRequest req, @RequestParam(value = "newsId") Long newsId) {
         final String content = req.getParameter("content");
         String message = CommentValidationService.isValidContent(content);
         if (message != null) {
@@ -45,11 +46,10 @@ public class CommentController {
             return "forward:/news/" + newsId;
         }
 
-        AuthUserDto authUser = (AuthUserDto) req.getSession().getAttribute("authUser");
+        final AuthUserDto userInSession = WebUtils.getUserInSession();
         final Timestamp creationTime = UtilService.getTime();
-
         final CommentDto comment = commentService.createComment
-                (new CommentDto(content, creationTime, authUser.getId(), newsId, authUser.getLogin()));
+                (new CommentDto(content, creationTime, userInSession.getId(), newsId, userInSession.getLogin()));
 
         String logMessage = "Created comment to news id: {} , at: {}";
         if (comment == null) {
@@ -60,11 +60,11 @@ public class CommentController {
         return "forward:/news/" + newsId;
     }
 
-//    "/auth/comment/update" POST
+    //    "/auth/comment/update" POST
     @PostMapping(value = "/{commentId}/update")
     public String updateComment(HttpServletRequest req,
                                 @PathVariable Long commentId,
-                                @RequestParam (value = "newsId") Long newsId) {
+                                @RequestParam(value = "newsId") Long newsId) {
         final String content = req.getParameter("content");
         String message = CommentValidationService.isValidContent(content);
         if (message != null) {
@@ -88,11 +88,11 @@ public class CommentController {
         return "forward:/news/" + newsId;
     }
 
-//    "/auth/comment/delete" GET
+    //    "/auth/comment/delete" GET
     @PostMapping(value = "/{commentId}/delete")
     public String deleteComment(HttpServletRequest req,
                                 @PathVariable Long commentId,
-                                @RequestParam (value = "newsId") Long newsId) {
+                                @RequestParam(value = "newsId") Long newsId) {
         final boolean isDeleted = commentService.deleteComment(commentId);
         String message = "delete.success";
         String logMessage = "Deleted comment id: {} , at: {}";

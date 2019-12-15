@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <html>
 <head>
@@ -22,18 +23,20 @@
     <spring:message code="created"/>: ${news.creationTime}</h5>
 <h5><spring:message code="comments"/>: ${requestScope.get('commentList').size()}</h5>
 
-<c:if test="${authUser.login == news.authorNews || authUser.role == 'ADMIN'}">
+<sec:authorize access="hasRole('ADMIN')" var="isAdmin"/>
+<sec:authentication property="principal.login" var="userInSessionLogin"/>
+
+<c:if test="${news.authorNews == userInSessionLogin || isAdmin}">
     <form action="${pageContext.request.contextPath}/news/${news.id}/torequest" method="GET">
         <input type="submit" value="<spring:message code="update.news"/>"/>
-<    </form>
+    </form>
     <form action="${pageContext.request.contextPath}/news/${news.id}/delete" method="POST">
         <input type="submit" value="<spring:message code="delete.news"/>"/>
     </form>
-    <hr/>
-    <hr/>
-    <%--</c:if>--%>
-    <%--<c:if test="${sessionScope.get('authUser') != null && requestScope.get('commentList') !=null}">--%>
-
+</c:if>
+<hr/>
+<hr/>
+<sec:authorize access="isAuthenticated()">
     <c:forEach items="${requestScope.commentList}" var="comment" varStatus="loop">
         <h4 style="color: #b04db2">${loop.index+1}) ${comment.content}</h4>
         <h5><spring:message code="author"/>:
@@ -42,7 +45,7 @@
         <h5><spring:message code="created"/>: ${comment.creationTime}</h5>
         <hr/>
 
-        <c:if test="${authUser.login == comment.authorComment || authUser.role == 'ADMIN'}">
+        <c:if test="${comment.authorComment == userInSessionLogin || isAdmin}">
             <c:choose>
                 <c:when test="${comment.id == commentToUpdateId}">
                     <form action="${pageContext.request.contextPath}/comments/${comment.id}/update" method="POST">
@@ -70,8 +73,7 @@
                 </label>
             </form>
         </c:if>
-
-    </c:forEach>
+            </c:forEach>
     <form action="${pageContext.request.contextPath}/comments/" method="POST">
         <label for="content"><strong><spring:message code="content"/></strong></label>
         <textarea id="content" name="content" rows="10"></textarea>
@@ -80,8 +82,7 @@
             <input hidden="hidden" type="text" name="newsId" value="${news.id}">
         </label>
     </form>
-</c:if>
-
+</sec:authorize>
 </body>
 </html>
 

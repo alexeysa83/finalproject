@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 
 <html>
 <head>
@@ -13,10 +14,10 @@
         <spring:message code="${requestScope.get('message')}"/></h2>
 </c:if>
 
-<c:if test="${sessionScope.get('authUser') != null}">
-    <a href="${pageContext.request.contextPath}/news/addnewstojsp">
+<sec:authorize access="isAuthenticated()">
+    <a href="${pageContext.request.contextPath}/news/add_news_to_jsp">
         <spring:message code="add.news"/></a>
-</c:if>
+</sec:authorize>
 
 <c:forEach items="${requestScope.newsList}" var="news">
     <h2 style="color: #2bb239"><a href="${pageContext.request.contextPath}/news/${news.id}">

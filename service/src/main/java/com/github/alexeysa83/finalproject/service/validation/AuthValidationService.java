@@ -1,12 +1,9 @@
 package com.github.alexeysa83.finalproject.service.validation;
 
 import com.github.alexeysa83.finalproject.model.Role;
-import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.service.auth.AuthUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.Objects;
 
 @Component
 public class AuthValidationService {
@@ -43,8 +40,8 @@ public class AuthValidationService {
     }
 
     //Check if user in session is the same to user who's security settings are being changed
-    public boolean needLogout(AuthUserDto user, Long id) {
-        return Objects.equals(id, user.getId());
+    public boolean needLogout(Long userInSessionId, Long id) {
+        return userInSessionId.equals(id);
     }
 
     public boolean isRoleValid(String role) {

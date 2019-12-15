@@ -34,7 +34,7 @@ public class BadgeController {
 //        final List<BadgeDto> badgesDB = badgeService.getAllBadges();
 //        req.setAttribute("badgesDB", badgesDB);
         setBadgesToRequest(req);
-        return "adminpage";
+        return "admin_page";
     }
 
     //"/admin/update/badge" GET
@@ -54,7 +54,7 @@ public class BadgeController {
         if (message != null) {
             req.setAttribute("message", message);
             setBadgesToRequest(req);
-            return "adminpage";
+            return "admin_page";
 //            return "forward:/admin/main";
         }
 
@@ -66,7 +66,7 @@ public class BadgeController {
             log.error("Failed to add badge name: {}, at: {}", badgeName, LocalDateTime.now());
             req.setAttribute("message", message);
             setBadgesToRequest(req);
-            return "adminpage";
+            return "admin_page";
 //            return "forward:/badges";
         }
         return "redirect:/badges";
@@ -80,7 +80,7 @@ public class BadgeController {
         if (message!=null) {
             req.setAttribute("message", message);
             setBadgesToRequest(req);
-            return "adminpage";
+            return "admin_page";
 //            return "forward:/admin/main";
         }
 
@@ -98,7 +98,7 @@ public class BadgeController {
         log.info(logMessage, badgeId, LocalDateTime.now());
         req.setAttribute("message", message);
         setBadgesToRequest(req);
-        return "adminpage";
+        return "admin_page";
 //        return "forward:/admin/main";
     }
 
@@ -115,7 +115,7 @@ public class BadgeController {
         log.info(logMessage, badgeId, LocalDateTime.now());
         req.setAttribute("message", message);
         setBadgesToRequest(req);
-        return "adminpage";
+        return "admin_page";
 //        return "forward:/badges";
     }
 

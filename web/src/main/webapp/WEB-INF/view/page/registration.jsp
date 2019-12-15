@@ -13,7 +13,7 @@
     <h2 style="color: firebrick">
         <spring:message code="${requestScope.get('message')}"/></h2>
 </c:if>
-<form action="${pageContext.request.contextPath}/auth_users/" method="POST">
+<form action="${pageContext.request.contextPath}/auth_users/registration" method="POST">
     <fieldset>
         <legend><spring:message code="form.registration"/></legend>
         <label for="login"><strong><spring:message code="choose.login"/>:</strong></label>

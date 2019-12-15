@@ -10,13 +10,17 @@
         <put-attribute name="footer" value="/WEB-INF/view/common/footer.jsp"/>
     </definition>
 
+<!--    <definition name="access_denied" extends="default">-->
+<!--        <put-attribute name="title" value="Access denied"/>-->
+<!--        <put-attribute name="body" value="/WEB-INF/view/page/access_denied.jsp"/>-->
+<!--    </definition>-->
     <definition name="addnews" extends="default">
         <put-attribute name="title" value="Add news"/>
         <put-attribute name="body" value="/WEB-INF/view/page/addnews.jsp"/>
     </definition>
-    <definition name="adminpage" extends="default">
+    <definition name="admin_page" extends="default">
         <put-attribute name="title" value="Admin page"/>
-        <put-attribute name="body" value="/WEB-INF/view/page/adminpage.jsp"/>
+        <put-attribute name="body" value="/WEB-INF/view/page/admin_page.jsp"/>
     </definition>
     <definition name="login" extends="default">
         <put-attribute name="title" value="Login"/>

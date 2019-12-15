@@ -4,6 +4,7 @@ import com.github.alexeysa83.finalproject.model.Role;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.service.auth.AuthUserService;
 import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
+import com.github.alexeysa83.finalproject.web.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -30,13 +31,13 @@ public class AuthUserController {
         this.validationService = validationService;
     }
 
-    @GetMapping("")
+    @GetMapping("/forward_to_registration")
     public String forwardToRegistrationJSP() {
         return "registration";
     }
 
 //    "/registration" POST
-    @PostMapping(value = "")
+    @PostMapping(value = "/registration")
     public String addUser(HttpServletRequest req) {
 
         final String login = req.getParameter("login");
@@ -158,8 +159,8 @@ public class AuthUserController {
             return "forward:/user_infos/" + authId;
         }
         log.info("Updated role to user id: {} , at: {}", authId, LocalDateTime.now());
-        final AuthUserDto authUser = (AuthUserDto) req.getSession().getAttribute("authUser");
-        final boolean needLogout = validationService.needLogout(authUser, authId);
+
+        final boolean needLogout = validationService.needLogout(WebUtils.getCurrentUserId(), authId);
         if (needLogout) {
             req.setAttribute("message", message);
             return "forward:/logout";
@@ -184,8 +185,7 @@ public class AuthUserController {
         }
         log.info(logMessage, authId, LocalDateTime.now());
 
-        final AuthUserDto authUser = (AuthUserDto) req.getSession().getAttribute("authUser");
-        final boolean needLogout = validationService.needLogout(authUser, authId);
+        final boolean needLogout = validationService.needLogout(WebUtils.getCurrentUserId(), authId);
         if (needLogout) {
             req.setAttribute("message", message);
             return "forward:/logout";
