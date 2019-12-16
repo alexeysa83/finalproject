@@ -2,7 +2,6 @@ package com.github.alexeysa83.finalproject.web.controller;
 
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.service.auth.AuthUserService;
-import com.github.alexeysa83.finalproject.web.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,28 +12,26 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
 @Controller
-public class AuthentificationController {
+@RequestMapping("/login")
+public class LoginController {
 
-    private static final Logger log = LoggerFactory.getLogger(AuthentificationController.class);
+    private static final Logger log = LoggerFactory.getLogger(LoginController.class);
 
     private final AuthUserService authUserService;
 
-    public AuthentificationController(AuthUserService authUserService) {
+    public LoginController(AuthUserService authUserService) {
         this.authUserService = authUserService;
     }
 
     //    "/login" GET
-    @GetMapping(value = "/login")
+    @GetMapping
     public String loginGetMethod() {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || authentication.getPrincipal().equals("anonymousUser")) {
@@ -44,8 +41,8 @@ public class AuthentificationController {
     }
 
     //    "/login" POST
-    @PostMapping(value = "/login")
-    public String loginPostMethod(HttpServletRequest req, HttpSession session) {
+    @PostMapping
+    public String loginPostMethod(HttpServletRequest req) {
         final String login = req.getParameter("login");
         final String password = req.getParameter("password");
 
@@ -71,25 +68,5 @@ public class AuthentificationController {
 
     private List<GrantedAuthority> getAuthorities(String role) {
         return Collections.singletonList((GrantedAuthority) () -> "ROLE_" + role);
-    }
-
-    //    "/auth/logout" GET
-    @RequestMapping(value = "/logout", method = {RequestMethod.GET, RequestMethod.POST})
-    public String logout(HttpServletRequest req) {
-        final AuthUserDto principal = WebUtils.getUserInSession();
-        SecurityContextHolder.clearContext();
-        try {
-            req.logout();
-        } catch (ServletException e) {
-            log.error("User id: {} unable to log out at: {}", principal.getId(), LocalDateTime.now());
-            throw new RuntimeException();
-        }
-        log.info("User id: {} logged out at: {}", principal.getId(), LocalDateTime.now());
-
-//        AuthUserDto authUser = (AuthUserDto) req.getSession().getAttribute("authUser");
-//        req.getSession().removeAttribute("authUser");
-//        req.getSession().invalidate();
-//        log.info("User id: {} logged out at: {}", authUser.getId(), LocalDateTime.now());
-        return "login";
     }
 }
