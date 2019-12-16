@@ -14,14 +14,14 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 
 @Controller
-@RequestMapping("/logout")
 public class LogoutController {
 
     private static final Logger log = LoggerFactory.getLogger(LogoutController.class);
 
     //    "/auth/logout" GET
-    @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/logout", method = {RequestMethod.GET, RequestMethod.POST})
     public String logout(HttpServletRequest req) {
+        req.setAttribute("message", "logout.user");
         final AuthUserDto principal = WebUtils.getUserInSession();
         SecurityContextHolder.clearContext();
         try {
