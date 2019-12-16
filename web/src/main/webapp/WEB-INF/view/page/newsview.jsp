@@ -24,7 +24,9 @@
 <h5><spring:message code="comments"/>: ${requestScope.get('commentList').size()}</h5>
 
 <sec:authorize access="hasRole('ADMIN')" var="isAdmin"/>
-<sec:authentication property="principal.login" var="userInSessionLogin"/>
+<sec:authorize access="isAuthenticated()">
+    <sec:authentication property="principal.login" var="userInSessionLogin"/>
+</sec:authorize>
 
 <c:if test="${news.authorNews == userInSessionLogin || isAdmin}">
     <form action="${pageContext.request.contextPath}/news/${news.id}/torequest" method="GET">
@@ -73,7 +75,7 @@
                 </label>
             </form>
         </c:if>
-            </c:forEach>
+    </c:forEach>
     <form action="${pageContext.request.contextPath}/comments/" method="POST">
         <label for="content"><strong><spring:message code="content"/></strong></label>
         <textarea id="content" name="content" rows="10"></textarea>

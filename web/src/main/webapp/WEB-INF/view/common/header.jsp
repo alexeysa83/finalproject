@@ -29,7 +29,8 @@
 <a href="${pageContext.request.contextPath}/news/"><spring:message code="main"/></a>
 
 <sec:authorize access="isAuthenticated()">
-    <a href="${pageContext.request.contextPath}/user_infos/${userInSessionAuthId}">${userInSessionLogin}</a>
+    <a href="${pageContext.request.contextPath}/user_infos/<sec:authentication property="principal.id"/>">
+        <sec:authentication property="principal.login"/></a>
     <a href="${pageContext.request.contextPath}/logout"><spring:message code="logout"/></a>
 </sec:authorize>
 

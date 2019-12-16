@@ -62,9 +62,6 @@ public class AuthentificationController {
             return "login";
         }
 
-//        req.getSession().setAttribute("authUser", userFromDB);
-        session.setAttribute("userInSessionLogin", userFromDB.getLogin());
-        session.setAttribute("userInSessionAuthId", userFromDB.getId());
         final String role = userFromDB.getRole().toString();
         final Authentication authentication = new UsernamePasswordAuthenticationToken(userFromDB, null, getAuthorities(role));
         SecurityContextHolder.getContext().setAuthentication(authentication);

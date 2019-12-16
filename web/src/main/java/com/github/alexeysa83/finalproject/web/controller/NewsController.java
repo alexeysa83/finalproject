@@ -39,7 +39,7 @@ public class NewsController {
      * currentPage default value
      */
 //    "/main" GET
-    @GetMapping(value = "")
+    @RequestMapping (value = "", method = {RequestMethod.GET, RequestMethod.POST})
     public String getAllNews(HttpServletRequest req) {
 
         String currentPage = req.getParameter("currentPage");
@@ -86,7 +86,7 @@ public class NewsController {
     }
 
     //    "/auth/news/add" POST
-    @PostMapping(value = "")
+    @PostMapping(value = "/add")
     public String addNews(HttpServletRequest req) {
         final String title = req.getParameter("title");
         final String content = req.getParameter("content");
@@ -150,6 +150,7 @@ public class NewsController {
             logMessage = "Failed to delete news id: {} , at: {}";
         }
         log.info(logMessage, newsId, LocalDateTime.now());
+        // No message
         req.setAttribute("message", message);
         return "forward:/news";
     }

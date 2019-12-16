@@ -25,7 +25,9 @@
     <h2><spring:message code="registered"/>: ${user.registrationTime}</h2>
 
     <sec:authorize access="hasRole('ADMIN')" var="isAdmin"/>
-    <sec:authentication property="principal.login" var="userInSessionLogin"/>
+    <sec:authorize access="isAuthenticated()">
+        <sec:authentication property="principal.login" var="userInSessionLogin"/>
+    </sec:authorize>
 
     <c:if test="${user.userLogin == userInSessionLogin || isAdmin}">
         <form action="${pageContext.request.contextPath}/user_infos/${user.authId}/torequest" method="GET">

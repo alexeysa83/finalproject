@@ -15,7 +15,9 @@
 </c:if>
 
 <sec:authorize access="hasRole('ADMIN')" var="isAdmin"/>
-<sec:authentication property="principal.login" var="userInSessionLogin"/>
+<sec:authorize access="isAuthenticated()">
+    <sec:authentication property="principal.login" var="userInSessionLogin"/>
+</sec:authorize>
 
 <c:if test="${user.userLogin == userInSessionLogin || isAdmin}">
 

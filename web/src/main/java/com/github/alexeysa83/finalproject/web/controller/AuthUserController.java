@@ -7,6 +7,10 @@ import com.github.alexeysa83.finalproject.service.validation.AuthValidationServi
 import com.github.alexeysa83.finalproject.web.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 
 @Controller
 @RequestMapping(value = "/auth_users")
@@ -56,16 +62,22 @@ public class AuthUserController {
             return "registration";
         }
 
-        final AuthUserDto authUser = authUserService.createAuthUserAndUserInfo(login, password);
-        if (authUser == null) {
+        final AuthUserDto userFromDB = authUserService.createAuthUserAndUserInfo(login, password);
+        if (userFromDB == null) {
             req.setAttribute("message", "error.unknown");
             log.error("Failed to registrate user with login: {} pass {}, at: {}", login, password, LocalDateTime.now());
             return "registration";
         }
 
-        req.getSession().setAttribute("authUser", authUser);
+        final String role = userFromDB.getRole().toString();
+        final Authentication authentication = new UsernamePasswordAuthenticationToken(userFromDB, null, getAuthorities(role));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
         log.info("User: {} registered at: {}", login, LocalDateTime.now());
         return "redirect:/index.jsp";
+    }
+
+    private List<GrantedAuthority> getAuthorities(String role) {
+        return Collections.singletonList((GrantedAuthority) () -> "ROLE_" + role);
     }
 
 //    "/auth/user/login" POST
