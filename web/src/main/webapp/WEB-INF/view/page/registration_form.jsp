@@ -17,10 +17,12 @@
     <fieldset>
         <legend><spring:message code="form.registration"/></legend>
         <label for="login"><strong><spring:message code="choose.login"/>:</strong></label>
-        <input id="login" type="text" name="login" required>
+        <input id="login" type="text" name="login" required
+               placeholder="<spring:message code="login.pass.placeholder"/>">
 
         <label for="password"><strong><spring:message code="choose.pass"/>:</strong></label>
-        <input id="password" type="password" name="password" required>
+        <input id="password" type="password" name="password" required
+               placeholder="<spring:message code="login.pass.placeholder"/>">
 
         <label for="passwordRepeat"><strong><spring:message code="repeat.pass"/>:</strong></label>
         <input id="passwordRepeat" type="password" name="passwordRepeat" required>

@@ -6,7 +6,6 @@ import com.github.alexeysa83.finalproject.dao.user.UserInfoBaseDao;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
 import com.github.alexeysa83.finalproject.service.UtilService;
-import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
@@ -49,8 +48,8 @@ public class DefaultAuthUserService implements AuthUserService {
         AuthUserDto userFromDB = authUserDao.getByLogin(userFromLogin.getLogin());
         boolean isValidPassword = false;
         if (userFromDB != null) {
-            isValidPassword = new AuthValidationService().isPasswordEqual
-                    (userFromLogin.getPassword(), userFromDB.getPassword());
+            isValidPassword =
+                    userFromLogin.getPassword().equals(userFromDB.getPassword());
         }
         return (isValidPassword) ? userFromDB : null;
     }

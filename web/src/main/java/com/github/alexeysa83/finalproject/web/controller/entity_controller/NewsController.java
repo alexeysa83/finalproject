@@ -1,4 +1,4 @@
-package com.github.alexeysa83.finalproject.web.controller;
+package com.github.alexeysa83.finalproject.web.controller.entity_controller;
 
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.dto.CommentDto;
@@ -55,7 +55,7 @@ public class NewsController {
 
         int totalPages = newsService.getNewsTotalPages();
         req.setAttribute("totalPages", totalPages);
-        return "mainpage";
+        return "main_page";
     }
 
     /**
@@ -68,7 +68,7 @@ public class NewsController {
         req.setAttribute("news", news);
         final List<CommentDto> commentList = commentService.getCommentsOnNews(newsId);
         req.setAttribute("commentList", commentList);
-        return "newsview";
+        return "news_view";
     }
 
     //    "/auth/news/update" GET
@@ -76,13 +76,13 @@ public class NewsController {
     public String setNewsToUpdate(HttpServletRequest req, @PathVariable Long newsId) {
         final NewsDto news = newsService.getNewsOnId(newsId);
         req.setAttribute("news", news);
-        return "newsupdate";
+        return "news_update";
     }
 
 //        "/auth/news/update" GET
     @GetMapping(value = "/add_news_to_jsp")
     public String forwardToJSP() {
-        return "addnews";
+        return "add_news";
     }
 
     //    "/auth/news/add" POST
@@ -93,7 +93,7 @@ public class NewsController {
         String message = NewsValidationService.isValidTitleContent(title, content);
         if (message != null) {
             req.setAttribute("message", message);
-            return "addnews";
+            return "add_news";
         }
 
         final AuthUserDto userInSession = WebUtils.getUserInSession();
@@ -106,7 +106,7 @@ public class NewsController {
             return "addnews";
         }
         log.info("Added news id: {}, at: {}", news.getId(), LocalDateTime.now());
-        return "redirect:/index.jsp";
+        return "redirect:/news";
     }
 
     /**

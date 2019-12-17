@@ -16,9 +16,9 @@
         <spring:message code="choose.lang"/>
     </button>
     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <a class="dropdown-item" href="${pageContext.request.contextPath}/news?locale=en_US">
+        <a class="dropdown-item" href="${requestScope['javax.servlet.forward.request_uri']}?locale=en_US">
             <spring:message code="english"/></a>
-        <a class="dropdown-item" href="${pageContext.request.contextPath}/news?locale=ru_RU">
+        <a class="dropdown-item" href="${requestScope['javax.servlet.forward.request_uri']}?locale=ru_RU">
             <spring:message code="russian"/></a>
     </div>
 </div>
@@ -31,7 +31,7 @@
 <sec:authorize access="isAuthenticated()">
     <a href="${pageContext.request.contextPath}/user_infos/<sec:authentication property="principal.id"/>">
         <sec:authentication property="principal.login"/></a>
-    <a href="${pageContext.request.contextPath}/logout"><spring:message code="logout"/></a>
+    <a href="${pageContext.request.contextPath}/logouts"><spring:message code="logout"/></a>
 </sec:authorize>
 
 <sec:authorize access="!isAuthenticated()">

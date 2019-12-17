@@ -1,7 +1,11 @@
 package com.github.alexeysa83.finalproject.web.spring;
 
+import com.github.alexeysa83.finalproject.service.config.ServiceConfig;
+import com.github.alexeysa83.finalproject.web.controller.entity_controller.*;
+import com.github.alexeysa83.finalproject.web.controller.security.ErrorController;
+import com.github.alexeysa83.finalproject.web.controller.security.LoginController;
+import com.github.alexeysa83.finalproject.web.controller.security.LogoutController;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -14,9 +18,64 @@ import java.util.Locale;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = "com.github.alexeysa83.finalproject")
 public class WebConfig {
 
+    private final ServiceConfig serviceConfig;
+
+    public WebConfig(ServiceConfig serviceConfig) {
+        this.serviceConfig = serviceConfig;
+    }
+
+    // Security controllers beans
+    @Bean
+    public LoginController loginController(){
+        return new LoginController(serviceConfig.authUserService());
+    }
+
+    @Bean
+    public LogoutController logoutController(){
+        return new LogoutController();
+    }
+
+    @Bean
+    public ErrorController errorController(){
+        return new ErrorController();
+    }
+
+    // Entity controllers beans
+    @Bean
+    public AuthUserController authUserController(){
+        return new AuthUserController(
+                serviceConfig.authUserService(),
+                serviceConfig.authValidationService());
+    }
+
+    @Bean
+    public UserInfoController userInfoController(){
+        return new UserInfoController(
+                serviceConfig.userService(),
+                serviceConfig.badgeService(),
+                serviceConfig.authValidationService());
+    }
+
+    @Bean
+    public NewsController newsController(){
+        return new NewsController(
+                serviceConfig.newsService(),
+                serviceConfig.commentService());
+    }
+
+    @Bean
+    public CommentController commentController(){
+        return new CommentController(serviceConfig.commentService());
+    }
+
+    @Bean
+    public BadgeController badgeController(){
+        return new BadgeController(serviceConfig.badgeValidationService(), serviceConfig.badgeService());
+    }
+
+    // Web config beans
     @Bean
     public UrlBasedViewResolver tilesViewResolver(){
         UrlBasedViewResolver resolver = new UrlBasedViewResolver();

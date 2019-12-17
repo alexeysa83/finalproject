@@ -31,6 +31,7 @@
         <spring-security-taglibs.version>5.2.1.RELEASE</spring-security-taglibs.version>
         <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
         <jstl.version>1.2</jstl.version>
+        <validation-api.version>2.0.1.Final</validation-api.version>
         <!--Tiles views-->
         <tiles-core.version>3.0.8</tiles-core.version>
         <tiles-jsp.version>3.0.8</tiles-jsp.version>
@@ -96,6 +97,11 @@
                 <groupId>jstl</groupId>
                 <artifactId>jstl</artifactId>
                 <version>${jstl.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>${validation-api.version}</version>
             </dependency>
 <!--Tiles views-->
             <dependency>

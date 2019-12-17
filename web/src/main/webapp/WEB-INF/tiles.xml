@@ -10,44 +10,44 @@
         <put-attribute name="footer" value="/WEB-INF/view/common/footer.jsp"/>
     </definition>
 
-<!--    <definition name="access_denied" extends="default">-->
-<!--        <put-attribute name="title" value="Access denied"/>-->
-<!--        <put-attribute name="body" value="/WEB-INF/view/page/access_denied.jsp"/>-->
-<!--    </definition>-->
-    <definition name="addnews" extends="default">
+    <definition name="access_denied" extends="default">
+        <put-attribute name="title" value="Access denied"/>
+        <put-attribute name="body" value="/WEB-INF/view/page/access_denied.jsp"/>
+    </definition>
+    <definition name="add_news" extends="default">
         <put-attribute name="title" value="Add news"/>
-        <put-attribute name="body" value="/WEB-INF/view/page/addnews.jsp"/>
+        <put-attribute name="body" value="/WEB-INF/view/page/add_news.jsp"/>
     </definition>
     <definition name="admin_page" extends="default">
         <put-attribute name="title" value="Admin page"/>
         <put-attribute name="body" value="/WEB-INF/view/page/admin_page.jsp"/>
     </definition>
-    <definition name="login" extends="default">
+    <definition name="login_form" extends="default">
         <put-attribute name="title" value="Login"/>
-        <put-attribute name="body" value="/WEB-INF/view/page/login.jsp"/>
+        <put-attribute name="body" value="/WEB-INF/view/page/login_form.jsp"/>
     </definition>
-    <definition name="mainpage" extends="default">
+    <definition name="main_page" extends="default">
         <put-attribute name="title" value="Main page"/>
-        <put-attribute name="body" value="/WEB-INF/view/page/mainpage.jsp"/>
+        <put-attribute name="body" value="/WEB-INF/view/page/main_page.jsp"/>
     </definition>
-    <definition name="newsupdate" extends="default">
+    <definition name="news_update" extends="default">
         <put-attribute name="title" value="Update news"/>
-        <put-attribute name="body" value="/WEB-INF/view/page/newsupdate.jsp"/>
+        <put-attribute name="body" value="/WEB-INF/view/page/news_update.jsp"/>
     </definition>
-    <definition name="newsview" extends="default">
+    <definition name="news_view" extends="default">
         <put-attribute name="title" value="News view"/>
-        <put-attribute name="body" value="/WEB-INF/view/page/newsview.jsp"/>
+        <put-attribute name="body" value="/WEB-INF/view/page/news_view.jsp"/>
     </definition>
-    <definition name="registration" extends="default">
+    <definition name="registration_form" extends="default">
         <put-attribute name="title" value="Registration"/>
-        <put-attribute name="body" value="/WEB-INF/view/page/registration.jsp"/>
+        <put-attribute name="body" value="/WEB-INF/view/page/registration_form.jsp"/>
     </definition>
-    <definition name="userpage" extends="default">
+    <definition name="user_info" extends="default">
         <put-attribute name="title" value="User page"/>
-        <put-attribute name="body" value="/WEB-INF/view/page/userpage.jsp"/>
+        <put-attribute name="body" value="/WEB-INF/view/page/user_info.jsp"/>
     </definition>
-    <definition name="userupdate" extends="default">
+    <definition name="user_update" extends="default">
         <put-attribute name="title" value="Update user"/>
-        <put-attribute name="body" value="/WEB-INF/view/page/userupdate.jsp"/>
+        <put-attribute name="body" value="/WEB-INF/view/page/user_update.jsp"/>
     </definition>
 </tiles-definitions>

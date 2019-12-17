@@ -1,4 +1,4 @@
-package com.github.alexeysa83.finalproject.web.controller;
+package com.github.alexeysa83.finalproject.web.controller.entity_controller;
 
 
 import com.github.alexeysa83.finalproject.model.dto.BadgeDto;

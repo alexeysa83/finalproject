@@ -2,13 +2,14 @@ package com.github.alexeysa83.finalproject.service.validation;
 
 import com.github.alexeysa83.finalproject.model.Role;
 import com.github.alexeysa83.finalproject.service.auth.AuthUserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-@Component
 public class AuthValidationService {
-    @Autowired
-    private AuthUserService authUserService;
+
+    private final AuthUserService authUserService;
+
+    public AuthValidationService(AuthUserService authUserService) {
+        this.authUserService = authUserService;
+    }
 
     /**
      * @param login

@@ -14,20 +14,22 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .authorizeRequests(authorizeRequests ->
-                        authorizeRequests
-                                .antMatchers("/login",
-                                        "/auth_users/forward_to_registration",
-                                        "/auth_users/registration",
-                                        "/news",
-                                        "/news/*").permitAll()
-                                .antMatchers("/badges",
-                                        "/user_infos/*/add/*",
-                                        "/user_infos/*/delete/*",
-                                        "/auth_users/*/update_role").hasRole("ADMIN")
-                                .anyRequest().authenticated())
-//                .exceptionHandling(exceptionHandling ->
-//                        exceptionHandling.accessDeniedPage("access_denied.jsp"))
+
+                .authorizeRequests()
+                .antMatchers("/login",
+                        "/auth_users/forward_to_registration",
+                        "/auth_users/registration",
+                        "/access_denied/**",
+                        "/news",
+                        "/news/*").permitAll()
+                .antMatchers("/badges",
+                        "/user_infos/*/add/*",
+                        "/user_infos/*/delete/*",
+                        "/auth_users/*/update_role").hasRole("ADMIN")
+                .anyRequest().authenticated()
+                .and()
+                .exceptionHandling().accessDeniedPage("/errors/access_denied")
+                .and()
                 .csrf().disable();
     }
 }

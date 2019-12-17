@@ -1,4 +1,4 @@
-package com.github.alexeysa83.finalproject.web.controller;
+package com.github.alexeysa83.finalproject.web.controller.entity_controller;
 
 import com.github.alexeysa83.finalproject.model.Role;
 import com.github.alexeysa83.finalproject.model.dto.BadgeDto;
@@ -42,7 +42,7 @@ public class UserInfoController {
         final UserInfoDto user = userService.getById(authId);
         if (user == null) {
             req.setAttribute("message", "deleted");
-            return "userpage";
+            return "user_info";
         }
         req.setAttribute("userBadges", user.getBadges());
         req.setAttribute("user", user);
@@ -53,7 +53,7 @@ public class UserInfoController {
             List<BadgeDto> badgesDB = badgeService.getAllBadges();
             req.setAttribute("badgesDB", badgesDB);
         }
-        return "userpage";
+        return "user_info";
     }
 
 //    "/auth/user/update" GET
@@ -62,10 +62,10 @@ public class UserInfoController {
         final UserInfoDto user = userService.getById(authId);
         if (user == null) {
             req.setAttribute("message", "deleted");
-            return "userpage";
+            return "user_info";
         }
         req.setAttribute("user", user);
-        return "userupdate";
+        return "user_update";
     }
 
     // Validation + add null to DB instead of ""
@@ -100,7 +100,7 @@ public class UserInfoController {
         req.setAttribute("user", userInfoDto);
         req.setAttribute("userBadges", userInfoDto.getBadges());
         req.setAttribute("badgesDB", badgesDB);
-        return "userpage";
+        return "user_info";
     }
 
     // Duplicate code
@@ -115,6 +115,6 @@ public class UserInfoController {
         req.setAttribute("user", userInfoDto);
         req.setAttribute("userBadges", userInfoDto.getBadges());
         req.setAttribute("badgesDB", badgesDB);
-        return "userpage";
+        return "user_info";
     }
 }

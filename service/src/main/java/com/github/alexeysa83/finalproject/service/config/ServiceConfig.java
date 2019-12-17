@@ -1,10 +1,6 @@
 package com.github.alexeysa83.finalproject.service.config;
 
-import com.github.alexeysa83.finalproject.dao.authuser.AuthUserBaseDao;
-import com.github.alexeysa83.finalproject.dao.badge.BadgeBaseDao;
-import com.github.alexeysa83.finalproject.dao.comment.CommentBaseDao;
-import com.github.alexeysa83.finalproject.dao.news.NewsBaseDao;
-import com.github.alexeysa83.finalproject.dao.user.UserInfoBaseDao;
+import com.github.alexeysa83.finalproject.dao.config.DaoConfig;
 import com.github.alexeysa83.finalproject.service.auth.AuthUserService;
 import com.github.alexeysa83.finalproject.service.auth.DefaultAuthUserService;
 import com.github.alexeysa83.finalproject.service.badge.BadgeService;
@@ -15,36 +11,57 @@ import com.github.alexeysa83.finalproject.service.news.DefaultNewsService;
 import com.github.alexeysa83.finalproject.service.news.NewsService;
 import com.github.alexeysa83.finalproject.service.user.DefaultUserService;
 import com.github.alexeysa83.finalproject.service.user.UserService;
+import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
+import com.github.alexeysa83.finalproject.service.validation.BadgeValidationService;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ComponentScan (value = "com.github.alexeysa83.finalproject.service.validation")
 public class ServiceConfig {
 
-    @Bean
-    public AuthUserService authUserService(AuthUserBaseDao authUserDao, UserInfoBaseDao userInfoDao){
-        return new DefaultAuthUserService(authUserDao, userInfoDao);
+    private final DaoConfig daoConfig;
+
+    public ServiceConfig(DaoConfig daoConfig) {
+        this.daoConfig = daoConfig;
     }
 
     @Bean
-    public UserService userService(UserInfoBaseDao userInfoDao){
-        return new DefaultUserService(userInfoDao);
+    public AuthUserService authUserService() {
+        return new DefaultAuthUserService(
+                daoConfig.authUserBaseDao(),
+                daoConfig.userInfoBaseDao());
     }
 
     @Bean
-    public NewsService newsService(NewsBaseDao newsBaseDao){
-        return new DefaultNewsService(newsBaseDao);
+    public UserService userService() {
+        return new DefaultUserService(daoConfig.userInfoBaseDao());
     }
 
     @Bean
-    public CommentService commentService(CommentBaseDao commentBaseDao){
-        return new DefaultCommentService(commentBaseDao);
+    public NewsService newsService() {
+        return new DefaultNewsService(daoConfig.newsBaseDao());
     }
 
     @Bean
-    public BadgeService badgeService(BadgeBaseDao badgeBaseDao){
-        return new DefaultBadgeService(badgeBaseDao);
+    public CommentService commentService() {
+        return new DefaultCommentService(daoConfig.commentBaseDao());
+    }
+
+    @Bean
+    public BadgeService badgeService() {
+        return new DefaultBadgeService(daoConfig.badgeBaseDao());
+    }
+
+    /**
+     *
+     */
+    @Bean
+    public BadgeValidationService badgeValidationService() {
+        return new BadgeValidationService(badgeService());
+    }
+
+    @Bean
+    public AuthValidationService authValidationService() {
+        return new AuthValidationService(authUserService());
     }
 }

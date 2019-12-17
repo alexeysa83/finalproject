@@ -1,4 +1,4 @@
-package com.github.alexeysa83.finalproject.web.controller;
+package com.github.alexeysa83.finalproject.web.controller.entity_controller;
 
 import com.github.alexeysa83.finalproject.model.Role;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
@@ -39,7 +39,7 @@ public class AuthUserController {
 
     @GetMapping("/forward_to_registration")
     public String forwardToRegistrationJSP() {
-        return "registration";
+        return "registration_form";
     }
 
 //    "/registration" POST
@@ -50,7 +50,7 @@ public class AuthUserController {
         String message = validationService.isLoginValid(login);
         if (message != null) {
             req.setAttribute("message", message);
-            return "registration";
+            return "registration_form";
         }
         // Optimize
         final String password = req.getParameter("password");
@@ -59,21 +59,21 @@ public class AuthUserController {
                 passwordRepeat);
         if (message != null) {
             req.setAttribute("message", message);
-            return "registration";
+            return "registration_form";
         }
 
         final AuthUserDto userFromDB = authUserService.createAuthUserAndUserInfo(login, password);
         if (userFromDB == null) {
             req.setAttribute("message", "error.unknown");
             log.error("Failed to registrate user with login: {} pass {}, at: {}", login, password, LocalDateTime.now());
-            return "registration";
+            return "registration_form";
         }
 
         final String role = userFromDB.getRole().toString();
         final Authentication authentication = new UsernamePasswordAuthenticationToken(userFromDB, null, getAuthorities(role));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         log.info("User: {} registered at: {}", login, LocalDateTime.now());
-        return "redirect:/index.jsp";
+        return "redirect:/news";
     }
 
     private List<GrantedAuthority> getAuthorities(String role) {
@@ -104,7 +104,7 @@ public class AuthUserController {
         }
         log.info("Updated login for user id: {}, at: {}", authId,  LocalDateTime.now());
         req.setAttribute("message", message);
-        return "forward:/logout";
+        return "forward:/logouts";
     }
 
 //    "/auth/user/password" POST
@@ -142,7 +142,7 @@ public class AuthUserController {
         }
         log.info("Updated password for user id: {}, at: {}", authId,  LocalDateTime.now());
         req.setAttribute("message", message);
-        return "forward:/logout";
+        return "forward:/logouts";
     }
 
 //    "/admin/update/role" POST
@@ -175,7 +175,7 @@ public class AuthUserController {
         final boolean needLogout = validationService.needLogout(WebUtils.getCurrentUserId(), authId);
         if (needLogout) {
             req.setAttribute("message", message);
-            return "forward:/logout";
+            return "forward:/logouts";
         }
         req.setAttribute("message", message);
         return "forward:/user_infos/" + authId;
@@ -200,7 +200,7 @@ public class AuthUserController {
         final boolean needLogout = validationService.needLogout(WebUtils.getCurrentUserId(), authId);
         if (needLogout) {
             req.setAttribute("message", message);
-            return "forward:/logout";
+            return "forward:/logouts";
         }
             return "forward:/user_infos/" + authId;
     }

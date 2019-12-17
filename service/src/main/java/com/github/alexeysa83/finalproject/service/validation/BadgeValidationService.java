@@ -1,14 +1,14 @@
 package com.github.alexeysa83.finalproject.service.validation;
 
 import com.github.alexeysa83.finalproject.service.badge.BadgeService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-@Component
 public class BadgeValidationService {
 
-    @Autowired
-    private BadgeService badgeService;
+      private final BadgeService badgeService;
+
+    public BadgeValidationService(BadgeService badgeService) {
+        this.badgeService = badgeService;
+    }
 
     /**
      *

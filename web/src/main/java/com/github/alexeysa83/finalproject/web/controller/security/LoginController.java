@@ -1,4 +1,4 @@
-package com.github.alexeysa83.finalproject.web.controller;
+package com.github.alexeysa83.finalproject.web.controller.security;
 
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.service.auth.AuthUserService;
@@ -35,7 +35,7 @@ public class LoginController {
     public String loginGetMethod() {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || authentication.getPrincipal().equals("anonymousUser")) {
-            return "login";
+            return "login_form";
         }
         return "redirect:/news";
     }
@@ -50,13 +50,13 @@ public class LoginController {
         if (userFromDB == null) {
             req.setAttribute("message", "wrong.logpass");
             log.info("Invalid login or password enter for user: {} at: {}", login, LocalDateTime.now());
-            return "login";
+            return "login_form";
         }
         // Translation
         if (userFromDB.isDeleted()) {
             req.setAttribute("message", "deleted");
             log.info("Deleted user: {} tried to login at: {}", login, LocalDateTime.now());
-            return "login";
+            return "login_form";
         }
 
         final String role = userFromDB.getRole().toString();

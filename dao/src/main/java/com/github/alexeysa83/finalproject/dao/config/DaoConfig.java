@@ -11,6 +11,7 @@ import com.github.alexeysa83.finalproject.dao.news.NewsBaseDao;
 import com.github.alexeysa83.finalproject.dao.repository.*;
 import com.github.alexeysa83.finalproject.dao.user.DefaultUserInfoBaseDao;
 import com.github.alexeysa83.finalproject.dao.user.UserInfoBaseDao;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -19,28 +20,39 @@ import org.springframework.context.annotation.Import;
 @Import(HibernateConfig.class)
 public class DaoConfig {
 
+    @Autowired
+    private AuthUserRepository authUserRepository;
+    @Autowired
+    private UserInfoRepository userInfoRepository;
+    @Autowired
+    private NewsRepository newsRepository;
+    @Autowired
+    private CommentRepository commentRepository;
+    @Autowired
+    private BadgeRepository badgeRepository;
+
     @Bean
-    public AuthUserBaseDao authUserBaseDao(AuthUserRepository repository) {
-        return new DefaultAuthUserBaseDao(repository);
+    public AuthUserBaseDao authUserBaseDao() {
+        return new DefaultAuthUserBaseDao(authUserRepository);
     }
 
     @Bean
-    public UserInfoBaseDao userInfoBaseDao(UserInfoRepository repository) {
-        return new DefaultUserInfoBaseDao(repository);
+    public UserInfoBaseDao userInfoBaseDao() {
+        return new DefaultUserInfoBaseDao(userInfoRepository);
     }
 
     @Bean
-    public NewsBaseDao newsBaseDao(NewsRepository repository) {
-        return new DefaultNewsBaseDao(repository);
+    public NewsBaseDao newsBaseDao() {
+        return new DefaultNewsBaseDao(newsRepository);
     }
 
     @Bean
-    public CommentBaseDao commentBaseDao(CommentRepository repository) {
-        return new DefaultCommentBaseDao(repository);
+    public CommentBaseDao commentBaseDao() {
+        return new DefaultCommentBaseDao(commentRepository);
     }
 
     @Bean
-    public BadgeBaseDao badgeBaseDao(BadgeRepository repository) {
-        return new DefaultBadgeBaseDao(repository);
+    public BadgeBaseDao badgeBaseDao() {
+        return new DefaultBadgeBaseDao(badgeRepository);
     }
 }

@@ -15,7 +15,7 @@ import javax.sql.DataSource;
 @Configuration
 @Import(SettingsConfig.class)
 @EnableTransactionManagement
-@EnableJpaRepositories (basePackages = "com.github.alexeysa83.finalproject.dao.repository")
+@EnableJpaRepositories(basePackages = "com.github.alexeysa83.finalproject.dao.repository")
 public class HibernateConfig {
 
     private final SettingsConfig settingsConfig;
