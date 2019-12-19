@@ -9,14 +9,11 @@
     <title>News view</title>
 </head>
 <body>
-<c:if test="${requestScope.get('message') != null}">
-    <h2 style="color: firebrick">
-        <spring:message code="${requestScope.get('message')}"/></h2>
-</c:if>
 
 <h2><span style='color: blue;'>${news.title}</span></h2>
-<h2>${news.content}</h2>
-
+<hr/>
+<h5>${news.content}</h5>
+<hr/>
 <h5 style="color: #2bb239"><spring:message code="author"/>:
     <a href="${pageContext.request.contextPath}/user_infos/${news.authId}">
         ${news.authorNews}</a>
@@ -25,15 +22,21 @@
 
 <sec:authorize access="hasRole('ADMIN')" var="isAdmin"/>
 <sec:authorize access="isAuthenticated()">
-    <sec:authentication property="principal.login" var="userInSessionLogin"/>
+    <sec:authentication property="principal.login" var="userInSession"/>
 </sec:authorize>
 
-<c:if test="${news.authorNews == userInSessionLogin || isAdmin}">
-    <form action="${pageContext.request.contextPath}/news/${news.id}/torequest" method="GET">
+<c:if test="${news.authorNews == userInSession || isAdmin}">
+    <form action="${pageContext.request.contextPath}/news/${news.id}/to_news_update_form" method="GET">
         <input type="submit" value="<spring:message code="update.news"/>"/>
+        <label>
+            <input hidden="hidden" type="text" name="authorId" value="${news.authId}">
+        </label>
     </form>
     <form action="${pageContext.request.contextPath}/news/${news.id}/delete" method="POST">
         <input type="submit" value="<spring:message code="delete.news"/>"/>
+        <label>
+            <input hidden="hidden" type="text" name="authorId" value="${news.authId}">
+        </label>
     </form>
 </c:if>
 <hr/>
@@ -47,7 +50,7 @@
         <h5><spring:message code="created"/>: ${comment.creationTime}</h5>
         <hr/>
 
-        <c:if test="${comment.authorComment == userInSessionLogin || isAdmin}">
+        <c:if test="${comment.authorComment == userInSession || isAdmin}">
             <c:choose>
                 <c:when test="${comment.id == commentToUpdateId}">
                     <form action="${pageContext.request.contextPath}/comments/${comment.id}/update" method="POST">
@@ -56,6 +59,7 @@
                         <input type="submit" value="<spring:message code="update.comment"/>"/>
                         <label>
                             <input hidden="hidden" type="text" name="newsId" value="${news.id}">
+                            <input hidden="hidden" type="text" name="authorId" value="${comment.authId}">
                         </label>
                     </form>
                 </c:when>
@@ -64,6 +68,7 @@
                         <input type="submit" value="<spring:message code="update.comment"/>"/>
                         <label>
                             <input hidden="hidden" type="text" name="newsId" value="${news.id}">
+                            <input hidden="hidden" type="text" name="authorId" value="${comment.authId}">
                         </label>
                     </form>
                 </c:otherwise>
@@ -72,6 +77,7 @@
                 <input type="submit" value="<spring:message code="delete.comment"/>"/>
                 <label>
                     <input hidden="hidden" type="text" name="newsId" value="${news.id}">
+                    <input hidden="hidden" type="text" name="authorId" value="${comment.authId}">
                 </label>
             </form>
         </c:if>

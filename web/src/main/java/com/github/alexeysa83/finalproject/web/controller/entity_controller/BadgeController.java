@@ -3,124 +3,136 @@ package com.github.alexeysa83.finalproject.web.controller.entity_controller;
 
 import com.github.alexeysa83.finalproject.model.dto.BadgeDto;
 import com.github.alexeysa83.finalproject.service.badge.BadgeService;
-import com.github.alexeysa83.finalproject.service.validation.BadgeValidationService;
+import com.github.alexeysa83.finalproject.web.request_entity.BadgeRequestModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.github.alexeysa83.finalproject.web.Utils.MessageContainer.*;
+
 @Controller
-@RequestMapping (value = "/badges")
+@RequestMapping(value = "/badges")
 public class BadgeController {
 
     private static final Logger log = LoggerFactory.getLogger(BadgeController.class);
 
-    private final BadgeValidationService validationService;
-
     private final BadgeService badgeService;
 
-    public BadgeController(BadgeValidationService validationService, BadgeService badgeService) {
-        this.validationService = validationService;
+    public BadgeController(BadgeService badgeService) {
         this.badgeService = badgeService;
     }
 
-    //    "/admin/main" GET
-    @GetMapping(value = "")
-    public String getAllBadges(HttpServletRequest req) {
-//        final List<BadgeDto> badgesDB = badgeService.getAllBadges();
-//        req.setAttribute("badgesDB", badgesDB);
-        setBadgesToRequest(req);
-        return "admin_page";
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping(value = "/all")
+    public String getAllBadges(ModelMap modelMap) {
+        final String RETURN_PAGE = "admin_page";
+        setBadgesToRequest(modelMap);
+        return RETURN_PAGE;
     }
 
-    //"/admin/update/badge" GET
+    // Used to add badge to update form
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/{badgeId}")
-    public String setBadgeIdToRequest(HttpServletRequest req, @PathVariable Long badgeId) {
-        req.setAttribute("badgeToUpdateId", badgeId);
-        setBadgesToRequest(req);
-//        return "adminpage";
-        return "forward:/badges";
+    public String getAllBadgesAndSetBadgeIdToRequest(ModelMap modelMap, @PathVariable Long badgeId) {
+        final String RETURN_PAGE = "admin_page";
+        modelMap.addAttribute(BADGE_TO_UPDATE_ID, badgeId);
+        setBadgesToRequest(modelMap);
+        return RETURN_PAGE;
     }
 
-//    "/admin/add/badge" POST
-    @PostMapping(value = "")
-    public String addBadge(HttpServletRequest req) {
-        final String badgeName = req.getParameter("badgeName");
-        String message = validationService.isNameValid(badgeName);
-        if (message != null) {
-            req.setAttribute("message", message);
-            setBadgesToRequest(req);
-            return "admin_page";
-//            return "forward:/admin/main";
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping(value = "/add")
+    public String addBadge(@Valid BadgeRequestModel badgeFromForm,
+                           BindingResult br,
+                           ModelMap modelMap,
+                           RedirectAttributesModelMap redirectModelMap) {
+        final String RETURN_PAGE_FAIL_TO_ADD = "admin_page";
+        final String RETURN_PAGE_SUCCESS_ADD = "redirect:/badges/all";
+        setBadgesToRequest(modelMap);
+
+        if (br.hasFieldErrors()) {
+            final String errorMessage = br.getFieldError().getDefaultMessage();
+            modelMap.addAttribute(ERROR_ATTRIBUTE, errorMessage);
+            return RETURN_PAGE_FAIL_TO_ADD;
         }
 
-        final BadgeDto badge = new BadgeDto();
-        badge.setBadgeName(badgeName);
-        final BadgeDto savedBadge = badgeService.createBadge(badge);
-        if (savedBadge == null) {
-            message = "error.unknown";
-            log.error("Failed to add badge name: {}, at: {}", badgeName, LocalDateTime.now());
-            req.setAttribute("message", message);
-            setBadgesToRequest(req);
-            return "admin_page";
-//            return "forward:/badges";
+        final BadgeDto badgeFromDB = badgeService.createBadge(badgeFromForm.convertToBadgeDto());
+        if (badgeFromDB == null) {
+            modelMap.addAttribute(ERROR_ATTRIBUTE, BADGE_NAME_IS_TAKEN);
+            return RETURN_PAGE_FAIL_TO_ADD;
         }
-        return "redirect:/badges";
+        redirectModelMap.addFlashAttribute(MESSAGE_ATTRIBUTE, BADGE_CREATED);
+        log.info("Added badge id: {} to DB, at: {}", badgeFromDB.getId(), LocalDateTime.now());
+        return RETURN_PAGE_SUCCESS_ADD;
     }
 
-//    "/admin/update/badge" POST
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/{badgeId}/update")
-    public String updateBadge(HttpServletRequest req, @PathVariable Long badgeId) {
-        final String badgeName = req.getParameter("badgeName");
-        String message = validationService.isNameValid(badgeName);
-        if (message!=null) {
-            req.setAttribute("message", message);
-            setBadgesToRequest(req);
-            return "admin_page";
-//            return "forward:/admin/main";
+    public String updateBadge(@PathVariable Long badgeId,
+                              @Valid BadgeRequestModel badgeFromForm,
+                              BindingResult br,
+                              ModelMap modelMap,
+                              RedirectAttributesModelMap redirectModelMap) {
+
+        final String RETURN_PAGE_FAIL_TO_UPDATE = "admin_page";
+        final String RETURN_PAGE_SUCCESS_UPDATE = "redirect:/badges/all";
+        setBadgesToRequest(modelMap);
+
+        if (br.hasFieldErrors()) {
+            final String errorMessage = br.getFieldError().getDefaultMessage();
+            modelMap.addAttribute(ERROR_ATTRIBUTE, errorMessage);
+            return RETURN_PAGE_FAIL_TO_UPDATE;
+        }
+        if (badgeService.checkNameIsTaken(badgeFromForm.getBadgeName())) {
+            modelMap.addAttribute(ERROR_ATTRIBUTE, BADGE_NAME_IS_TAKEN);
+            return RETURN_PAGE_FAIL_TO_UPDATE;
         }
 
-        final BadgeDto badgeToUpdate = new BadgeDto();
+        final BadgeDto badgeToUpdate = badgeFromForm.convertToBadgeDto();
         badgeToUpdate.setId(badgeId);
-        badgeToUpdate.setBadgeName(badgeName);
-
         final boolean isUpdated = badgeService.updateBadge(badgeToUpdate);
-        message = "update.success";
-        String logMessage = "Updated badge id: {} , at: {}";
+
         if (!isUpdated) {
-            message = "update.fail";
-            logMessage = "Failed to update badge id: {} , at: {}";
+            modelMap.addAttribute(ERROR_ATTRIBUTE, FAILED_TO_UPDATE);
+            log.error("Failed to update badge id: {} , at: {}", badgeId, LocalDateTime.now());
+            return RETURN_PAGE_FAIL_TO_UPDATE;
         }
-        log.info(logMessage, badgeId, LocalDateTime.now());
-        req.setAttribute("message", message);
-        setBadgesToRequest(req);
-        return "admin_page";
-//        return "forward:/admin/main";
+        redirectModelMap.addFlashAttribute(MESSAGE_ATTRIBUTE, SUCCESSFUL_UPDATE);
+        log.info("Updated badge id: {} , at: {}", badgeId, LocalDateTime.now());
+        return RETURN_PAGE_SUCCESS_UPDATE;
     }
 
-//    "/admin/delete/badge" GET
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/{badgeId}/delete")
-    public String deleteBadge(HttpServletRequest req, @PathVariable Long badgeId) {
+    public String deleteBadge(@PathVariable Long badgeId,
+                              RedirectAttributesModelMap redirectModelMap) {
+
+        final String RETURN_PAGE = "redirect:/badges/all";
+
         final boolean isDeleted = badgeService.deleteBadge(badgeId);
-        String message = "delete.success";
-        String logMessage = "Deleted badge id: {} , at: {}";
         if (!isDeleted) {
-            message = "delete.fail";
-            logMessage = "Failed to delete badge id: {} , at: {}";
+            redirectModelMap.addFlashAttribute(ERROR_ATTRIBUTE, FAILED_TO_DELETE);
+            log.error("Failed to delete badge id: {} , at: {}", badgeId, LocalDateTime.now());
         }
-        log.info(logMessage, badgeId, LocalDateTime.now());
-        req.setAttribute("message", message);
-        setBadgesToRequest(req);
-        return "admin_page";
-//        return "forward:/badges";
+        redirectModelMap.addFlashAttribute(MESSAGE_ATTRIBUTE, SUCCESSFUL_DELETE);
+        log.info("User id: {} deleted at: {}", badgeId, LocalDateTime.now());
+        return RETURN_PAGE;
     }
 
-    private void setBadgesToRequest(HttpServletRequest req) {
+    private void setBadgesToRequest(ModelMap modelMap) {
         final List<BadgeDto> badgesDB = badgeService.getAllBadges();
-        req.setAttribute("badgesDB", badgesDB);
+        modelMap.addAttribute(BADGES_ALL_FROM_DB, badgesDB);
     }
 }

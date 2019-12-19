@@ -9,23 +9,20 @@
     <title>Registration</title>
 </head>
 <body>
-<c:if test="${requestScope.get('message') != null}">
-    <h2 style="color: firebrick">
-        <spring:message code="${requestScope.get('message')}"/></h2>
-</c:if>
 <form action="${pageContext.request.contextPath}/auth_users/registration" method="POST">
     <fieldset>
         <legend><spring:message code="form.registration"/></legend>
         <label for="login"><strong><spring:message code="choose.login"/>:</strong></label>
         <input id="login" type="text" name="login" required
-               placeholder="<spring:message code="login.pass.placeholder"/>">
+               placeholder="<spring:message code="login.placeholder"/>">
 
         <label for="password"><strong><spring:message code="choose.pass"/>:</strong></label>
         <input id="password" type="password" name="password" required
-               placeholder="<spring:message code="login.pass.placeholder"/>">
+               placeholder="<spring:message code="pass.placeholder"/>">
 
         <label for="passwordRepeat"><strong><spring:message code="repeat.pass"/>:</strong></label>
-        <input id="passwordRepeat" type="password" name="passwordRepeat" required>
+        <input id="passwordRepeat" type="password" name="repeatPassword" required
+               placeholder="<spring:message code="passrepeat.placeholder"/>">
         <input type="submit" value="<spring:message code="submit"/>"/>
     </fieldset>
 </form>

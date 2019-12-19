@@ -8,10 +8,6 @@
     <title>Update news</title>
 </head>
 <body>
-<c:if test="${requestScope.get('message') != null}">
-    <h2 style="color: firebrick">
-        <spring:message code="${requestScope.get('message')}"/></h2>
-</c:if>
 
 <form action="${pageContext.request.contextPath}/news/${news.id}/update" method="POST">
     <label for="title"><strong><spring:message code="title"/></strong></label>
@@ -22,6 +18,9 @@
     <br/>
     <input type="reset" value="<spring:message code="reset"/>">
     <button type="submit" class="color-square"><spring:message code="update.news"/></button>
+    <label>
+        <input hidden="hidden" type="text" name="authorId" value="${news.authId}">
+    </label>
 </form>
 </body>
 </html>

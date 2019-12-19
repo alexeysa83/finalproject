@@ -23,22 +23,30 @@
     </div>
 </div>
 <sec:authorize access="hasRole('ADMIN')">
-    <a href="${pageContext.request.contextPath}/badges/"><spring:message code="admin.page"/></a>
+    <a href="${pageContext.request.contextPath}/badges/all"><spring:message code="admin.page"/></a>
 </sec:authorize>
 
-<a href="${pageContext.request.contextPath}/news/"><spring:message code="main"/></a>
+<a href="${pageContext.request.contextPath}/news/all"><spring:message code="main"/></a>
 
 <sec:authorize access="isAuthenticated()">
     <a href="${pageContext.request.contextPath}/user_infos/<sec:authentication property="principal.id"/>">
         <sec:authentication property="principal.login"/></a>
-    <a href="${pageContext.request.contextPath}/logouts"><spring:message code="logout"/></a>
+    <a href="${pageContext.request.contextPath}/logout_custom"><spring:message code="logout"/></a>
 </sec:authorize>
 
 <sec:authorize access="!isAuthenticated()">
     <a href="${pageContext.request.contextPath}/login"><spring:message code="login"/></a>
-    <a href="${pageContext.request.contextPath}/auth_users/forward_to_registration"><spring:message code="registration"/></a>
+    <a href="${pageContext.request.contextPath}/auth_users/forward_to_registration_form"><spring:message code="registration"/></a>
 </sec:authorize>
 <hr/>
+<c:if test="${requestScope.get('message') != null}">
+    <h4 style="color: #18b239">
+        <spring:message code="${requestScope.get('message')}"/></h4>
+</c:if>
+<c:if test="${requestScope.get('error') != null}">
+    <h4 style="color: firebrick">
+        <spring:message code="${requestScope.get('error')}"/></h4>
+</c:if>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>

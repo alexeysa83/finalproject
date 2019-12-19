@@ -9,10 +9,6 @@
     <title>User page</title>
 </head>
 <body>
-<c:if test="${requestScope.get('message') != null}">
-    <h2 style="color: firebrick">
-        <spring:message code="${requestScope.get('message')}"/></h2>
-</c:if>
 
 <c:if test="${user != null}">
     <h2><span style='color: blue;'>${user.userLogin}</span></h2>
@@ -24,20 +20,19 @@
 
     <h2><spring:message code="registered"/>: ${user.registrationTime}</h2>
 
-    <sec:authorize access="hasRole('ADMIN')" var="isAdmin"/>
     <sec:authorize access="isAuthenticated()">
-        <sec:authentication property="principal.login" var="userInSessionLogin"/>
+        <sec:authentication property="principal" var="userInSession"/>
     </sec:authorize>
 
-    <c:if test="${user.userLogin == userInSessionLogin || isAdmin}">
-        <form action="${pageContext.request.contextPath}/user_infos/${user.authId}/torequest" method="GET">
+    <c:if test="${user.userLogin == userInSession.login || userInSession.role == 'ADMIN'}">
+        <form action="${pageContext.request.contextPath}/user_infos/${user.authId}" method="GET">
             <input type="submit" value="<spring:message code="update.user"/>"/>
+            <label>
+                <input hidden="hidden" type="text" name="returnPage" value="user_update">
+            </label>
         </form>
         <form action="${pageContext.request.contextPath}/auth_users/${user.authId}/delete" method="POST">
             <input type="submit" value="<spring:message code="delete.user"/>"/>
-            <label>
-                <input hidden="hidden" type="text" name="login" value="${user.userLogin}">
-            </label>
         </form>
     </c:if>
     <hr/>
@@ -46,7 +41,7 @@
     <c:forEach items="${requestScope.userBadges}" var="badge">
         <h4><span class="badge badge-secondary" style="color: #2bb239">${badge.badgeName}</span></h4>
     </c:forEach>
-    <c:if test="${isAdmin}">
+    <sec:authorize access="hasRole('ADMIN')">
         <div class="dropdown">
             <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuAddBadge"
                     data-toggle="dropdown"
@@ -75,7 +70,7 @@
                 </c:forEach>
             </div>
         </div>
-    </c:if>
+    </sec:authorize>
 </c:if>
 </body>
 </html>

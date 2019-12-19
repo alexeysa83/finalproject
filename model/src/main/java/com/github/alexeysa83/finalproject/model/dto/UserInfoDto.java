@@ -22,24 +22,6 @@ public class UserInfoDto {
         this.registrationTime = registrationTime;
     }
 
-    public UserInfoDto(Long authId, String firstName, String lastName, String email, String phone) {
-        this.authId = authId;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.phone = phone;
-    }
-
-    public UserInfoDto(Long authId, String firstName, String lastName, Timestamp registrationTime, String email, String phone, String userLogin) {
-        this.authId = authId;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.registrationTime = registrationTime;
-        this.email = email;
-        this.phone = phone;
-        this.userLogin = userLogin;
-    }
-
     public Long getAuthId() {
         return authId;
     }

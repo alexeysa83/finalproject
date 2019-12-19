@@ -4,7 +4,7 @@ import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 
 public interface AuthUserService {
 
-    AuthUserDto createAuthUserAndUserInfo(String login, String password);
+    AuthUserDto createAuthUserAndUserInfo(AuthUserDto userFromRegistrationForm);
 
     AuthUserDto getById (Long id);
 

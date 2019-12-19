@@ -68,7 +68,7 @@ class DefaultAuthUserServiceTest {
 
         when(userInfoDao.add(newUserInfo)).thenReturn(testUserInfo);
 
-        final AuthUserDto userFromDB = service.createAuthUserAndUserInfo(testLogin, testPassword);
+        final AuthUserDto userFromDB = service.createAuthUserAndUserInfo(new AuthUserDto(testLogin, testPassword));
         assertNotNull(userFromDB);
         assertEquals(testAuthUser, userFromDB);
         assertEquals(testUserInfo, userFromDB.getUserInfoDto());
@@ -120,4 +120,6 @@ class DefaultAuthUserServiceTest {
         final AuthUserDto userFromDB = service.loginAuthUser(userFromLogin);
         assertNull(userFromDB);
     }
+
+
 }

@@ -9,10 +9,6 @@
     <title>Login</title>
 </head>
 <body>
-<c:if test="${requestScope.get('message') != null}">
-    <h2 style="color: firebrick">
-        <spring:message code="${requestScope.get('message')}"/></h2>
-</c:if>
 
 <form action="${pageContext.request.contextPath}/login" method="POST">
     <fieldset>

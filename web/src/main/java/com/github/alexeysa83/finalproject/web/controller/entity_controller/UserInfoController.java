@@ -1,20 +1,26 @@
 package com.github.alexeysa83.finalproject.web.controller.entity_controller;
 
-import com.github.alexeysa83.finalproject.model.Role;
 import com.github.alexeysa83.finalproject.model.dto.BadgeDto;
 import com.github.alexeysa83.finalproject.model.dto.UserInfoDto;
 import com.github.alexeysa83.finalproject.service.badge.BadgeService;
 import com.github.alexeysa83.finalproject.service.user.UserService;
-import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
-import com.github.alexeysa83.finalproject.web.WebUtils;
+import com.github.alexeysa83.finalproject.web.request_entity.UserInfoRequestModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static com.github.alexeysa83.finalproject.web.Utils.AuthenticationUtils.getPrincipalUserAuthId;
+import static com.github.alexeysa83.finalproject.web.Utils.AuthenticationUtils.isPrincipalUserAdmin;
+import static com.github.alexeysa83.finalproject.web.Utils.MessageContainer.*;
 
 @Controller
 @RequestMapping(value = "/user_infos")
@@ -26,95 +32,108 @@ public class UserInfoController {
 
     private final BadgeService badgeService;
 
-    private final AuthValidationService validationService;
-
-    public UserInfoController(UserService userService,
-                              BadgeService badgeService,
-                              AuthValidationService validationService) {
+    public UserInfoController(UserService userService, BadgeService badgeService) {
         this.userService = userService;
         this.badgeService = badgeService;
-        this.validationService = validationService;
     }
 
-    //    "/auth/user/view" GET
-    @RequestMapping(value = "/{authId}", method = {RequestMethod.GET, RequestMethod.POST})
-    public String getUserInfoById(HttpServletRequest req, @PathVariable Long authId) {
-        final UserInfoDto user = userService.getById(authId);
-        if (user == null) {
-            req.setAttribute("message", "deleted");
-            return "user_info";
-        }
-        req.setAttribute("userBadges", user.getBadges());
-        req.setAttribute("user", user);
+    @GetMapping(value = "/{authId}")
+    public String getUserInfoById(@PathVariable Long authId,
+                                  @RequestParam(name = "returnPage", defaultValue = "user_info") String returnPage,
+                                  ModelMap modelMap) {
+        final String DEFAULT_RETURN_PAGE_USER_INFO = "user_info";
+        final String RETURN_PAGE_USER_UPDATE = "user_update";
 
-        final Role role = WebUtils.getUserInSession().getRole();
-        boolean isAdmin = validationService.isAdmin(role);
-        if (isAdmin) {
-            List<BadgeDto> badgesDB = badgeService.getAllBadges();
-            req.setAttribute("badgesDB", badgesDB);
+        final UserInfoDto userFromDB = userService.getById(authId);
+        if (userFromDB == null) {
+            modelMap.addAttribute(ERROR_ATTRIBUTE, USER_DELETED);
+            return DEFAULT_RETURN_PAGE_USER_INFO;
         }
-        return "user_info";
+        modelMap.addAttribute(USER_ATTRIBUTE, userFromDB);
+
+        switch (returnPage) {
+            case RETURN_PAGE_USER_UPDATE:
+                return returnPage;
+            case DEFAULT_RETURN_PAGE_USER_INFO:
+                modelMap.addAttribute(USER_BADGES_ATTRIBUTE, userFromDB.getBadges());
+                if (isPrincipalUserAdmin()) {
+                    List<BadgeDto> badgesDB = badgeService.getAllBadges();
+                    modelMap.addAttribute(BADGES_ALL_FROM_DB, badgesDB);
+                }
+                return returnPage;
+            default:
+                log.error("Unknown return page: {},  user id: {} , at: {}", returnPage, authId, LocalDateTime.now());
+                throw new RuntimeException("Wrong return page variable");
+        }
     }
 
-//    "/auth/user/update" GET
-    @GetMapping(value = "/{authId}/torequest")
-    public String setUserInfoToUpdate(HttpServletRequest req, @PathVariable Long authId) {
-        final UserInfoDto user = userService.getById(authId);
-        if (user == null) {
-            req.setAttribute("message", "deleted");
-            return "user_info";
-        }
-        req.setAttribute("user", user);
-        return "user_update";
-    }
+    /**
+     * Null to database instead of ""
+     */
+    @PostMapping(value = "/{userToUpdateId}/update")
+    public String updateUserInfo(@PathVariable Long userToUpdateId,
+                                 @Valid UserInfoRequestModel userFromUpdateForm,
+                                 BindingResult br,
+                                 RedirectAttributesModelMap redirectModelMap) {
+        final String RETURN_PAGE_FAIL_UPDATE = "redirect:/user_infos/" + userToUpdateId + "?returnPage=user_update";
+        final String RETURN_PAGE_SUCCESS_UPDATE = "redirect:/user_infos/" + userToUpdateId;
 
-    // Validation + add null to DB instead of ""
-//    "/auth/user/update" POST
-    @PostMapping(value = "/{authId}/update")
-    public String updateUserInfo(HttpServletRequest req, @PathVariable Long authId) {
-        final String firstName = req.getParameter("firstName");
-        final String lastName = req.getParameter("lastName");
-        final String email = req.getParameter("email");
-        final String phone = req.getParameter("phone");
-        final boolean isUpdated = userService.updateUserInfo(new UserInfoDto(authId, firstName, lastName, email, phone));
-        String message = "update.success";
-        String logMessage = "Updated profile to user id: {} , at: {}";
+        if ((!getPrincipalUserAuthId().equals(userToUpdateId)) & !(isPrincipalUserAdmin())) {
+            redirectModelMap.addFlashAttribute(ERROR_ATTRIBUTE, NO_PERMISSION_TO_UPDATE);
+            return RETURN_PAGE_FAIL_UPDATE;
+        }
+
+        if (br.hasFieldErrors()) {
+            final String errorMessage = br.getFieldError().getDefaultMessage();
+            redirectModelMap.addFlashAttribute(ERROR_ATTRIBUTE, errorMessage);
+            return RETURN_PAGE_FAIL_UPDATE;
+        }
+
+        final UserInfoDto userToUpdate = userFromUpdateForm.convertToUserInfoDto();
+        userToUpdate.setAuthId(userToUpdateId);
+        final boolean isUpdated = userService.updateUserInfo(userToUpdate);
         if (!isUpdated) {
-            message = "update.fail";
-            logMessage = "Failed to update profile to user id: {} , at: {}";
+            log.error("Failed to update profile to user id: {} , at: {}", userToUpdateId, LocalDateTime.now());
+            redirectModelMap.addFlashAttribute(ERROR_ATTRIBUTE, FAILED_TO_UPDATE);
+            return RETURN_PAGE_FAIL_UPDATE;
         }
-        log.info(logMessage, authId, LocalDateTime.now());
-        req.setAttribute("message", message);
-        return "forward:/user_infos/" + authId;
+
+        redirectModelMap.addFlashAttribute(MESSAGE_ATTRIBUTE, SUCCESSFUL_UPDATE);
+        log.info("Updated profile to user id: {} , at: {}", userToUpdateId, LocalDateTime.now());
+        return RETURN_PAGE_SUCCESS_UPDATE;
     }
 
-//    "/admin/add/user_badge" GET
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/{authId}/add/{badgeId}")
-    public String addBadgeToUserInfo(HttpServletRequest req,
-                                     @PathVariable Long authId,
-                                     @PathVariable Long badgeId) {
+    public String addBadgeToUserInfo(@PathVariable Long authId,
+                                     @PathVariable Long badgeId,
+                                     RedirectAttributesModelMap redirectModelMap) {
 
-        final UserInfoDto userInfoDto = userService.addBadgeToUser(authId, badgeId);
-        final List<BadgeDto> badgesDB = badgeService.getAllBadges();
-// == null
-        req.setAttribute("user", userInfoDto);
-        req.setAttribute("userBadges", userInfoDto.getBadges());
-        req.setAttribute("badgesDB", badgesDB);
-        return "user_info";
+        final String DEFAULT_RETURN_PAGE = "redirect:/user_infos/" + authId;
+        final UserInfoDto userWithBadge = userService.addBadgeToUser(authId, badgeId);
+        if (userWithBadge == null) {
+            redirectModelMap.addFlashAttribute(ERROR_ATTRIBUTE, FAILED_TO_UPDATE);
+            log.error("Failed to add badge id: {} to user id: {} , at: {}", badgeId, authId, LocalDateTime.now());
+            return DEFAULT_RETURN_PAGE;
+        }
+        redirectModelMap.addFlashAttribute(MESSAGE_ATTRIBUTE, SUCCESSFUL_UPDATE);
+        return DEFAULT_RETURN_PAGE;
     }
 
-    // Duplicate code
-//    "/admin/delete/user_badge" GET
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/{authId}/delete/{badgeId}")
-    public String deleteBadgeFromUserInfo(HttpServletRequest req,
-                                          @PathVariable Long authId,
-                                          @PathVariable Long badgeId) {
-        final UserInfoDto userInfoDto = userService.deleteBadgeFromUser(authId, badgeId);
-        final List<BadgeDto> badgesDB = badgeService.getAllBadges();
-// == null
-        req.setAttribute("user", userInfoDto);
-        req.setAttribute("userBadges", userInfoDto.getBadges());
-        req.setAttribute("badgesDB", badgesDB);
-        return "user_info";
+    public String deleteBadgeFromUserInfo(@PathVariable Long authId,
+                                          @PathVariable Long badgeId,
+                                          RedirectAttributesModelMap redirectModelMap) {
+
+        final String DEFAULT_RETURN_PAGE = "redirect:/user_infos/" + authId;
+        final UserInfoDto userDeletedBadge = userService.deleteBadgeFromUser(authId, badgeId);
+        if (userDeletedBadge == null) {
+            redirectModelMap.addFlashAttribute(ERROR_ATTRIBUTE, FAILED_TO_DELETE);
+            log.error("Failed to delete badge id: {} from user id: {} , at: {}", badgeId, authId, LocalDateTime.now());
+            return DEFAULT_RETURN_PAGE;
+        }
+        redirectModelMap.addFlashAttribute(MESSAGE_ATTRIBUTE, SUCCESSFUL_DELETE);
+        return DEFAULT_RETURN_PAGE;
     }
 }

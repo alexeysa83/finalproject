@@ -3,24 +3,21 @@ package com.github.alexeysa83.finalproject.web.controller.entity_controller;
 import com.github.alexeysa83.finalproject.model.Role;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.service.auth.AuthUserService;
-import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
-import com.github.alexeysa83.finalproject.web.WebUtils;
+import com.github.alexeysa83.finalproject.web.request_entity.AuthUserRequestModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
+
+import static com.github.alexeysa83.finalproject.web.Utils.AuthenticationUtils.*;
+import static com.github.alexeysa83.finalproject.web.Utils.MessageContainer.*;
 
 @Controller
 @RequestMapping(value = "/auth_users")
@@ -30,178 +27,214 @@ public class AuthUserController {
 
     private final AuthUserService authUserService;
 
-    private final AuthValidationService validationService;
-
-    public AuthUserController(AuthUserService authUserService, AuthValidationService validationService) {
+    public AuthUserController(AuthUserService authUserService) {
         this.authUserService = authUserService;
-        this.validationService = validationService;
     }
 
-    @GetMapping("/forward_to_registration")
-    public String forwardToRegistrationJSP() {
+    @GetMapping("/forward_to_registration_form")
+    public String forwardToRegistrationFormJSP() {
         return "registration_form";
     }
 
-//    "/registration" POST
+    /**
+     * Messages from BindingResult + null?
+     */
     @PostMapping(value = "/registration")
-    public String addUser(HttpServletRequest req) {
+    public String addUser(@Valid AuthUserRequestModel userFromRegisterForm,
+                          BindingResult br,
+                          ModelMap modelMap,
+                          RedirectAttributesModelMap redirectModelMap) {
+        final String RETURN_PAGE_FAIL_TO_ADD = "registration_form";
+        final String RETURN_PAGE_SUCCESS_ADD = "redirect:/user_infos/";
 
-        final String login = req.getParameter("login");
-        String message = validationService.isLoginValid(login);
-        if (message != null) {
-            req.setAttribute("message", message);
-            return "registration_form";
-        }
-        // Optimize
-        final String password = req.getParameter("password");
-        final String passwordRepeat = req.getParameter("passwordRepeat");
-        message = validationService.isPasswordValid(password,
-                passwordRepeat);
-        if (message != null) {
-            req.setAttribute("message", message);
-            return "registration_form";
+        if (br.hasFieldErrors()) {
+            final String errorMessage = br.getFieldError().getDefaultMessage();
+            modelMap.addAttribute(ERROR_ATTRIBUTE, errorMessage);
+//            final List<ObjectError> allErrors = br.getAllErrors();
+//            for (ObjectError allError : allErrors) {
+//                model.put("message", allError.getDefaultMessage());
+//            }
+            return RETURN_PAGE_FAIL_TO_ADD;
         }
 
-        final AuthUserDto userFromDB = authUserService.createAuthUserAndUserInfo(login, password);
+        if (!userFromRegisterForm.isPasswordMatchRepeatPassword()) {
+            modelMap.addAttribute(ERROR_ATTRIBUTE, INVALID_REPEAT_PASS);
+            return RETURN_PAGE_FAIL_TO_ADD;
+        }
+
+        final AuthUserDto userFromDB = authUserService.createAuthUserAndUserInfo(
+                userFromRegisterForm.convertToAuthUserDto());
         if (userFromDB == null) {
-            req.setAttribute("message", "error.unknown");
-            log.error("Failed to registrate user with login: {} pass {}, at: {}", login, password, LocalDateTime.now());
-            return "registration_form";
+            modelMap.addAttribute(ERROR_ATTRIBUTE, LOGIN_IS_TAKEN);
+            return RETURN_PAGE_FAIL_TO_ADD;
         }
-
-        final String role = userFromDB.getRole().toString();
-        final Authentication authentication = new UsernamePasswordAuthenticationToken(userFromDB, null, getAuthorities(role));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        log.info("User: {} registered at: {}", login, LocalDateTime.now());
-        return "redirect:/news";
+        setUserInSession(userFromDB);
+        redirectModelMap.addFlashAttribute(MESSAGE_ATTRIBUTE, SUCCESSFUL_REGISTRATION);
+        log.info("User id: {} registered at: {}", userFromDB.getId(), LocalDateTime.now());
+        return RETURN_PAGE_SUCCESS_ADD + userFromDB.getId();
     }
 
-    private List<GrantedAuthority> getAuthorities(String role) {
-        return Collections.singletonList((GrantedAuthority) () -> "ROLE_" + role);
-    }
+    /**
+     * Optimization
+     * <p>
+     * get FromAuthentification instead of get by id?
+     */
+    @PostMapping(value = "/{userToUpdateId}/update_login")
+    public String updateAuthUserLogin(@PathVariable Long userToUpdateId,
+                                      @Valid AuthUserRequestModel userFromUpdateForm,
+                                      BindingResult br,
+                                      RedirectAttributesModelMap redirectModelMap) {
 
-//    "/auth/user/login" POST
-    @PostMapping(value = "/{authId}/update_login")
-    public String updateAuthUserLogin(HttpServletRequest req, @PathVariable Long authId) {
-        final String loginNew = req.getParameter("login");
-        String message = validationService.isLoginValid(loginNew);
-        if (message != null) {
-            req.setAttribute("message", message);
-            return "forward:/user_infos/" + authId;
+
+        final String RETURN_PAGE_FAIL_UPDATE_LOGIN = "redirect:/user_infos/" + userToUpdateId + "?returnPage=user_update";
+        final String RETURN_PAGE_SUCCESS_UPDATE_LOGIN = "redirect:/logout_custom";
+
+        if (!getPrincipalUserAuthId().equals(userToUpdateId)) {
+            redirectModelMap.addFlashAttribute(ERROR_ATTRIBUTE, NO_PERMISSION_TO_UPDATE);
+            return RETURN_PAGE_FAIL_UPDATE_LOGIN;
         }
 
-        final AuthUserDto userOld = authUserService.getById(authId);
+        if (br.hasFieldErrors()) {
+            final String errorMessage = br.getFieldError().getDefaultMessage();
+            redirectModelMap.addFlashAttribute(ERROR_ATTRIBUTE, errorMessage);
+            return RETURN_PAGE_FAIL_UPDATE_LOGIN;
+        }
 
-        final boolean isUpdated = authUserService.updateAuthUser
-                (new AuthUserDto(userOld.getId(), loginNew, userOld.getPassword(),
-                        userOld.getRole(), userOld.isDeleted(), userOld.getUserInfoDto()));
-        message = "update.success";
+        final String updatedLogin = userFromUpdateForm.getLogin();
+        final boolean isLoginTaken = authUserService.checkLoginIsTaken(updatedLogin);
+        if (isLoginTaken) {
+            redirectModelMap.addFlashAttribute(ERROR_ATTRIBUTE, LOGIN_IS_TAKEN);
+            return RETURN_PAGE_FAIL_UPDATE_LOGIN;
+        }
+
+        final AuthUserDto userToUpdate = authUserService.getById(userToUpdateId);
+        userToUpdate.setLogin(updatedLogin);
+        final boolean isUpdated = authUserService.updateAuthUser(userToUpdate);
+
         if (!isUpdated) {
-            message = "update.fail";
-            log.error("Failed to update login for user id: {}, at: {}", authId,  LocalDateTime.now());
-            req.setAttribute("message", message);
-            return "forward:/user_infos/" + authId;
+            redirectModelMap.addFlashAttribute(ERROR_ATTRIBUTE, FAILED_TO_UPDATE);
+            log.error("Failed to update login for user id: {}, at: {}", userToUpdateId, LocalDateTime.now());
+            return RETURN_PAGE_FAIL_UPDATE_LOGIN;
         }
-        log.info("Updated login for user id: {}, at: {}", authId,  LocalDateTime.now());
-        req.setAttribute("message", message);
-        return "forward:/logouts";
+        redirectModelMap.addFlashAttribute(MESSAGE_ATTRIBUTE, SUCCESSFUL_UPDATE);
+        log.info("Updated login for user id: {}, at: {}", userToUpdateId, LocalDateTime.now());
+        return RETURN_PAGE_SUCCESS_UPDATE_LOGIN;
     }
 
-//    "/auth/user/password" POST
-    @PostMapping(value = "/{authId}/update_password")
-    public String updateAuthUserPassword(HttpServletRequest req, @PathVariable Long authId) {
+    @PostMapping(value = "/{userToUpdateId}/update_password")
+    public String updateAuthUserPassword(@PathVariable Long userToUpdateId,
+                                         @RequestParam(name = "passwordCurrent") String passwordCurrent,
+                                         @Valid AuthUserRequestModel userFromUpdateForm,
+                                         BindingResult br,
+                                         RedirectAttributesModelMap redirectModelMap) {
 
-        final String passwordNew = req.getParameter("passwordNew");
-        final String passwordRepeat = req.getParameter("passwordRepeat");
+        final String RETURN_PAGE_FAIL_UPDATE_PASSWORD = "redirect:/user_infos/" + userToUpdateId + "?returnPage=user_update";
+        final String RETURN_PAGE_SUCCESS_UPDATE_PASSWORD = "redirect:/logout_custom";
 
-        String message = validationService.isPasswordValid(passwordNew, passwordRepeat);
-        if (message != null) {
-            req.setAttribute("message", message);
-            return "forward:/user_infos/" + authId;
+        if (!getPrincipalUserAuthId().equals(userToUpdateId)) {
+            redirectModelMap.addFlashAttribute(ERROR_ATTRIBUTE, NO_PERMISSION_TO_UPDATE);
+            return RETURN_PAGE_FAIL_UPDATE_PASSWORD;
         }
 
-        final String passwordBefore = req.getParameter("passwordBefore");
-        final AuthUserDto user = authUserService.getById(authId);
-        final boolean isValid = validationService.isPasswordEqual(passwordBefore, user.getPassword());
+        if (br.hasFieldErrors()) {
+            final String errorMessage = br.getFieldError().getDefaultMessage();
+            redirectModelMap.addFlashAttribute(ERROR_ATTRIBUTE, errorMessage);
+            return RETURN_PAGE_FAIL_UPDATE_PASSWORD;
+        }
+
+        //New password and new repeat password check
+        if (!userFromUpdateForm.isPasswordMatchRepeatPassword()) {
+            redirectModelMap.addFlashAttribute(ERROR_ATTRIBUTE, INVALID_REPEAT_PASS);
+            return RETURN_PAGE_FAIL_UPDATE_PASSWORD;
+        }
+
+        final AuthUserDto userToUpdate = authUserService.getById(userToUpdateId);
+
+        //Current password of updated user entered on jsp is compared with current password from DB
+        final boolean isValid = passwordCurrent.equals(userToUpdate.getPassword());
         if (!isValid) {
-            message = "wrong.pass";
-            log.info("Invalid password enter for user id: {} at: {}", authId, LocalDateTime.now());
-            req.setAttribute("message", message);
-            return "forward:/user_infos/" + authId;
+            redirectModelMap.addFlashAttribute(ERROR_ATTRIBUTE, WRONG_PASSWORD_ENTERED);
+            log.info("Invalid password enter for user id: {} at: {}", userToUpdateId, LocalDateTime.now());
+            return RETURN_PAGE_FAIL_UPDATE_PASSWORD;
         }
 
-        final boolean isUpdated = authUserService.updateAuthUser
-                (new AuthUserDto(user.getId(), user.getLogin(), passwordNew,
-                        user.getRole(), user.isDeleted(), user.getUserInfoDto()));
-        message = "update.success";
+        userToUpdate.setPassword(userFromUpdateForm.getPassword());
+        final boolean isUpdated = authUserService.updateAuthUser(userToUpdate);
         if (!isUpdated) {
-            message = "update.fail";
-            log.error("Failed to update password for user id: {} , at: {}", authId, LocalDateTime.now());
-            req.setAttribute("message", message);
-            return "forward:/user_infos/" + authId;
+            redirectModelMap.addFlashAttribute(ERROR_ATTRIBUTE, FAILED_TO_UPDATE);
+            log.error("Failed to update password for user id: {} , at: {}", userToUpdateId, LocalDateTime.now());
+            return RETURN_PAGE_FAIL_UPDATE_PASSWORD;
         }
-        log.info("Updated password for user id: {}, at: {}", authId,  LocalDateTime.now());
-        req.setAttribute("message", message);
-        return "forward:/logouts";
+        redirectModelMap.addFlashAttribute(MESSAGE_ATTRIBUTE, SUCCESSFUL_UPDATE);
+        log.info("Updated password for user id: {}, at: {}", userToUpdateId, LocalDateTime.now());
+        return RETURN_PAGE_SUCCESS_UPDATE_PASSWORD;
     }
 
-//    "/admin/update/role" POST
-    @PostMapping(value = "/{authId}/update_role")
-    public String updateAuthUserRole(HttpServletRequest req, @PathVariable Long authId) {
-        final String r = req.getParameter("role");
-        boolean isRoleValid = validationService.isRoleValid(r);
-        String message;
-        if (!isRoleValid) {
-            message = "update.fail";
-            log.error("Failed to update role to user id: {} , at: {}", authId, LocalDateTime.now());
-            req.setAttribute("message", message);
-            return "forward:/user_infos/" + authId;
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping(value = "/{userToUpdateId}/update_role")
+    public String updateAuthUserRole(@PathVariable Long userToUpdateId,
+                                     @Valid AuthUserRequestModel userFromUpdateForm,
+                                     BindingResult br,
+                                     RedirectAttributesModelMap redirectModelMap) {
+
+        final String RETURN_PAGE_FAIL_UPDATE_ROLE = "redirect:/user_infos/" + userToUpdateId + "?returnPage=user_update";
+        final String RETURN_PAGE_SUCCESS_UPDATE_ROLE_NEED_LOGOUT = "redirect:/logout_custom";
+        final String RETURN_PAGE_SUCCESS_UPDATE_ROLE_AND_NO_LOGOUT = "redirect:/user_infos/" + userToUpdateId;
+
+        if (br.hasFieldErrors()) {
+            final String errorMessage = br.getFieldError().getDefaultMessage();
+            redirectModelMap.addFlashAttribute(ERROR_ATTRIBUTE, errorMessage);
+            log.error("Failed to update role to user id: {} , at: {}", userToUpdateId, LocalDateTime.now());
+            return RETURN_PAGE_FAIL_UPDATE_ROLE;
         }
 
-        final Role role = Role.valueOf(r);
-        final AuthUserDto user = authUserService.getById(authId);
-        final boolean isUpdated = authUserService.updateAuthUser
-                (new AuthUserDto(user.getId(), user.getLogin(),
-                        user.getPassword(), role, user.isDeleted(), user.getUserInfoDto()));
-        message = "update.success";
+        final AuthUserDto userToUpdate = authUserService.getById(userToUpdateId);
+        final Role updatedRole = userFromUpdateForm.getRoleInEnum();
+        userToUpdate.setRole(updatedRole);
+
+        final boolean isUpdated = authUserService.updateAuthUser(userToUpdate);
         if (!isUpdated) {
-            message = "update.fail";
-            log.error("Failed to update role to user id: {} , at: {}", authId, LocalDateTime.now());
-            req.setAttribute("message", message);
-            return "forward:/user_infos/" + authId;
+            redirectModelMap.addFlashAttribute(ERROR_ATTRIBUTE, FAILED_TO_UPDATE);
+            log.error("Failed to update role to user id: {} , at: {}", userToUpdateId, LocalDateTime.now());
+            return RETURN_PAGE_FAIL_UPDATE_ROLE;
         }
-        log.info("Updated role to user id: {} , at: {}", authId, LocalDateTime.now());
 
-        final boolean needLogout = validationService.needLogout(WebUtils.getCurrentUserId(), authId);
+        redirectModelMap.addFlashAttribute(MESSAGE_ATTRIBUTE, SUCCESSFUL_UPDATE);
+        log.info("Updated role to user id: {} , at: {}", userToUpdateId, LocalDateTime.now());
+
+        final boolean needLogout = getPrincipalUserAuthId().equals(userToUpdateId);
         if (needLogout) {
-            req.setAttribute("message", message);
-            return "forward:/logouts";
+            return RETURN_PAGE_SUCCESS_UPDATE_ROLE_NEED_LOGOUT;
         }
-        req.setAttribute("message", message);
-        return "forward:/user_infos/" + authId;
+        return RETURN_PAGE_SUCCESS_UPDATE_ROLE_AND_NO_LOGOUT;
     }
 
-    // unsuccessful delete
-//    "/auth/user/delete" GET
-        @PostMapping(value = "/{authId}/delete")
-    public String deleteAuthUser(HttpServletRequest req, @PathVariable Long authId) {
-        final boolean isDeleted = authUserService.deleteUser(authId);
-        String logMessage = "User id: {} deleted at: {}";
-        String message = "delete.success";
+    @PostMapping(value = "/{userToDeleteId}/delete")
+    public String deleteAuthUser(@PathVariable Long userToDeleteId,
+                                 RedirectAttributesModelMap redirectModelMap) {
+
+        final String RETURN_PAGE_NEED_LOGOUT = "redirect:/logout_custom";
+        final String RETURN_PAGE_NO_LOGOUT = "redirect:/user_infos/" + userToDeleteId;
+
+        if ((!getPrincipalUserAuthId().equals(userToDeleteId)) & !(isPrincipalUserAdmin())) {
+            redirectModelMap.addFlashAttribute(ERROR_ATTRIBUTE, NO_PERMISSION_TO_UPDATE);
+            return RETURN_PAGE_NO_LOGOUT;
+        }
+
+        final boolean isDeleted = authUserService.deleteUser(userToDeleteId);
         if (!isDeleted) {
-            message = "delete.fail";
-            logMessage = "Failed to delete user id: {} , at: {}";
-            log.info(logMessage, authId, LocalDateTime.now());
-            req.setAttribute("message", message);
-            return "forward:/news";
+            redirectModelMap.addFlashAttribute(ERROR_ATTRIBUTE, FAILED_TO_DELETE);
+            log.error("Failed to delete user id: {} , at: {}", userToDeleteId, LocalDateTime.now());
+            return RETURN_PAGE_NO_LOGOUT;
         }
-        log.info(logMessage, authId, LocalDateTime.now());
 
-        final boolean needLogout = validationService.needLogout(WebUtils.getCurrentUserId(), authId);
+        redirectModelMap.addFlashAttribute(MESSAGE_ATTRIBUTE, SUCCESSFUL_DELETE);
+        log.info("User id: {} deleted at: {}", userToDeleteId, LocalDateTime.now());
+
+        final boolean needLogout = getPrincipalUserAuthId().equals(userToDeleteId);
         if (needLogout) {
-            req.setAttribute("message", message);
-            return "forward:/logouts";
+            return RETURN_PAGE_NEED_LOGOUT;
         }
-            return "forward:/user_infos/" + authId;
+        return RETURN_PAGE_NO_LOGOUT;
     }
 }

@@ -15,30 +15,7 @@ public class NewsDto {
     public NewsDto() {
     }
 
-    public NewsDto(Long id, String title, String content) {
-        this.id = id;
-        this.title = title;
-        this.content = content;
-    }
-
-    public NewsDto(String title, String content, Timestamp creationTime, Long authId, String authorNews) {
-        this.title = title;
-        this.content = content;
-        this.creationTime = creationTime;
-        this.authId = authId;
-        this.authorNews = authorNews;
-    }
-
-    public NewsDto(Long id, String title, String content, Timestamp creationTime, Long authId, String authorNews) {
-        this.id = id;
-        this.title = title;
-        this.content = content;
-        this.creationTime = creationTime;
-        this.authId = authId;
-        this.authorNews = authorNews;
-    }
-
-    public Long getId() {
+      public Long getId() {
         return id;
     }
 

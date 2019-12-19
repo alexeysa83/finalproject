@@ -32,6 +32,7 @@
         <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
         <jstl.version>1.2</jstl.version>
         <validation-api.version>2.0.1.Final</validation-api.version>
+        <hibernate-validator.version>6.1.0.Final</hibernate-validator.version>
         <!--Tiles views-->
         <tiles-core.version>3.0.8</tiles-core.version>
         <tiles-jsp.version>3.0.8</tiles-jsp.version>
@@ -103,7 +104,13 @@
                 <artifactId>validation-api</artifactId>
                 <version>${validation-api.version}</version>
             </dependency>
-<!--Tiles views-->
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-validator</artifactId>
+                <version>${hibernate-validator.version}</version>
+            </dependency>
+
+            <!--Tiles views-->
             <dependency>
                 <groupId>org.apache.tiles</groupId>
                 <artifactId>tiles-core</artifactId>
@@ -129,7 +136,7 @@
                 <artifactId>tiles-template</artifactId>
                 <version>${tiles-template.version}</version>
             </dependency>
-<!--DB-->
+            <!--DB-->
             <dependency>
                 <groupId>org.springframework.data</groupId>
                 <artifactId>spring-data-jpa</artifactId>

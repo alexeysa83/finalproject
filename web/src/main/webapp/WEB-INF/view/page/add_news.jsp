@@ -8,10 +8,6 @@
     <title>Add news</title>
 </head>
 <body>
-<c:if test="${requestScope.get('message') != null}">
-    <h2 style="color: firebrick">
-        <spring:message code="${requestScope.get('message')}"/></h2>
-</c:if>
 
 <form action="${pageContext.request.contextPath}/news/add" method="POST">
     <label for="title"><strong><spring:message code="title"/></strong></label>

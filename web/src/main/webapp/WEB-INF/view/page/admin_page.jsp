@@ -8,11 +8,8 @@
     <title>Admin page</title>
 </head>
 <body>
-<c:if test="${requestScope.get('message') != null}">
-    <h2 style="color: firebrick">
-        <spring:message code="${requestScope.get('message')}"/></h2>
-</c:if>
-<p><span style='color: blue;'><spring:message code="badges"/></span></p>
+
+<h2><p><span style='color: blue;'><spring:message code="badges"/></span></p></h2>
 
 <c:forEach items="${requestScope.badgesDB}" var="badge" varStatus="loop">
     <h4>${loop.index+1}) ${badge.badgeName}</h4>
@@ -34,7 +31,7 @@
         <input type="submit" value="<spring:message code="delete.badge"/>"/>
     </form>
 </c:forEach>
-<form action="${pageContext.request.contextPath}/badges/" method="POST">
+<form action="${pageContext.request.contextPath}/badges/add" method="POST">
     <input class="form-control" type="text" name="badgeName"
            placeholder="<spring:message code="name.badge"/>">
     <input type="submit" value="<spring:message code="add.badge"/>"/>

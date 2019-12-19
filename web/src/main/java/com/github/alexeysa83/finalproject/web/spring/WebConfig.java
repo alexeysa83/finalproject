@@ -18,6 +18,7 @@ import java.util.Locale;
 
 @Configuration
 @EnableWebMvc
+//@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebConfig {
 
     private final ServiceConfig serviceConfig;
@@ -28,70 +29,63 @@ public class WebConfig {
 
     // Security controllers beans
     @Bean
-    public LoginController loginController(){
+    public LoginController loginController() {
         return new LoginController(serviceConfig.authUserService());
     }
 
     @Bean
-    public LogoutController logoutController(){
+    public LogoutController logoutController() {
         return new LogoutController();
     }
 
     @Bean
-    public ErrorController errorController(){
+    public ErrorController errorController() {
         return new ErrorController();
     }
 
     // Entity controllers beans
     @Bean
-    public AuthUserController authUserController(){
-        return new AuthUserController(
-                serviceConfig.authUserService(),
-                serviceConfig.authValidationService());
+    public AuthUserController authUserController() {
+        return new AuthUserController(serviceConfig.authUserService());
     }
 
     @Bean
-    public UserInfoController userInfoController(){
-        return new UserInfoController(
-                serviceConfig.userService(),
-                serviceConfig.badgeService(),
-                serviceConfig.authValidationService());
+    public UserInfoController userInfoController() {
+        return new UserInfoController(serviceConfig.userService(), serviceConfig.badgeService());
     }
 
     @Bean
-    public NewsController newsController(){
-        return new NewsController(
-                serviceConfig.newsService(),
-                serviceConfig.commentService());
+    public NewsController newsController() {
+        return new NewsController(serviceConfig.newsService(), serviceConfig.commentService());
     }
 
     @Bean
-    public CommentController commentController(){
+    public CommentController commentController() {
         return new CommentController(serviceConfig.commentService());
     }
 
     @Bean
-    public BadgeController badgeController(){
-        return new BadgeController(serviceConfig.badgeValidationService(), serviceConfig.badgeService());
+    public BadgeController badgeController() {
+        return new BadgeController(serviceConfig.badgeService());
     }
 
     // Web config beans
     @Bean
-    public UrlBasedViewResolver tilesViewResolver(){
+    public UrlBasedViewResolver tilesViewResolver() {
         UrlBasedViewResolver resolver = new UrlBasedViewResolver();
         resolver.setViewClass(TilesView.class);
         return resolver;
     }
 
     @Bean
-    public TilesConfigurer tilesConfigurer(){
+    public TilesConfigurer tilesConfigurer() {
         final TilesConfigurer tilesConfigurer = new TilesConfigurer();
         tilesConfigurer.setDefinitions("/WEB-INF/tiles.xml");
         return tilesConfigurer;
     }
 
     @Bean
-    public ReloadableResourceBundleMessageSource messageSource(){
+    public ReloadableResourceBundleMessageSource messageSource() {
         ReloadableResourceBundleMessageSource source = new ReloadableResourceBundleMessageSource();
         source.setBasenames("classpath:/messages", "classpath:/interface");
         source.setDefaultEncoding("UTF-8");
@@ -99,7 +93,7 @@ public class WebConfig {
     }
 
     @Bean
-    public CookieLocaleResolver localeResolver(){
+    public CookieLocaleResolver localeResolver() {
         CookieLocaleResolver resolver = new CookieLocaleResolver();
         resolver.setDefaultLocale(Locale.forLanguageTag("en_US"));
         resolver.setCookieName("LocaleCookie");

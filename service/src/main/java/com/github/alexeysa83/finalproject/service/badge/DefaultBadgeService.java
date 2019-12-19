@@ -14,9 +14,17 @@ public class DefaultBadgeService implements BadgeService {
         this.badgeDao = badgeDao;
     }
 
+    /**
+     * TEST
+     * @param badgeDto
+     * @return
+     */
     @Override
     @Transactional
     public BadgeDto createBadge(BadgeDto badgeDto) {
+        if (checkNameIsTaken(badgeDto.getBadgeName())) {
+            return null;
+        }
         return badgeDao.add(badgeDto);
     }
 

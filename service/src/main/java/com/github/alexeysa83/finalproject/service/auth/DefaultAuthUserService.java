@@ -23,9 +23,12 @@ public class DefaultAuthUserService implements AuthUserService {
 
     @Override
     @Transactional
-    public AuthUserDto createAuthUserAndUserInfo(String login, String password) {
-        AuthUserDto authUserDto = new AuthUserDto(login, password);
-        final AuthUserDto savedAuthUser = authUserDao.add(authUserDto);
+    public AuthUserDto createAuthUserAndUserInfo(AuthUserDto userFromRegistrationForm) {
+        if (checkLoginIsTaken(userFromRegistrationForm.getLogin())) {
+            return null;
+        }
+
+        final AuthUserDto savedAuthUser = authUserDao.add(userFromRegistrationForm);
 
         final Timestamp regTime = UtilService.getTime();
         final UserInfoDto userInfoDto = new UserInfoDto(regTime);

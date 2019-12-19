@@ -15,23 +15,6 @@ public class CommentDto {
     public CommentDto() {
     }
 
-    public CommentDto(String content, Timestamp creationTime, Long authId, Long newsId, String authorComment) {
-        this.content = content;
-        this.creationTime = creationTime;
-        this.authId = authId;
-        this.newsId = newsId;
-        this.authorComment = authorComment;
-    }
-
-    public CommentDto(Long id, String content, Timestamp creationTime, Long authId, Long newsId, String authorComment) {
-        this.id = id;
-        this.content = content;
-        this.creationTime = creationTime;
-        this.authId = authId;
-        this.newsId = newsId;
-        this.authorComment = authorComment;
-    }
-
     public Long getId() {
         return id;
     }

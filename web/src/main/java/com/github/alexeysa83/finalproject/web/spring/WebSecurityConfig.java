@@ -14,15 +14,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-
                 .authorizeRequests()
                 .antMatchers("/login",
-                        "/auth_users/forward_to_registration",
+                        "/auth_users/forward_to_registration_form",
                         "/auth_users/registration",
-                        "/access_denied/**",
                         "/news",
-                        "/news/*").permitAll()
-                .antMatchers("/badges",
+                        "/news/all",
+                        "/news/forward_to_add_news_form",
+                        "/news/*",
+                        "/news/**").permitAll()
+                .antMatchers("/badges/**",
                         "/user_infos/*/add/*",
                         "/user_infos/*/delete/*",
                         "/auth_users/*/update_role").hasRole("ADMIN")

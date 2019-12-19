@@ -2,34 +2,30 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
-<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <html>
 <head>
     <title>Main page</title>
 </head>
 <body>
-<c:if test="${requestScope.get('message') != null}">
-    <h2 style="color: firebrick">
-        <spring:message code="${requestScope.get('message')}"/></h2>
-</c:if>
 
 <sec:authorize access="isAuthenticated()">
-    <a href="${pageContext.request.contextPath}/news/add_news_to_jsp">
+    <a href="${pageContext.request.contextPath}/news/forward_to_add_news_form">
         <spring:message code="add.news"/></a>
 </sec:authorize>
 
 <c:forEach items="${requestScope.newsList}" var="news">
     <h2 style="color: #2bb239"><a href="${pageContext.request.contextPath}/news/${news.id}">
             ${news.title}</a></h2>
-    <h2>${news.content}</h2>
-    <h3><spring:message code="author"/>:
+    <h6>${news.content}</h6>
+    <h5><spring:message code="author"/>:
         <a href="${pageContext.request.contextPath}/user_infos/${news.authId}">
-                ${news.authorNews}</a></h3>
-    <h3><spring:message code="created"/>: ${news.creationTime}</h3>
-<%--    comments--%>
-<%--    comments--%>
-    <h4><spring:message code="comments"/>: 0</h4>
+                ${news.authorNews}</a></h5>
+    <h5><spring:message code="created"/>: ${news.creationTime}</h5>
+    <%--    comments--%>
+    <%--    comments--%>
+    <h5><spring:message code="comments"/>: 0</h5>
     <hr/>
 </c:forEach>
 
@@ -38,7 +34,7 @@
         <c:if test="${currentPage > 1}">
             <li class="page-item">
                 <a class="page-link"
-                   href="${pageContext.request.contextPath}/news?currentPage=${currentPage-1}"
+                   href="${pageContext.request.contextPath}/news/all?currentPage=${currentPage-1}"
                    aria-label="Previous">
                     <span aria-hidden="true">&laquo;</span>
                 </a>
@@ -48,20 +44,20 @@
             <c:choose>
                 <c:when test="${currentPage == page}">
                     <li class="page-item active" aria-current="page">
-                        <a class="page-link" >${page}<span class="sr-only">(current)</span></a>
+                        <a class="page-link">${page}<span class="sr-only">(current)</span></a>
                     </li>
                 </c:when>
                 <c:otherwise>
                     <li class="page-item">
                         <a class="page-link"
-                           href="${pageContext.request.contextPath}/news?currentPage=${page}">${page}</a></li>
+                           href="${pageContext.request.contextPath}/news/all?currentPage=${page}">${page}</a></li>
                 </c:otherwise>
             </c:choose>
         </c:forEach>
         <c:if test="${currentPage < totalPages}">
             <li class="page-item">
                 <a class="page-link"
-                   href="${pageContext.request.contextPath}/news?currentPage=${currentPage+1}"
+                   href="${pageContext.request.contextPath}/news/all?currentPage=${currentPage+1}"
                    aria-label="Next">
                     <span aria-hidden="true">&raquo;</span>
                 </a>

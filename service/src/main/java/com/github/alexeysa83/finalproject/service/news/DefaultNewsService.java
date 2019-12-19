@@ -43,7 +43,7 @@ public class DefaultNewsService implements NewsService {
     //Add page parameter
     @Override
     @Transactional
-    public List<NewsDto> getNewsOnCurrentPage(int page) {
+        public List<NewsDto> getNewsOnCurrentPage(int page) {
         return newsDao.getNewsOnPage(page, PAGE_SIZE);
     }
 

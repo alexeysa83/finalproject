@@ -6,17 +6,25 @@ import com.github.alexeysa83.finalproject.model.dto.NewsDto;
 import com.github.alexeysa83.finalproject.service.UtilService;
 import com.github.alexeysa83.finalproject.service.comment.CommentService;
 import com.github.alexeysa83.finalproject.service.news.NewsService;
-import com.github.alexeysa83.finalproject.service.validation.NewsValidationService;
-import com.github.alexeysa83.finalproject.web.WebUtils;
+import com.github.alexeysa83.finalproject.web.Utils.AuthenticationUtils;
+import com.github.alexeysa83.finalproject.web.request_entity.NewsRequestModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static com.github.alexeysa83.finalproject.web.Utils.AuthenticationUtils.getPrincipalUserAuthId;
+import static com.github.alexeysa83.finalproject.web.Utils.AuthenticationUtils.isPrincipalUserAdmin;
+import static com.github.alexeysa83.finalproject.web.Utils.MessageContainer.*;
 
 @Controller
 @RequestMapping(value = "/news")
@@ -33,125 +41,143 @@ public class NewsController {
         this.commentService = commentService;
     }
 
+    @GetMapping(value = "/all")
+    public String getNewsOnMainPage(@RequestParam(name = "currentPage", defaultValue = "1") String currentPage,
+                                    ModelMap modelMap) {
+        final String RETURN_PAGE = "main_page";
 
-    /**
-     * Check null
-     * currentPage default value
-     */
-//    "/main" GET
-    @RequestMapping (value = "", method = {RequestMethod.GET, RequestMethod.POST})
-    public String getAllNews(HttpServletRequest req) {
-
-        String currentPage = req.getParameter("currentPage");
-        if (currentPage == null) {
-            currentPage = "1";
-        }
-        // Parse Integer not needed?
         final int page = Integer.parseInt(currentPage);
-        req.setAttribute("currentPage", page);
+        modelMap.addAttribute(PAGE_CURRENT, page);
 
         List<NewsDto> newsList = newsService.getNewsOnCurrentPage(page);
-        req.setAttribute("newsList", newsList);
+        modelMap.addAttribute(NEWS_LIST, newsList);
 
         int totalPages = newsService.getNewsTotalPages();
-        req.setAttribute("totalPages", totalPages);
-        return "main_page";
+        modelMap.addAttribute(PAGES_TOTAL, totalPages);
+
+        return RETURN_PAGE;
     }
 
-    /**
-     * Optimization
-     */
-//"/news/view" GET
-    @RequestMapping (value = "/{newsId}", method = {RequestMethod.GET, RequestMethod.POST})
-    public String getNewsById(HttpServletRequest req, @PathVariable Long newsId) {
+    @GetMapping(value = "/{newsId}")
+    public String getNewsById(@PathVariable Long newsId,
+                              ModelMap modelMap) {
+        final String RETURN_PAGE = "news_view";
         final NewsDto news = newsService.getNewsOnId(newsId);
-        req.setAttribute("news", news);
+        modelMap.addAttribute(NEWS_SINGLE, news);
         final List<CommentDto> commentList = commentService.getCommentsOnNews(newsId);
-        req.setAttribute("commentList", commentList);
-        return "news_view";
+        modelMap.addAttribute(COMMENT_LIST, commentList);
+        return RETURN_PAGE;
     }
 
-    //    "/auth/news/update" GET
-    @RequestMapping(value = "/{newsId}/torequest", method = {RequestMethod.GET, RequestMethod.POST} )
-    public String setNewsToUpdate(HttpServletRequest req, @PathVariable Long newsId) {
-        final NewsDto news = newsService.getNewsOnId(newsId);
-        req.setAttribute("news", news);
-        return "news_update";
+    @GetMapping(value = "/{newsId}/to_news_update_form")
+    public String setNewsToUpdateForm(@PathVariable Long newsId,
+                                      @RequestParam(value = "authorId") Long authorId,
+                                      ModelMap modelMap) {
+        final String RETURN_PAGE_TO_UPDATE_FORM = "news_update";
+        final String RETURN_PAGE_NO_PERMISSION_TO_UPDATE = "forward:/news/" + newsId;
+        if ((!getPrincipalUserAuthId().equals(authorId)) & !(isPrincipalUserAdmin())) {
+            modelMap.addAttribute(ERROR_ATTRIBUTE, NO_PERMISSION_TO_UPDATE);
+            return RETURN_PAGE_NO_PERMISSION_TO_UPDATE;
+        }
+        final NewsDto newsFromDB = newsService.getNewsOnId(newsId);
+        modelMap.addAttribute(NEWS_SINGLE, newsFromDB);
+        return RETURN_PAGE_TO_UPDATE_FORM;
     }
 
-//        "/auth/news/update" GET
-    @GetMapping(value = "/add_news_to_jsp")
-    public String forwardToJSP() {
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping(value = "/forward_to_add_news_form")
+    public String forwardToAddNewsJSP() {
         return "add_news";
     }
 
-    //    "/auth/news/add" POST
+    @PreAuthorize("isAuthenticated()")
     @PostMapping(value = "/add")
-    public String addNews(HttpServletRequest req) {
-        final String title = req.getParameter("title");
-        final String content = req.getParameter("content");
-        String message = NewsValidationService.isValidTitleContent(title, content);
-        if (message != null) {
-            req.setAttribute("message", message);
-            return "add_news";
+    public String addNews(@Valid NewsRequestModel newsFromAddForm,
+                          BindingResult br,
+                          ModelMap modelMap,
+                          RedirectAttributesModelMap redirectModelMap) {
+
+        final String RETURN_PAGE_FAIL_TO_ADD = "add_news";
+        final String RETURN_PAGE_SUCCESS_ADD = "redirect:/news/";
+        if (br.hasFieldErrors()) {
+            final String errorMessage = br.getFieldError().getDefaultMessage();
+            modelMap.addAttribute(ERROR_ATTRIBUTE, errorMessage);
+            return RETURN_PAGE_FAIL_TO_ADD;
         }
 
-        final AuthUserDto userInSession = WebUtils.getUserInSession();
+        final NewsDto newsDto = newsFromAddForm.convertToNewsDto();
         final Timestamp creationTime = UtilService.getTime();
-        final NewsDto news = newsService.createNews(
-                new NewsDto(title, content, creationTime, userInSession.getId(), userInSession.getLogin()));
-        if (news == null) {
-            req.setAttribute("message", "error.unknown");
+        newsDto.setCreationTime(creationTime);
+        final AuthUserDto userInSession = AuthenticationUtils.getPrincipalUserInSession();
+        newsDto.setAuthId(userInSession.getId());
+        newsDto.setAuthorNews(userInSession.getLogin());
+
+        final NewsDto newsFromDB = newsService.createNews(newsDto);
+        if (newsFromDB == null) {
+            modelMap.addAttribute(ERROR_ATTRIBUTE, ERROR_UNKNOWN);
             log.error("Failed to add news for user id: {}, at: {}", userInSession.getId(), LocalDateTime.now());
-            return "addnews";
+            return RETURN_PAGE_FAIL_TO_ADD;
         }
-        log.info("Added news id: {}, at: {}", news.getId(), LocalDateTime.now());
-        return "redirect:/news";
+        redirectModelMap.addFlashAttribute(MESSAGE_ATTRIBUTE, NEWS_CREATED);
+        log.info("Added news id: {}, at: {}", newsFromDB.getId(), LocalDateTime.now());
+        return RETURN_PAGE_SUCCESS_ADD + newsFromDB.getId();
     }
 
-    /**
-     * Optimization
-     *
-     * @param req
-     * @return
-     */
-//    "/auth/news/update" POST
     @PostMapping(value = "/{newsId}/update")
-    public String updateNews(HttpServletRequest req, @PathVariable Long newsId) {
-        final String title = req.getParameter("title");
-        final String content = req.getParameter("content");
-        String message = NewsValidationService.isValidTitleContent(title, content);
-        if (message != null) {
-            req.setAttribute("message", message);
-            return "forward:/news/" + newsId + "/torequest";
+    public String updateNews(@PathVariable Long newsId,
+                             @RequestParam(value = "authorId") Long authorId,
+                             @Valid NewsRequestModel newsFromAddForm,
+                             BindingResult br,
+                             RedirectAttributesModelMap redirectModelMap) {
+
+        final String RETURN_PAGE_FAIL_TO_UPDATE = "redirect:/news/" + newsId + "/to_news_update_form";
+        final String RETURN_PAGE_SUCCESS_UPDATE = "redirect:/news/" + newsId;
+
+        if ((!getPrincipalUserAuthId().equals(authorId)) & !(isPrincipalUserAdmin())) {
+            redirectModelMap.addAttribute("authorId", authorId);
+            redirectModelMap.addFlashAttribute(ERROR_ATTRIBUTE, NO_PERMISSION_TO_UPDATE);
+            return RETURN_PAGE_FAIL_TO_UPDATE;
+        }
+        if (br.hasFieldErrors()) {
+            final String errorMessage = br.getFieldError().getDefaultMessage();
+            redirectModelMap.addAttribute("authorId", authorId);
+            redirectModelMap.addFlashAttribute(ERROR_ATTRIBUTE, errorMessage);
+            return RETURN_PAGE_FAIL_TO_UPDATE;
         }
 
-        final boolean isUpdated = newsService.updateNews(new NewsDto(newsId, title, content));
-
-        message = "update.success";
-        String logMessage = "Updated news id: {} , at: {}";
+        final NewsDto newsToUpdate = newsFromAddForm.convertToNewsDto();
+        newsToUpdate.setId(newsId);
+        final boolean isUpdated = newsService.updateNews(newsToUpdate);
         if (!isUpdated) {
-            message = "update.fail";
-            logMessage = "Failed to update news id: {} , at: {}";
+            redirectModelMap.addFlashAttribute(ERROR_ATTRIBUTE, FAILED_TO_UPDATE);
+            log.error("Failed to update news id: {} , at: {}", newsId, LocalDateTime.now());
+            return RETURN_PAGE_FAIL_TO_UPDATE;
         }
-        log.info(logMessage, newsId, LocalDateTime.now());
-        req.setAttribute("message", message);
-        return "forward:/news/" + newsId;
+        redirectModelMap.addFlashAttribute(MESSAGE_ATTRIBUTE, SUCCESSFUL_UPDATE);
+        log.info("Updated news id: {} , at: {}", newsId, LocalDateTime.now());
+        return RETURN_PAGE_SUCCESS_UPDATE;
     }
 
-    //    "/auth/news/delete" GET
     @PostMapping(value = "/{newsId}/delete")
-    public String deleteNews(HttpServletRequest req, @PathVariable Long newsId) {
-        final boolean isDeleted = newsService.deleteNews(newsId);
-        String message = "delete.success";
-        String logMessage = "Deleted news id: {} , at: {}";
-        if (!isDeleted) {
-            message = "delete.fail";
-            logMessage = "Failed to delete news id: {} , at: {}";
+    public String deleteNews(@PathVariable Long newsId,
+                             @RequestParam(value = "authorId") Long authorId,
+                             RedirectAttributesModelMap redirectModelMap) {
+
+        final String RETURN_PAGE = "redirect:/news/all";
+
+        if ((!getPrincipalUserAuthId().equals(authorId)) & !(isPrincipalUserAdmin())) {
+            redirectModelMap.addFlashAttribute(ERROR_ATTRIBUTE, NO_PERMISSION_TO_UPDATE);
+            return RETURN_PAGE;
         }
-        log.info(logMessage, newsId, LocalDateTime.now());
-        // No message
-        req.setAttribute("message", message);
-        return "forward:/news";
+
+        final boolean isDeleted = newsService.deleteNews(newsId);
+        if (!isDeleted) {
+            redirectModelMap.addFlashAttribute(ERROR_ATTRIBUTE, FAILED_TO_DELETE);
+            log.error("Failed to delete news id: {} , at: {}", newsId, LocalDateTime.now());
+            return RETURN_PAGE;
+        }
+        redirectModelMap.addFlashAttribute(MESSAGE_ATTRIBUTE, SUCCESSFUL_DELETE);
+        log.info("Deleted news id: {} , at: {}", newsId, LocalDateTime.now());
+        return RETURN_PAGE;
     }
 }
