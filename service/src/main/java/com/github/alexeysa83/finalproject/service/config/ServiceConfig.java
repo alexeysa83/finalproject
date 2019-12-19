@@ -11,8 +11,6 @@ import com.github.alexeysa83.finalproject.service.news.DefaultNewsService;
 import com.github.alexeysa83.finalproject.service.news.NewsService;
 import com.github.alexeysa83.finalproject.service.user.DefaultUserService;
 import com.github.alexeysa83.finalproject.service.user.UserService;
-import com.github.alexeysa83.finalproject.service.validation.AuthValidationService;
-import com.github.alexeysa83.finalproject.service.validation.BadgeValidationService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -50,18 +48,5 @@ public class ServiceConfig {
     @Bean
     public BadgeService badgeService() {
         return new DefaultBadgeService(daoConfig.badgeBaseDao());
-    }
-
-    /**
-     *
-     */
-    @Bean
-    public BadgeValidationService badgeValidationService() {
-        return new BadgeValidationService(badgeService());
-    }
-
-    @Bean
-    public AuthValidationService authValidationService() {
-        return new AuthValidationService(authUserService());
     }
 }
