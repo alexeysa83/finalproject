@@ -1,7 +1,12 @@
 package com.github.alexeysa83.finalproject.dao.convert_entity;
 
+import com.github.alexeysa83.finalproject.dao.entity.CommentEntity;
 import com.github.alexeysa83.finalproject.dao.entity.NewsEntity;
+import com.github.alexeysa83.finalproject.model.dto.CommentDto;
 import com.github.alexeysa83.finalproject.model.dto.NewsDto;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class NewsConvert {
 
@@ -20,6 +25,15 @@ public abstract class NewsConvert {
         newsDto.setAuthId(newsEntity.getAuthUser().getId());
         newsDto.setAuthorNews(newsEntity.getAuthUser().getLogin());
 
+        final List<CommentEntity> entityComments = newsEntity.getComments();
+        if (entityComments.size() > 0) {
+            final List<CommentDto> commentDtos = new ArrayList<>();
+            entityComments.forEach(commentEntity -> {
+                final CommentDto commentDto = CommentConvert.toDto(commentEntity);
+                commentDtos.add(commentDto);
+            });
+            newsDto.setComments(commentDtos);
+        }
         return newsDto;
     }
 

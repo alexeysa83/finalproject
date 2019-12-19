@@ -25,7 +25,7 @@
     <h5><spring:message code="created"/>: ${news.creationTime}</h5>
     <%--    comments--%>
     <%--    comments--%>
-    <h5><spring:message code="comments"/>: 0</h5>
+    <h5><spring:message code="comments"/>: ${news.comments.size()}</h5>
     <hr/>
 </c:forEach>
 

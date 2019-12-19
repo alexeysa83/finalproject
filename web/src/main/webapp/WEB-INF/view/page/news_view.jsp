@@ -42,7 +42,7 @@
 <hr/>
 <hr/>
 <sec:authorize access="isAuthenticated()">
-    <c:forEach items="${requestScope.commentList}" var="comment" varStatus="loop">
+    <c:forEach items="${news.comments}" var="comment" varStatus="loop">
         <h4 style="color: #b04db2">${loop.index+1}) ${comment.content}</h4>
         <h5><spring:message code="author"/>:
             <a href="${pageContext.request.contextPath}/user_infos/${comment.authId}">

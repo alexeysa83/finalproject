@@ -50,10 +50,10 @@ public class UserInfoRequestModel {
 
     public UserInfoDto convertToUserInfoDto() {
         final UserInfoDto userInfoDto = new UserInfoDto();
-        userInfoDto.setFirstName(firstName);
-        userInfoDto.setLastName(lastName);
-        userInfoDto.setEmail(email);
-        userInfoDto.setPhone(phone);
+        userInfoDto.setFirstName((firstName.equals("")) ? null : firstName);
+        userInfoDto.setLastName((lastName.equals("")) ? null : lastName);
+        userInfoDto.setEmail((email.equals("")) ? null : email);
+        userInfoDto.setPhone((phone.equals("")) ? null : phone);
         return userInfoDto;
     }
 }

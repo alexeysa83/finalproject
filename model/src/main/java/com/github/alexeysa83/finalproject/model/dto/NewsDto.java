@@ -1,6 +1,8 @@
 package com.github.alexeysa83.finalproject.model.dto;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class NewsDto {
@@ -12,10 +14,12 @@ public class NewsDto {
     private Long authId;
     private String authorNews;
 
+    private List<CommentDto> comments = new ArrayList<>();
+
     public NewsDto() {
     }
 
-      public Long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -61,6 +65,14 @@ public class NewsDto {
 
     public void setAuthorNews(String authorNews) {
         this.authorNews = authorNews;
+    }
+
+    public List<CommentDto> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<CommentDto> comments) {
+        this.comments = comments;
     }
 
     @Override

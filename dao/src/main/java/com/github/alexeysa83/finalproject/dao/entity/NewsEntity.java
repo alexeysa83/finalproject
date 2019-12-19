@@ -75,7 +75,7 @@ public class NewsEntity {
         this.authUser = authUser;
     }
 
-    @OneToMany (mappedBy = "news", fetch = FetchType.LAZY)
+    @OneToMany (mappedBy = "news", fetch = FetchType.EAGER)
     public List<CommentEntity> getComments() {
         return comments;
     }

@@ -25,7 +25,7 @@ public abstract class UserInfoConvert {
         userInfoDto.setPhone(userInfoEntity.getPhone());
         userInfoDto.setUserLogin(userInfoEntity.getAuthUser().getLogin());
 
-        List<BadgeEntity> badgeEntities = userInfoEntity.getBadges();
+        final List<BadgeEntity> badgeEntities = userInfoEntity.getBadges();
         if (badgeEntities.size() > 0) {
             final List<BadgeDto> badgeDtos = new ArrayList<>();
             badgeEntities.forEach(badgeEntity -> {

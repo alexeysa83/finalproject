@@ -1,10 +1,8 @@
 package com.github.alexeysa83.finalproject.web.controller.entity_controller;
 
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
-import com.github.alexeysa83.finalproject.model.dto.CommentDto;
 import com.github.alexeysa83.finalproject.model.dto.NewsDto;
 import com.github.alexeysa83.finalproject.service.UtilService;
-import com.github.alexeysa83.finalproject.service.comment.CommentService;
 import com.github.alexeysa83.finalproject.service.news.NewsService;
 import com.github.alexeysa83.finalproject.web.Utils.AuthenticationUtils;
 import com.github.alexeysa83.finalproject.web.request_entity.NewsRequestModel;
@@ -34,12 +32,9 @@ public class NewsController {
 
     private final NewsService newsService;
 
-    private final CommentService commentService;
-
-    public NewsController(NewsService newsService, CommentService commentService) {
+    public NewsController(NewsService newsService) {
         this.newsService = newsService;
-        this.commentService = commentService;
-    }
+            }
 
     @GetMapping(value = "/all")
     public String getNewsOnMainPage(@RequestParam(name = "currentPage", defaultValue = "1") String currentPage,
@@ -64,8 +59,6 @@ public class NewsController {
         final String RETURN_PAGE = "news_view";
         final NewsDto news = newsService.getNewsOnId(newsId);
         modelMap.addAttribute(NEWS_SINGLE, news);
-        final List<CommentDto> commentList = commentService.getCommentsOnNews(newsId);
-        modelMap.addAttribute(COMMENT_LIST, commentList);
         return RETURN_PAGE;
     }
 

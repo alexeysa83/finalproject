@@ -100,7 +100,7 @@ public class UserInfoEntity {
         this.authUser = authUser;
     }
 
-    @ManyToMany (mappedBy = "users", fetch = FetchType.LAZY)
+    @ManyToMany (mappedBy = "users", fetch = FetchType.EAGER)
     public List<BadgeEntity> getBadges() {
         return badges;
     }

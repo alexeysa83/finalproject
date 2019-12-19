@@ -56,7 +56,7 @@ public class WebConfig {
 
     @Bean
     public NewsController newsController() {
-        return new NewsController(serviceConfig.newsService(), serviceConfig.commentService());
+        return new NewsController(serviceConfig.newsService());
     }
 
     @Bean
