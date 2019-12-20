@@ -31,4 +31,11 @@ public interface UserInfoRepository extends JpaRepository <UserInfoEntity, Long>
     @Query(value = "from BadgeEntity b where b.id=:id")
     BadgeEntity getBadgeById(@Param("id") Long id);
 
+    @Query(value = "select sum(rating) from news_rating nr join news n on n.id = nr.news_id where n.auth_id=:authId",
+            nativeQuery = true)
+    Integer getRatingFromThisUserNews(@Param("authId") Long authId);
+
+    @Query(value = "select sum(rating) from comment_rating cr join comment c on c.id = cr.comment_id where c.auth_id=:authId",
+            nativeQuery = true)
+    Integer getRatingFromThisUserComment(@Param("authId") Long authId);
 }

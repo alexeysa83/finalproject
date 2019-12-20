@@ -13,6 +13,8 @@ public class UserInfoDto {
     private String email;
     private String phone;
     private String userLogin;
+    private int userRating;
+    private String ratingColour;
     private List<BadgeDto> badges;
 
     public UserInfoDto() {
@@ -76,6 +78,22 @@ public class UserInfoDto {
 
     public void setUserLogin(String userLogin) {
         this.userLogin = userLogin;
+    }
+
+    public int getUserRating() {
+        return userRating;
+    }
+
+    public void setUserRating(int userRating) {
+        this.userRating = userRating;
+    }
+
+    public String getRatingColour() {
+        return ratingColour;
+    }
+
+    public void setRatingColour(String ratingColour) {
+        this.ratingColour = ratingColour;
     }
 
     public List<BadgeDto> getBadges() {

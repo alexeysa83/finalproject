@@ -20,7 +20,7 @@ public class DefaultUserInfoBaseDao implements UserInfoBaseDao {
     private final UserInfoRepository userInfoRepository;
 
     public DefaultUserInfoBaseDao(UserInfoRepository userInfoRepository) {
-                this.userInfoRepository = userInfoRepository;
+        this.userInfoRepository = userInfoRepository;
     }
 
     @Override
@@ -44,9 +44,21 @@ public class DefaultUserInfoBaseDao implements UserInfoBaseDao {
         final Optional<UserInfoEntity> optional = userInfoRepository.findById(authId);
         if (optional.isPresent()) {
             final UserInfoEntity userInfoEntity = optional.get();
-            return UserInfoConvert.toDto(userInfoEntity);
+            final UserInfoDto userInfoDto = UserInfoConvert.toDto(userInfoEntity);
+            userInfoDto.setUserRating(getUserRating(authId));
+            return userInfoDto;
         }
         return null;
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public int getUserRating(Long authId) {
+        final Integer fromNews = userInfoRepository.getRatingFromThisUserNews(authId);
+        final int ratingFromThisUserNews = (fromNews == null) ? 0 : fromNews;
+        final Integer fromComments = userInfoRepository.getRatingFromThisUserComment(authId);
+        final int ratingFromThisUserComment = (fromComments == null) ? 0 : fromComments;
+        return ratingFromThisUserComment + ratingFromThisUserNews;
     }
 
     @Override

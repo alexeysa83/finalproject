@@ -11,7 +11,8 @@
 <body>
 
 <c:if test="${user != null}">
-    <h2><span style='color: blue;'>${user.userLogin}</span></h2>
+    <h2><span style='color: blue;'>${user.userLogin}</span>
+        <span class="rating" style='color: ${user.ratingColour}'> ${user.userRating} </span></h2>
     <hr/>
     <h2 style="color: #2bb239"><spring:message code="first"/>: ${user.firstName}</h2>
     <h2 style="color: #2bb239"><spring:message code="last"/>: ${user.lastName}</h2>
