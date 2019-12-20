@@ -6,7 +6,7 @@ import javax.validation.constraints.Pattern;
 
 public class BadgeRequestModel {
 
-    @Pattern(regexp = "^[A-ZА-ЯЁ]{2,15}$", message = "invalid.badge.name")
+    @Pattern(regexp = "^[A-ZА-ЯЁ_ ]{2,20}$", message = "invalid.badge.name")
     private String badgeName;
 
     public String getBadgeName() {

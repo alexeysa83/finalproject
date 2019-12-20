@@ -18,11 +18,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/login",
                         "/auth_users/forward_to_registration_form",
                         "/auth_users/registration",
-                        "/news",
-                        "/news/all",
-                        "/news/forward_to_add_news_form",
-                        "/news/*",
-                        "/news/**").permitAll()
+//                        "/news",
+//                        "/news/all",
+//                        "/news/forward_to_add_news_form",
+//                        "/news/**",
+                        "/news/*").permitAll()
                 .antMatchers("/badges/**",
                         "/user_infos/*/add/*",
                         "/user_infos/*/delete/*",
