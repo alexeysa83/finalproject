@@ -12,6 +12,7 @@ public class CommentDto {
     private Long newsId;
     private String authorComment;
     private int ratingTotal;
+    private String ratingColour;
     private Integer userInSessionRateOnThisComment;
 
     public CommentDto() {
@@ -71,6 +72,14 @@ public class CommentDto {
 
     public void setRatingTotal(int ratingTotal) {
         this.ratingTotal = ratingTotal;
+    }
+
+    public String getRatingColour() {
+        return ratingColour;
+    }
+
+    public void setRatingColour(String ratingColour) {
+        this.ratingColour = ratingColour;
     }
 
     public Integer getUserInSessionRateOnThisComment() {

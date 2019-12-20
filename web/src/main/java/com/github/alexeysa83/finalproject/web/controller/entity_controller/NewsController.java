@@ -1,9 +1,11 @@
 package com.github.alexeysa83.finalproject.web.controller.entity_controller;
 
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
+import com.github.alexeysa83.finalproject.model.dto.CommentDto;
 import com.github.alexeysa83.finalproject.model.dto.NewsDto;
 import com.github.alexeysa83.finalproject.model.dto.NewsRatingDto;
 import com.github.alexeysa83.finalproject.service.UtilService;
+import com.github.alexeysa83.finalproject.service.comment.CommentService;
 import com.github.alexeysa83.finalproject.service.news.NewsService;
 import com.github.alexeysa83.finalproject.web.Utils.WebAuthenticationUtils;
 import com.github.alexeysa83.finalproject.web.request_entity.NewsRequestModel;
@@ -21,9 +23,9 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.github.alexeysa83.finalproject.web.Utils.MessageContainer.*;
 import static com.github.alexeysa83.finalproject.web.Utils.WebAuthenticationUtils.getPrincipalUserAuthId;
 import static com.github.alexeysa83.finalproject.web.Utils.WebAuthenticationUtils.isPrincipalUserAdmin;
-import static com.github.alexeysa83.finalproject.web.Utils.MessageContainer.*;
 
 @Controller
 @RequestMapping(value = "/news")
@@ -33,9 +35,12 @@ public class NewsController {
 
     private final NewsService newsService;
 
-    public NewsController(NewsService newsService) {
+    private final CommentService commentService;
+
+    public NewsController(NewsService newsService, CommentService commentService) {
         this.newsService = newsService;
-            }
+        this.commentService = commentService;
+    }
 
     @GetMapping(value = "/all")
     public String getNewsOnMainPage(@RequestParam(name = "currentPage", defaultValue = "1") String currentPage,
@@ -60,9 +65,13 @@ public class NewsController {
         final String RETURN_PAGE = "news_view";
         final NewsDto news = newsService.getNewsOnId(newsId);
         modelMap.addAttribute(NEWS_SINGLE, news);
+        // Have to take it from comment service not from getComments field because of comment rating implementation
+        final List<CommentDto> commentsOnNews = commentService.getCommentsOnNews(newsId);
+        modelMap.addAttribute(COMMENT_LIST, commentsOnNews);
         return RETURN_PAGE;
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping(value = "/{newsId}/to_news_update_form")
     public String setNewsToUpdateForm(@PathVariable Long newsId,
                                       @RequestParam(value = "authorId") Long authorId,
@@ -117,6 +126,7 @@ public class NewsController {
         return RETURN_PAGE_SUCCESS_ADD + newsFromDB.getId();
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping(value = "/{newsId}/update")
     public String updateNews(@PathVariable Long newsId,
                              @RequestParam(value = "authorId") Long authorId,
@@ -152,6 +162,7 @@ public class NewsController {
         return RETURN_PAGE_SUCCESS_UPDATE;
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping(value = "/{newsId}/delete")
     public String deleteNews(@PathVariable Long newsId,
                              @RequestParam(value = "authorId") Long authorId,
@@ -175,19 +186,43 @@ public class NewsController {
         return RETURN_PAGE;
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping ("/{newsId}/add_rating/{authId}")
-    public String addRatingToNews (NewsRatingDto newsRatingDto){
+    public String addRatingToNews (NewsRatingDto newsRatingDto,
+                                   @RequestParam(value = "authorId") Long authorId,
+                                   RedirectAttributesModelMap redirectModelMap){
         final String RETURN_PAGE = "redirect:/news/" + newsRatingDto.getNewsId();
 
+        if ((getPrincipalUserAuthId().equals(authorId))) {
+            redirectModelMap.addFlashAttribute(ERROR_ATTRIBUTE, NO_PERMISSION_TO_UPDATE);
+            return RETURN_PAGE;
+        }
+
         final boolean isAdded = newsService.addRatingOnNews(newsRatingDto);
+        if (!isAdded) {
+            redirectModelMap.addFlashAttribute(ERROR_ATTRIBUTE, ERROR_UNKNOWN);
+            log.error("Failed to add rating to news: {}, at: {}", newsRatingDto, LocalDateTime.now());
+        }
         return RETURN_PAGE;
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping ("/{newsId}/delete_rating/{authId}")
-    public String deleteRatingFromNews (NewsRatingDto newsRatingDto){
+    public String deleteRatingFromNews (NewsRatingDto newsRatingDto,
+                                        @RequestParam(value = "authorId") Long authorId,
+                                        RedirectAttributesModelMap redirectModelMap){
         final String RETURN_PAGE = "redirect:/news/" + newsRatingDto.getNewsId();
 
+        if ((getPrincipalUserAuthId().equals(authorId))) {
+            redirectModelMap.addFlashAttribute(ERROR_ATTRIBUTE, NO_PERMISSION_TO_UPDATE);
+            return RETURN_PAGE;
+        }
+
         final boolean isDeleted = newsService.deleteRatingFromNews(newsRatingDto);
+        if (!isDeleted) {
+            redirectModelMap.addFlashAttribute(ERROR_ATTRIBUTE, ERROR_UNKNOWN);
+            log.error("Failed to delete rating from news: {}, at: {}", newsRatingDto, LocalDateTime.now());
+        }
         return RETURN_PAGE;
     }
 }

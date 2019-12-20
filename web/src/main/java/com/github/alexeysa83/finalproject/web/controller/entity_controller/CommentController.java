@@ -2,6 +2,7 @@ package com.github.alexeysa83.finalproject.web.controller.entity_controller;
 
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.dto.CommentDto;
+import com.github.alexeysa83.finalproject.model.dto.CommentRatingDto;
 import com.github.alexeysa83.finalproject.service.UtilService;
 import com.github.alexeysa83.finalproject.service.comment.CommentService;
 import com.github.alexeysa83.finalproject.web.Utils.WebAuthenticationUtils;
@@ -18,9 +19,9 @@ import javax.validation.Valid;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
+import static com.github.alexeysa83.finalproject.web.Utils.MessageContainer.*;
 import static com.github.alexeysa83.finalproject.web.Utils.WebAuthenticationUtils.getPrincipalUserAuthId;
 import static com.github.alexeysa83.finalproject.web.Utils.WebAuthenticationUtils.isPrincipalUserAdmin;
-import static com.github.alexeysa83.finalproject.web.Utils.MessageContainer.*;
 
 @Controller
 @RequestMapping(value = "/comments")
@@ -136,5 +137,45 @@ public class CommentController {
         redirectModelMap.addFlashAttribute(MESSAGE_ATTRIBUTE, SUCCESSFUL_UPDATE);
         log.info("Deleted comment id: {} , at: {}", commentId, LocalDateTime.now());
         return RETURN_PAGE_REDIRECT_NEWS;
+    }
+
+    @GetMapping ("/{commentId}/add_rating/{authId}")
+    public String addRatingToComment (@RequestParam(value = "newsId") Long newsId,
+                                      @RequestParam(value = "authorId") Long authorId,
+                                      CommentRatingDto commentRatingDto,
+                                      RedirectAttributesModelMap redirectModelMap){
+        final String RETURN_PAGE = "redirect:/news/" + newsId;
+
+        if ((getPrincipalUserAuthId().equals(authorId))) {
+            redirectModelMap.addFlashAttribute(ERROR_ATTRIBUTE, NO_PERMISSION_TO_UPDATE);
+            return RETURN_PAGE;
+        }
+
+        final boolean isAdded = commentService.addRatingOnComment(commentRatingDto);
+        if (!isAdded) {
+            redirectModelMap.addFlashAttribute(ERROR_ATTRIBUTE, ERROR_UNKNOWN);
+            log.error("Failed to add rating to comment: {}, at: {}", commentRatingDto, LocalDateTime.now());
+        }
+        return RETURN_PAGE;
+    }
+
+    @GetMapping ("/{commentId}/delete_rating/{authId}")
+    public String deleteRatingFromComment (@RequestParam(value = "newsId") Long newsId,
+                                           @RequestParam(value = "authorId") Long authorId,
+                                           CommentRatingDto commentRatingDto,
+                                           RedirectAttributesModelMap redirectModelMap){
+        final String RETURN_PAGE = "redirect:/news/" + newsId;
+
+        if ((getPrincipalUserAuthId().equals(authorId))) {
+            redirectModelMap.addFlashAttribute(ERROR_ATTRIBUTE, NO_PERMISSION_TO_UPDATE);
+            return RETURN_PAGE;
+        }
+
+        final boolean isDeleted = commentService.deleteRatingFromComment(commentRatingDto);
+        if (!isDeleted) {
+            redirectModelMap.addFlashAttribute(ERROR_ATTRIBUTE, ERROR_UNKNOWN);
+            log.error("Failed to add rating to comment: {}, at: {}", commentRatingDto, LocalDateTime.now());
+        }
+        return RETURN_PAGE;
     }
 }

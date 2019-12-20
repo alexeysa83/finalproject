@@ -11,53 +11,48 @@
 <body>
 
 <sec:authorize access="hasRole('ADMIN')" var="isAdmin"/>
-<sec:authorize access="isAuthenticated()">
+<sec:authorize access="isAuthenticated()" var="isLoggedIn">
     <sec:authentication property="principal" var="userInSession"/>
 </sec:authorize>
 
-<h2><span style='color: blue;'>${news.title}</span></h2>
+<h2><span align="center" style='color: blue;'>${news.title}</span></h2>
 <hr/>
 <h5>${news.content}</h5>
 <hr/>
-<h5 ><spring:message code="author"/>:
+<h5><spring:message code="author"/>:
     <a href="${pageContext.request.contextPath}/user_infos/${news.authId}">
         ${news.authorNews}</a>
     <spring:message code="created"/>: ${news.creationTime}</h5>
-<h5><spring:message code="comments"/>: <span class="rating">${news.comments.size()}</span>
-<%--<c:choose>--%>
-<%--    <c:when test="${news.ratingTotal} > 0">--%>
-<%--        <h5 style="color: #28fc34"><spring:message code="rating"/>: ${news.ratingTotal}</h5>--%>
-<%--    </c:when>--%>
-<%--    <c:when test="${news.ratingTotal} < 0">--%>
-<%--        <h5><spring:message code="rating"/>: <span style="color: red">${news.ratingTotal}</span></h5>--%>
-<%--    </c:when>--%>
-<%--    <c:otherwise>--%>
-<%--        <h5><spring:message code="rating"/>: ${news.ratingTotal}</h5>--%>
-<%--    </c:otherwise>--%>
-<%--</c:choose>--%>
-<sec:authorize access="isAuthenticated()">
+
+<h5>
+    <spring:message code="comments"/>: <span class="rating">${news.comments.size()} </span>
+    <spring:message code="rating"/>:
+
+    <c:if test="${!isLoggedIn  || news.authorNews == userInSession.login}">
+    <span class="rating" style='color: ${news.ratingColour}'> ${news.ratingTotal}</c:if>
+
+        <c:if test="${isLoggedIn && !(news.authorNews == userInSession.login)}">
     <c:choose>
         <c:when test="${news.userInSessionRateOnThisNews == null}">
-            <h4><a style="color: black"
-                   href="${pageContext.request.contextPath}/news/${news.id}/add_rating/${userInSession.id}?rate=1">+</a>
-            </h4>
-            <h5 style="color: #13b233">${news.ratingTotal}</h5> <h4 style="color: black"><a
-                href="${pageContext.request.contextPath}/news/${news.id}/add_rating/${userInSession.id}?rate=-1">-</a>
-        </h4>
+            <a style="color: black"
+               href="${pageContext.request.contextPath}/news/${news.id}/add_rating/${userInSession.id}?rate=1&authorId=${news.authId}">+</a>
+            <span class="rating" style='color: ${news.ratingColour}'> ${news.ratingTotal} </span>
+            <a style="color: black"
+               href="${pageContext.request.contextPath}/news/${news.id}/add_rating/${userInSession.id}?rate=-1&authorId=${news.authId}">-</a>
         </c:when>
         <c:when test="${news.userInSessionRateOnThisNews == 1}">
-            <h4><a style="color: black"
-                   href="${pageContext.request.contextPath}/news/${news.id}/delete_rating/${userInSession.id}">x</a>
-            </h4>
-            <h5 style="color: #18b239">${news.ratingTotal}</h5>
+            <a style="color: black"
+               href="${pageContext.request.contextPath}/news/${news.id}/delete_rating/${userInSession.id}?authorId=${news.authId}">x</a>
+            <span class="rating" style='color: ${news.ratingColour}'> ${news.ratingTotal} </span>
         </c:when>
         <c:when test="${news.userInSessionRateOnThisNews == -1}">
-            <h5 style="color: #18b239">${news.ratingTotal}</h5> <h4 style="color: black"><a
-                href="${pageContext.request.contextPath}/news/${news.id}/delete_rating/${userInSession.id}">x</a></h4>
+            <span class="rating" style='color: ${news.ratingColour}'> ${news.ratingTotal} </span>
+            <a style="color: black"
+               href="${pageContext.request.contextPath}/news/${news.id}/delete_rating/${userInSession.id}?authorId=${news.authId}">x</a>
         </c:when>
     </c:choose>
-</sec:authorize></h5>
-
+    </c:if>
+</h5>
 
 <c:if test="${news.authorNews == userInSession.login || isAdmin}">
     <form action="${pageContext.request.contextPath}/news/${news.id}/to_news_update_form" method="GET">
@@ -76,12 +71,39 @@
     <hr/>
 </c:if>
 <sec:authorize access="isAuthenticated()">
-    <c:forEach items="${news.comments}" var="comment" varStatus="loop">
-        <h4 style="color: #b04db2">${loop.index+1}) ${comment.content}</h4>
-        <h5><spring:message code="author"/>:
-            <a href="${pageContext.request.contextPath}/user_infos/${comment.authId}">
-                    ${comment.authorComment}</a></h5>
-        <h5><spring:message code="created"/>: ${comment.creationTime}</h5>
+    <c:forEach items="${requestScope.commentList}" var="comment" varStatus="loop">
+        <h5 style="color: #b04db2">${loop.index+1}) ${comment.content}</h5>
+        <h6><spring:message code="author"/>:
+            <a href="${pageContext.request.contextPath}/user_infos/${comment.authId}">${comment.authorComment}</a>
+
+            <spring:message code="created"/>: ${comment.creationTime}
+
+            <c:if test="${comment.authorComment == userInSession.login}">
+            <span class="rating" style='color: ${comment.ratingColour}'> ${comment.ratingTotal}</c:if>
+
+            <c:if test="${!(comment.authorComment == userInSession.login)}">
+                <c:choose>
+                    <c:when test="${comment.userInSessionRateOnThisComment == null}">
+                        <a style="color: black"
+                           href="${pageContext.request.contextPath}/comments/${comment.id}/add_rating/${userInSession.id}?rate=1&authorId=${comment.authId}&newsId=${comment.newsId}">+</a>
+                                   <span class="rating"
+                                         style='color: ${comment.ratingColour}'> ${comment.ratingTotal} </span>
+                        <a style="color: black"
+                           href="${pageContext.request.contextPath}/comments/${comment.id}/add_rating/${userInSession.id}?rate=-1&authorId=${comment.authId}&newsId=${comment.newsId}">-</a>
+                    </c:when>
+                    <c:when test="${comment.userInSessionRateOnThisComment == 1}">
+                        <a style="color: black"
+                           href="${pageContext.request.contextPath}/comments/${comment.id}/delete_rating/${userInSession.id}?authorId=${comment.authId}&newsId=${comment.newsId}">x</a>
+                        <span class="rating" style='color: ${comment.ratingColour}'> ${comment.ratingTotal} </span>
+                    </c:when>
+                    <c:when test="${comment.userInSessionRateOnThisComment == -1}">
+                        <span class="rating" style='color: ${comment.ratingColour}'> ${comment.ratingTotal} </span>
+                        <a style="color: black"
+                           href="${pageContext.request.contextPath}/comments/${comment.id}/delete_rating/${userInSession.id}?authorId=${comment.authId}&newsId=${comment.newsId}">x</a>
+                    </c:when>
+                </c:choose>
+            </c:if>
+        </h6>
         <hr/>
 
         <c:if test="${comment.authorComment == userInSession.login || isAdmin}">
