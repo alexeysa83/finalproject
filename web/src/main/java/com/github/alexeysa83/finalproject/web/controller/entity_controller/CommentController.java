@@ -4,7 +4,7 @@ import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.dto.CommentDto;
 import com.github.alexeysa83.finalproject.service.UtilService;
 import com.github.alexeysa83.finalproject.service.comment.CommentService;
-import com.github.alexeysa83.finalproject.web.Utils.AuthenticationUtils;
+import com.github.alexeysa83.finalproject.web.Utils.WebAuthenticationUtils;
 import com.github.alexeysa83.finalproject.web.request_entity.CommentRequestModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,8 +18,8 @@ import javax.validation.Valid;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
-import static com.github.alexeysa83.finalproject.web.Utils.AuthenticationUtils.getPrincipalUserAuthId;
-import static com.github.alexeysa83.finalproject.web.Utils.AuthenticationUtils.isPrincipalUserAdmin;
+import static com.github.alexeysa83.finalproject.web.Utils.WebAuthenticationUtils.getPrincipalUserAuthId;
+import static com.github.alexeysa83.finalproject.web.Utils.WebAuthenticationUtils.isPrincipalUserAdmin;
 import static com.github.alexeysa83.finalproject.web.Utils.MessageContainer.*;
 
 @Controller
@@ -66,7 +66,7 @@ public class CommentController {
         commentDto.setNewsId(newsId);
         final Timestamp creationTime = UtilService.getTime();
         commentDto.setCreationTime(creationTime);
-        final AuthUserDto userInSession = AuthenticationUtils.getPrincipalUserInSession();
+        final AuthUserDto userInSession = WebAuthenticationUtils.getPrincipalUserInSession();
         commentDto.setAuthId(userInSession.getId());
         commentDto.setAuthorComment(userInSession.getLogin());
 

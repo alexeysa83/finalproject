@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 
-import static com.github.alexeysa83.finalproject.web.Utils.AuthenticationUtils.setUserInSession;
+import static com.github.alexeysa83.finalproject.web.Utils.WebAuthenticationUtils.setUserInSession;
 
 @Controller
 @RequestMapping("/login")

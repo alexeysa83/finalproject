@@ -2,9 +2,10 @@ package com.github.alexeysa83.finalproject.web.controller.entity_controller;
 
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.dto.NewsDto;
+import com.github.alexeysa83.finalproject.model.dto.NewsRatingDto;
 import com.github.alexeysa83.finalproject.service.UtilService;
 import com.github.alexeysa83.finalproject.service.news.NewsService;
-import com.github.alexeysa83.finalproject.web.Utils.AuthenticationUtils;
+import com.github.alexeysa83.finalproject.web.Utils.WebAuthenticationUtils;
 import com.github.alexeysa83.finalproject.web.request_entity.NewsRequestModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +21,8 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.github.alexeysa83.finalproject.web.Utils.AuthenticationUtils.getPrincipalUserAuthId;
-import static com.github.alexeysa83.finalproject.web.Utils.AuthenticationUtils.isPrincipalUserAdmin;
+import static com.github.alexeysa83.finalproject.web.Utils.WebAuthenticationUtils.getPrincipalUserAuthId;
+import static com.github.alexeysa83.finalproject.web.Utils.WebAuthenticationUtils.isPrincipalUserAdmin;
 import static com.github.alexeysa83.finalproject.web.Utils.MessageContainer.*;
 
 @Controller
@@ -101,7 +102,7 @@ public class NewsController {
         final NewsDto newsDto = newsFromAddForm.convertToNewsDto();
         final Timestamp creationTime = UtilService.getTime();
         newsDto.setCreationTime(creationTime);
-        final AuthUserDto userInSession = AuthenticationUtils.getPrincipalUserInSession();
+        final AuthUserDto userInSession = WebAuthenticationUtils.getPrincipalUserInSession();
         newsDto.setAuthId(userInSession.getId());
         newsDto.setAuthorNews(userInSession.getLogin());
 
@@ -171,6 +172,22 @@ public class NewsController {
         }
         redirectModelMap.addFlashAttribute(MESSAGE_ATTRIBUTE, SUCCESSFUL_DELETE);
         log.info("Deleted news id: {} , at: {}", newsId, LocalDateTime.now());
+        return RETURN_PAGE;
+    }
+
+    @GetMapping ("/{newsId}/add_rating/{authId}")
+    public String addRatingToNews (NewsRatingDto newsRatingDto){
+        final String RETURN_PAGE = "redirect:/news/" + newsRatingDto.getNewsId();
+
+        final boolean isAdded = newsService.addRatingOnNews(newsRatingDto);
+        return RETURN_PAGE;
+    }
+
+    @GetMapping ("/{newsId}/delete_rating/{authId}")
+    public String deleteRatingFromNews (NewsRatingDto newsRatingDto){
+        final String RETURN_PAGE = "redirect:/news/" + newsRatingDto.getNewsId();
+
+        final boolean isDeleted = newsService.deleteRatingFromNews(newsRatingDto);
         return RETURN_PAGE;
     }
 }

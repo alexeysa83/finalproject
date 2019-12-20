@@ -13,6 +13,9 @@ public class NewsDto {
     private Timestamp creationTime;
     private Long authId;
     private String authorNews;
+    private int ratingTotal;
+    private String ratingColour;
+    private Integer userInSessionRateOnThisNews;
 
     private List<CommentDto> comments = new ArrayList<>();
 
@@ -65,6 +68,30 @@ public class NewsDto {
 
     public void setAuthorNews(String authorNews) {
         this.authorNews = authorNews;
+    }
+
+    public int getRatingTotal() {
+        return ratingTotal;
+    }
+
+    public void setRatingTotal(int ratingTotal) {
+        this.ratingTotal = ratingTotal;
+    }
+
+    public String getRatingColour() {
+        return ratingColour;
+    }
+
+    public void setRatingColour(String ratingColour) {
+        this.ratingColour = ratingColour;
+    }
+
+    public Integer getUserInSessionRateOnThisNews() {
+        return userInSessionRateOnThisNews;
+    }
+
+    public void setUserInSessionRateOnThisNews(Integer userInSessionRateOnThisNews) {
+        this.userInSessionRateOnThisNews = userInSessionRateOnThisNews;
     }
 
     public List<CommentDto> getComments() {

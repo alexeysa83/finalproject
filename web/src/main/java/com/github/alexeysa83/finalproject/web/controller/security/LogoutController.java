@@ -1,7 +1,7 @@
 package com.github.alexeysa83.finalproject.web.controller.security;
 
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
-import com.github.alexeysa83.finalproject.web.Utils.AuthenticationUtils;
+import com.github.alexeysa83.finalproject.web.Utils.WebAuthenticationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,7 +19,7 @@ public class LogoutController {
 
     @GetMapping(value = "/logout_custom")
     public String logout(HttpServletRequest req) {
-        final AuthUserDto principal = AuthenticationUtils.getPrincipalUserInSession();
+        final AuthUserDto principal = WebAuthenticationUtils.getPrincipalUserInSession();
         SecurityContextHolder.clearContext();
         try {
             req.logout();

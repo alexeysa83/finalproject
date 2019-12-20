@@ -18,8 +18,8 @@ import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.github.alexeysa83.finalproject.web.Utils.AuthenticationUtils.getPrincipalUserAuthId;
-import static com.github.alexeysa83.finalproject.web.Utils.AuthenticationUtils.isPrincipalUserAdmin;
+import static com.github.alexeysa83.finalproject.web.Utils.WebAuthenticationUtils.getPrincipalUserAuthId;
+import static com.github.alexeysa83.finalproject.web.Utils.WebAuthenticationUtils.isPrincipalUserAdmin;
 import static com.github.alexeysa83.finalproject.web.Utils.MessageContainer.*;
 
 @Controller

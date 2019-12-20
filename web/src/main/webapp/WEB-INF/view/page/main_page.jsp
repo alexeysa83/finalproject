@@ -7,6 +7,7 @@
 <html>
 <head>
     <title>Main page</title>
+
 </head>
 <body>
 
@@ -22,10 +23,10 @@
     <h5><spring:message code="author"/>:
         <a href="${pageContext.request.contextPath}/user_infos/${news.authId}">
                 ${news.authorNews}</a></h5>
-    <h5><spring:message code="created"/>: ${news.creationTime}</h5>
-    <%--    comments--%>
-    <%--    comments--%>
-    <h5><spring:message code="comments"/>: ${news.comments.size()}</h5>
+    <p><spring:message code="created"/>: ${news.creationTime}</p>
+    <p><spring:message code="comments"/>: <span class="rating">${news.comments.size()}</span>
+        <spring:message code="rating"/>:
+        <span class="rating" style='color: ${news.ratingColour}'>${news.ratingTotal}</span></p>
     <hr/>
 </c:forEach>
 

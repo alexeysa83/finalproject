@@ -11,7 +11,7 @@ import java.sql.Timestamp;
 
 public interface UserInfoRepository extends JpaRepository <UserInfoEntity, Long> {
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query (value = "insert into user_info (auth_id, registration_time) values (:authId, :registrationTime)", nativeQuery = true)
     void saveUserInfo (@Param("authId")Long authId, @Param("registrationTime") Timestamp regTime);
 

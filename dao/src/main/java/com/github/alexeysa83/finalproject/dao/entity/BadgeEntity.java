@@ -44,7 +44,7 @@ public class BadgeEntity {
     @ManyToMany (fetch = FetchType.LAZY)
     @JoinTable(name = "user_badge",
             joinColumns = {@JoinColumn(name = "badge_id")},
-            inverseJoinColumns = {@JoinColumn(name = "user_id")})
+            inverseJoinColumns = {@JoinColumn(name = "auth_id")})
     public List<UserInfoEntity> getUsers() {
         return users;
     }

@@ -26,7 +26,9 @@
         <!-- dependencies -->
         <spring-webmvc.version>5.2.1.RELEASE</spring-webmvc.version>
         <spring-orm.version>5.2.1.RELEASE</spring-orm.version>
+        <spring-aop.version>5.2.1.RELEASE</spring-aop.version>
         <spring-security-web.version>5.2.1.RELEASE</spring-security-web.version>
+        <spring-security-core.version>5.2.1.RELEASE</spring-security-core.version>
         <spring-security-config.version>5.2.1.RELEASE</spring-security-config.version>
         <spring-security-taglibs.version>5.2.1.RELEASE</spring-security-taglibs.version>
         <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
@@ -74,9 +76,19 @@
                 <version>${spring-orm.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-aop</artifactId>
+                <version>${spring-aop.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-web</artifactId>
                 <version>${spring-security-web.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-core</artifactId>
+                <version>${spring-security-core.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.security</groupId>

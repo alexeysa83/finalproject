@@ -1,11 +1,12 @@
 package com.github.alexeysa83.finalproject.dao.news;
 
-import com.github.alexeysa83.finalproject.dao.util.AddDeleteTestEntity;
 import com.github.alexeysa83.finalproject.dao.comment.CommentBaseDao;
 import com.github.alexeysa83.finalproject.dao.config.DaoConfig;
+import com.github.alexeysa83.finalproject.dao.util.AddDeleteTestEntity;
 import com.github.alexeysa83.finalproject.model.dto.AuthUserDto;
 import com.github.alexeysa83.finalproject.model.dto.CommentDto;
 import com.github.alexeysa83.finalproject.model.dto.NewsDto;
+import com.github.alexeysa83.finalproject.model.dto.NewsRatingDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +34,9 @@ class DefaultNewsBaseDaoTest {
     @Test
     void add() {
         final String testName = "CreateNewsTest";
-        final AuthUserDto user = util.addTestAuthUserToDB(testName);
+        final AuthUserDto testUser = util.addTestAuthUserToDB(testName);
 
-        final NewsDto testNews = util.createNewsDto(testName, user);
+        final NewsDto testNews = util.createNewsDto(testName, testUser);
 
         final NewsDto savedNews = newsDao.add(testNews);
         assertNotNull(savedNews);
@@ -52,19 +53,24 @@ class DefaultNewsBaseDaoTest {
     @Test
     void getByIdExist() {
         final String testName = "GetByIdNewsTest";
-        final AuthUserDto user = util.addTestAuthUserToDB(testName);
+        final Integer testRate = 1;
+        final AuthUserDto testUser = util.addTestAuthUserToDB(testName);
 
-        final NewsDto testNews = util.addTestNewsToDB(testName, user);
-        final Long id = testNews.getId();
-        final NewsDto newsFromDB = newsDao.getById(id);
+        final NewsDto testNews = util.addTestNewsToDB(testName, testUser);
+        final Long newsId = testNews.getId();
+        util.addTestNewsRatingToDB(testUser.getId(), newsId, testRate);
 
+        final NewsDto newsFromDB = newsDao.getById(newsId);
         assertNotNull(newsFromDB);
-        assertEquals(id, newsFromDB.getId());
+        assertEquals(newsId, newsFromDB.getId());
         assertEquals(testNews.getTitle(), newsFromDB.getTitle());
         assertEquals(testNews.getContent(), newsFromDB.getContent());
         assertEquals(testNews.getCreationTime(), newsFromDB.getCreationTime());
         assertEquals(testNews.getAuthId(), newsFromDB.getAuthId());
         assertEquals(testNews.getAuthorNews(), newsFromDB.getAuthorNews());
+
+        assertEquals(testRate, newsFromDB.getRatingTotal());
+        assertNull(newsFromDB.getUserInSessionRateOnThisNews());
     }
 
     @Test
@@ -76,12 +82,12 @@ class DefaultNewsBaseDaoTest {
     @Test
     void getRowsNews() {
         final String testName = "GetCountNewsTest";
-        final AuthUserDto user = util.addTestAuthUserToDB(testName);
+        final AuthUserDto testUser = util.addTestAuthUserToDB(testName);
 
         final int testCount = 3;
 
         for (int i = 0; i < testCount; i++) {
-            util.addTestNewsToDB(testName + i, user);
+            util.addTestNewsToDB(testName + i, testUser);
         }
 
         final int countFromDB = newsDao.getRows();
@@ -89,13 +95,16 @@ class DefaultNewsBaseDaoTest {
     }
 
     @Test
-        void getNewsOnPage() {
+    void getNewsOnPage() {
         final String testName = "GetNewsOnPageTest";
-        final AuthUserDto user = util.addTestAuthUserToDB(testName);
+        final Integer testRate = 1;
+        final AuthUserDto testUser = util.addTestAuthUserToDB(testName);
+        final Long authId = testUser.getId();
         final int PAGE_SIZE = 10;
         LinkedList<NewsDto> testList = new LinkedList<>();
         for (int i = 0; i < PAGE_SIZE * 2; i++) {
-            final NewsDto testNews = util.addTestNewsToDB(testName + i, user);
+            final NewsDto testNews = util.addTestNewsToDB(testName + i, testUser);
+            util.addTestNewsRatingToDB(authId, testNews.getId(), testRate);
             testList.addFirst(testNews);
         }
 
@@ -113,6 +122,9 @@ class DefaultNewsBaseDaoTest {
                 assertEquals(testNews.getCreationTime(), newsFromDB.getCreationTime());
                 assertEquals(testNews.getAuthId(), newsFromDB.getAuthId());
                 assertEquals(testNews.getAuthorNews(), newsFromDB.getAuthorNews());
+
+                assertEquals(testRate, newsFromDB.getRatingTotal());
+                assertNull(newsFromDB.getUserInSessionRateOnThisNews());
             }
         }
     }
@@ -120,16 +132,17 @@ class DefaultNewsBaseDaoTest {
     @Test
     void updateSuccess() {
         final String testName = "UpdateNewsTest";
-        final AuthUserDto user = util.addTestAuthUserToDB(testName);
+        final AuthUserDto testUser = util.addTestAuthUserToDB(testName);
 
-        final NewsDto testNews = util.addTestNewsToDB(testName, user);
+        final NewsDto testNews = util.addTestNewsToDB(testName, testUser);
         final Long id = testNews.getId();
 
          /*FakeUser is needed to create different from test news authid and author login fields
          which should not be updated
           */
-        user.setLogin("FakeUser");
-        final NewsDto newsToUpdate = util.createNewsDto("UpdateNewsComplete", user);
+        testUser.setLogin("FakeUser");
+        testUser.setId(0L);
+        final NewsDto newsToUpdate = util.createNewsDto("UpdateNewsComplete", testUser);
         newsToUpdate.setId(id);
 
         final boolean isUpdated = newsDao.update(newsToUpdate);
@@ -154,20 +167,23 @@ class DefaultNewsBaseDaoTest {
     }
 
     @Test
-   void deleteSuccess() {
+    void deleteSuccess() {
         final String testName = "DeleteNewsTest";
-        final AuthUserDto user = util.addTestAuthUserToDB(testName);
+        final AuthUserDto testUser = util.addTestAuthUserToDB(testName);
 
-        final NewsDto testNews = util.addTestNewsToDB(testName, user);
+        final NewsDto testNews = util.addTestNewsToDB(testName, testUser);
+        final Long newsId = testNews.getId();
         final CommentDto testComment = util.addTestCommentToDB(testName, testNews);
-        final Long id = testNews.getId();
-        NewsDto newsToDelete = newsDao.getById(id);
+
+        util.addTestNewsRatingToDB(testUser.getId(), newsId, 1);
+
+        NewsDto newsToDelete = newsDao.getById(newsId);
         assertNotNull(newsToDelete);
 
-        final boolean isDeleted = newsDao.delete(id);
+        final boolean isDeleted = newsDao.delete(newsId);
         assertTrue(isDeleted);
 
-        final NewsDto afterDelete = newsDao.getById(id);
+        final NewsDto afterDelete = newsDao.getById(newsId);
         assertNull(afterDelete);
 
         final CommentDto commentAfterDelete = commentDao.getById(testComment.getId());
@@ -178,5 +194,91 @@ class DefaultNewsBaseDaoTest {
     void deleteFail() {
         final boolean isDeleted = newsDao.delete(0L);
         assertFalse(isDeleted);
+    }
+
+    // Also testing getRatingOnNewsFromUser if rating exist
+    @Test
+    void addRatingOnNews() {
+        final String testName = "AddRatingOnNewsTest";
+        final Integer rate = 1;
+        final AuthUserDto testUser = util.addTestAuthUserToDB(testName);
+        final Long authId = testUser.getId();
+
+        final NewsDto testNews = util.addTestNewsToDB(testName, testUser);
+        final Long newsId = testNews.getId();
+
+        final NewsRatingDto testRating = util.createNewsRatingDto(authId, newsId, rate);
+
+        final boolean isAdded = newsDao.addRatingOnNews(testRating);
+        assertTrue(isAdded);
+
+        final Integer rateFromDB = newsDao.getRatingOnNewsFromUser(authId, newsId);
+        assertEquals(rate, rateFromDB);
+    }
+
+    // Also testing getRatingOnNewsFromUser if rating exist and not exist (return null)
+    @Test
+    void deleteRatingFromNews() {
+        final String testName = "DeleteRatingOnNewsTest";
+        final Integer rate = -1;
+        final AuthUserDto testUser = util.addTestAuthUserToDB(testName);
+        final Long authId = testUser.getId();
+
+        final NewsDto testNews = util.addTestNewsToDB(testName, testUser);
+        final Long newsId = testNews.getId();
+
+        final NewsRatingDto testRating = util.createNewsRatingDto(authId, newsId, rate);
+
+        final boolean isAdded = newsDao.addRatingOnNews(testRating);
+        assertTrue(isAdded);
+
+        final Integer rateToDelete = newsDao.getRatingOnNewsFromUser(authId, newsId);
+        assertNotNull(rateToDelete);
+
+        final boolean isDeleted = newsDao.deleteRatingFromNews(testRating);
+        assertTrue(isDeleted);
+
+        final Integer rateAfterDelete = newsDao.getRatingOnNewsFromUser(authId, newsId);
+        assertNull(rateAfterDelete);
+    }
+
+    @Test
+    void deleteRatingFail() {
+        final NewsRatingDto testRating = util.createNewsRatingDto(0L, 0L, 1);
+        final boolean isDeleted = newsDao.deleteRatingFromNews(testRating);
+        assertFalse(isDeleted);
+    }
+
+    @Test
+    void getTotalRatingOnNews() {
+        final String testName = "GetTotalRatingOnNewsTest";
+        final Integer rate = -1;
+        final Integer rate2 = 1;
+        final Integer rate3 = 1;
+        final AuthUserDto authorUser = util.addTestAuthUserToDB(testName);
+
+        final NewsDto testNews = util.addTestNewsToDB(testName, authorUser);
+        final Long newsId = testNews.getId();
+
+        final AuthUserDto testUser = util.addTestAuthUserToDB(testName + "1");
+        final AuthUserDto testUser2 = util.addTestAuthUserToDB(testName + "2");
+        final AuthUserDto testUser3 = util.addTestAuthUserToDB(testName + "3");
+        util.addTestNewsRatingToDB(testUser.getId(), newsId, rate);
+        util.addTestNewsRatingToDB(testUser2.getId(), newsId, rate2);
+        util.addTestNewsRatingToDB(testUser3.getId(), newsId, rate3);
+
+        final int totalRatingFromDB = newsDao.getTotalRatingOnNews(newsId);
+        final int expectedTotalRating = rate + rate2 + rate3;
+        assertEquals(expectedTotalRating, totalRatingFromDB);
+    }
+
+    @Test
+    void totalRatingZero() {
+        final String testName = "GetTotalRatingZeroOnNewsTest";
+        final AuthUserDto testUser = util.addTestAuthUserToDB(testName);
+        final NewsDto testNews = util.addTestNewsToDB(testName, testUser);
+
+        final int totalRatingFromDB = newsDao.getTotalRatingOnNews(testNews.getId());
+        assertEquals(0, totalRatingFromDB);
     }
 }

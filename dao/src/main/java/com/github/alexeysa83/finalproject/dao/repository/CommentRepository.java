@@ -25,4 +25,30 @@ public interface CommentRepository extends JpaRepository<CommentEntity, Long> {
     @Query(value = "from NewsEntity n where n.id=:id")
     NewsEntity getNewsById(@Param("id") Long id);
 
+    /**
+     * COMMENT RATING
+     */
+
+    @Query(value = "select rating cr from comment_rating cr where cr.auth_id=:authId and cr.comment_id=:commentId",
+            nativeQuery = true)
+    Integer getRatingOnCommentFromUser(@Param("authId")Long authId, @Param("commentId")Long commentId);
+
+    @Query(value = "select sum(rating) from comment_rating cr where cr.comment_id=:commentId",
+            nativeQuery = true)
+    Integer getTotalRatingOnComments(@Param("commentId")Long commentId);
+
+    @Modifying (clearAutomatically = true)
+    @Query (value = "insert into comment_rating (auth_id, comment_id, rating) values (:authId, :commentId, :rating)",
+            nativeQuery = true)
+    int addRatingOnComment(@Param("authId")Long authId, @Param("commentId")Long commentId, @Param("rating")int rating );
+
+    @Modifying (clearAutomatically = true)
+    @Query (value = "delete from comment_rating cr where cr.auth_id=:authId and cr.comment_id=:commentId",
+            nativeQuery = true)
+    int deleteSingleRatingOnComment(@Param("authId")Long authId, @Param("commentId")Long commentId);
+
+    @Modifying (clearAutomatically = true)
+    @Query (value = "delete from comment_rating cr where cr.comment_id=:commentId",
+            nativeQuery = true)
+    void deleteAllRatingOnComment(@Param("commentId")Long commentId);
 }

@@ -16,7 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 
-import static com.github.alexeysa83.finalproject.web.Utils.AuthenticationUtils.*;
+import static com.github.alexeysa83.finalproject.web.Utils.WebAuthenticationUtils.*;
 import static com.github.alexeysa83.finalproject.web.Utils.MessageContainer.*;
 
 @Controller

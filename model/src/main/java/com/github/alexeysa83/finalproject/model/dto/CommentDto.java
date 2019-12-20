@@ -11,6 +11,8 @@ public class CommentDto {
     private Long authId;
     private Long newsId;
     private String authorComment;
+    private int ratingTotal;
+    private Integer userInSessionRateOnThisComment;
 
     public CommentDto() {
     }
@@ -61,6 +63,22 @@ public class CommentDto {
 
     public void setAuthorComment(String authorComment) {
         this.authorComment = authorComment;
+    }
+
+    public int getRatingTotal() {
+        return ratingTotal;
+    }
+
+    public void setRatingTotal(int ratingTotal) {
+        this.ratingTotal = ratingTotal;
+    }
+
+    public Integer getUserInSessionRateOnThisComment() {
+        return userInSessionRateOnThisComment;
+    }
+
+    public void setUserInSessionRateOnThisComment(Integer userInSessionRateOnThisComment) {
+        this.userInSessionRateOnThisComment = userInSessionRateOnThisComment;
     }
 
     @Override

@@ -98,4 +98,32 @@ public class AddDeleteTestEntity {
         final BadgeDto badgeDto = createBadgeDto(name);
         return badgeDao.add(badgeDto);
     }
+
+    // Test News Rating util methods
+    public NewsRatingDto createNewsRatingDto(Long authId, Long newsId, Integer rate) {
+        NewsRatingDto newsRatingDto = new NewsRatingDto();
+        newsRatingDto.setAuthId(authId);
+        newsRatingDto.setNewsId(newsId);
+        newsRatingDto.setRate(rate);
+        return newsRatingDto;
+    }
+
+    public boolean addTestNewsRatingToDB(Long authId, Long newsId, Integer rate) {
+        final NewsRatingDto newsRatingDto = createNewsRatingDto(authId, newsId, rate);
+        return newsDao.addRatingOnNews(newsRatingDto);
+    }
+
+    // Test Comment Rating util methods
+    public CommentRatingDto createCommentRatingDto(Long authId, Long commentId, Integer rate) {
+        CommentRatingDto commentRatingDto = new CommentRatingDto();
+        commentRatingDto.setAuthId(authId);
+        commentRatingDto.setCommentId(commentId);
+        commentRatingDto.setRate(rate);
+        return commentRatingDto;
+    }
+
+    public boolean addTestCommentRatingToDB(Long authId, Long commentId, Integer rate) {
+        final CommentRatingDto commentRatingDto = createCommentRatingDto(authId, commentId, rate);
+        return commentDao.addRatingOnComment(commentRatingDto);
+    }
 }

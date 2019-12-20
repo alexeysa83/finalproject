@@ -1,11 +1,13 @@
 package com.github.alexeysa83.finalproject.dao.comment;
 
+import com.github.alexeysa83.finalproject.dao.Utils.DaoAuthenticationUtils;
 import com.github.alexeysa83.finalproject.dao.convert_entity.CommentConvert;
 import com.github.alexeysa83.finalproject.dao.entity.AuthUserEntity;
 import com.github.alexeysa83.finalproject.dao.entity.CommentEntity;
 import com.github.alexeysa83.finalproject.dao.entity.NewsEntity;
 import com.github.alexeysa83.finalproject.dao.repository.CommentRepository;
 import com.github.alexeysa83.finalproject.model.dto.CommentDto;
+import com.github.alexeysa83.finalproject.model.dto.CommentRatingDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
@@ -28,7 +30,6 @@ public class DefaultCommentBaseDao implements CommentBaseDao {
 
     /**
      *
-
      */
     @Override
     @Transactional(propagation = Propagation.MANDATORY)
@@ -57,7 +58,8 @@ public class DefaultCommentBaseDao implements CommentBaseDao {
         final Optional<CommentEntity> optional = commentRepository.findById(id);
         if (optional.isPresent()) {
             final CommentEntity commentEntity = optional.get();
-            return CommentConvert.toDto(commentEntity);
+            final CommentDto commentDto = CommentConvert.toDto(commentEntity);
+            return addRatingFieldsToCommentDto(commentDto);
         }
         return null;
     }
@@ -68,8 +70,23 @@ public class DefaultCommentBaseDao implements CommentBaseDao {
         List<CommentDto> commentDtoList;
         final NewsEntity newsEntity = commentRepository.getNewsById(newsId);
         List<CommentEntity> entityComments = newsEntity.getComments();
-        commentDtoList = entityComments.stream().map(CommentConvert::toDto).collect(Collectors.toList());
+        commentDtoList = entityComments.stream()
+                .map(CommentConvert::toDto)
+                .map(this::addRatingFieldsToCommentDto)
+                .collect(Collectors.toList());
         return commentDtoList;
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    CommentDto addRatingFieldsToCommentDto(CommentDto commentDto) {
+        final Long userInSessionAuthId = DaoAuthenticationUtils.getPrincipalUserAuthId();
+        final Long commentId = commentDto.getId();
+        final Integer rate = getRatingOnCommentFromUser(userInSessionAuthId, commentId);
+        final int totalRatingOnComment = getTotalRatingOnComment(commentId);
+
+        commentDto.setUserInSessionRateOnThisComment(rate);
+        commentDto.setRatingTotal(totalRatingOnComment);
+        return commentDto;
     }
 
     @Override
@@ -87,6 +104,7 @@ public class DefaultCommentBaseDao implements CommentBaseDao {
     @Override
     @Transactional(propagation = Propagation.MANDATORY)
     public boolean delete(Long id) {
+        commentRepository.deleteAllRatingOnComment(id);
         final int rowsDeleted = commentRepository.deleteComment(id);
         if (rowsDeleted > 0) {
             log.info("Comment id: {} deleted from DB at: {}", id, LocalDateTime.now());
@@ -94,5 +112,56 @@ public class DefaultCommentBaseDao implements CommentBaseDao {
             log.error("Fail to delete comment from in DB: {}, at: {}", id, LocalDateTime.now());
         }
         return rowsDeleted > 0;
+    }
+
+    /**
+     * COMMENT RATING
+     */
+
+    @Override
+    @Transactional(propagation = Propagation.MANDATORY)
+    public boolean addRatingOnComment(CommentRatingDto ratingDto) {
+        final Long authId = ratingDto.getAuthId();
+        final Long commentId = ratingDto.getCommentId();
+        final int rowsUpdated = commentRepository.addRatingOnComment(authId, commentId, ratingDto.getRate());
+        if (rowsUpdated > 0) {
+            log.info("Rating on comment id: {} from user id: {} added to DB at: {}", commentId, authId, LocalDateTime.now());
+        } else {
+            log.info("Failed to add rating: {} on comment at: {}", ratingDto, LocalDateTime.now());
+        }
+        return rowsUpdated > 0;
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.MANDATORY)
+    public boolean deleteRatingFromComment(CommentRatingDto ratingDto) {
+        final Long authId = ratingDto.getAuthId();
+        final Long commentId = ratingDto.getCommentId();
+        final int rowsDeleted = commentRepository.deleteSingleRatingOnComment(authId, commentId);
+        if (rowsDeleted > 0) {
+            log.info("Rating on comment id: {} from user id: {} deleted from DB at: {}", commentId, authId, LocalDateTime.now());
+        } else {
+            log.info("Failed to delete rating: {} on comment at: {}", ratingDto, LocalDateTime.now());
+        }
+        return rowsDeleted > 0;
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public Integer getRatingOnCommentFromUser(Long authId, Long commentId) {
+        Integer ratingOnCommentFromUser;
+        try {
+            ratingOnCommentFromUser = commentRepository.getRatingOnCommentFromUser(authId, commentId);
+        } catch (NullPointerException e) {
+            return null;
+        }
+        return ratingOnCommentFromUser;
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public int getTotalRatingOnComment(Long commentId) {
+        final Integer totalRatingOnComment = commentRepository.getTotalRatingOnComments(commentId);
+        return (totalRatingOnComment == null) ? 0 : totalRatingOnComment;
     }
 }
