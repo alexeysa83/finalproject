@@ -4,5 +4,4 @@ Final project up-to-date
  - unauthirized users may login or create new account (checking if login is already taken)
  - there is an option to logout for authorized users
 
-predefined users: login - adminn, pass - admin
-                  login - userInfoDto, pass - userInfoDto
+
